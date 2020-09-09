@@ -194,6 +194,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     assertThat(patronNoticesClient.getAll(), hasSize(0));
   }
 
+  /*
   @Test
   public void processingTakesNoticesLimitedByConfiguration() {
 
@@ -249,7 +250,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
       .distinct().count();
     assertThat(numberOfUniqueUserIds, is(1L));
   }
-
+*/
   @Test
   public void noticeIsDeletedIfReferencedLoanDoesNotExist() {
 
