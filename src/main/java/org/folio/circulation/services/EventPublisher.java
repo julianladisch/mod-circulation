@@ -104,7 +104,7 @@ public class EventPublisher {
       Loan loan = checkInContext.getLoan();
 
       JsonObject payloadJsonObject = new JsonObject();
-      write(payloadJsonObject, USER_ID_FIELD, loan.getUserId());
+      //write(payloadJsonObject, USER_ID_FIELD, loan.getUserId());
       write(payloadJsonObject, LOAN_ID_FIELD, loan.getId());
       write(payloadJsonObject, RETURN_DATE_FIELD, loan.getReturnDate());
 
