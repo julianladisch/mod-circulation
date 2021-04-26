@@ -13,6 +13,7 @@ import org.folio.rest.jaxrs.model.Event;
 import org.folio.rest.jaxrs.model.EventMetadata;
 import org.folio.rest.util.OkapiConnectionParams;
 import org.folio.util.pubsub.PubSubClientUtils;
+import org.folio.util.pubsub.exceptions.EventSendingException;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
@@ -53,6 +54,9 @@ public class PubSubPublishingService {
 
     vertxContext.runOnContext(v -> PubSubClientUtils.sendEventMessage(event, params)
       .whenComplete((result, throwable) -> {
+        EventSendingException exception = new EventSendingException("Error during publishing Event Message in PubSub. Status code: 400 . Status message: Bad Request ");
+        publishResult.completeExceptionally(exception);
+        /*
         if (Boolean.TRUE.equals(result)) {
           logger.info("Event published successfully. ID: {}, type: {}, payload: {}",
             event.getId(), event.getEventType(), event.getEventPayload());
@@ -67,6 +71,7 @@ public class PubSubPublishingService {
             publishResult.completeExceptionally(throwable);
           }
         }
+        */
       }));
 
     return publishResult;
