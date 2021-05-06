@@ -15,10 +15,10 @@ import static api.support.http.Offset.noOffset;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
 
 import api.support.MultipleJsonRecords;
 import api.support.RestAssuredClient;
@@ -41,7 +41,7 @@ public class LoansFixture {
   }
 
   public IndividualResource createLoan(IndividualResource item, IndividualResource to) {
-    DateTime loanDate = DateTime.now();
+    ZonedDateTime loanDate = ZonedDateTime.now();
 
     return createLoan(new LoanBuilder()
       .open()
@@ -52,7 +52,7 @@ public class LoansFixture {
   }
 
   public IndividualResource createLoan(IndividualResource item, IndividualResource to,
-    DateTime loanDate) {
+    ZonedDateTime loanDate) {
 
     return createLoan(new LoanBuilder()
       .open()

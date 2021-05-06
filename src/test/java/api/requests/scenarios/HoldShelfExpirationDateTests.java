@@ -10,6 +10,7 @@ import static api.support.builders.RequestBuilder.OPEN_NOT_YET_FILLED;
 import static api.support.matchers.ItemStatusCodeMatcher.hasItemStatus;
 import static api.support.matchers.ResponseStatusCodeMatcher.hasStatus;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
+import static java.time.ZoneOffset.UTC;
 import static org.folio.HttpStatus.HTTP_OK;
 import static org.folio.circulation.support.utils.DateTimeUtil.atEndOfTheDay;
 import static org.hamcrest.CoreMatchers.is;
@@ -25,10 +26,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 import org.folio.circulation.support.ClockManager;
-import api.support.http.IndividualResource;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,6 +35,7 @@ import org.junit.runner.RunWith;
 import api.support.APITests;
 import api.support.builders.CheckInByBarcodeRequestBuilder;
 import api.support.fixtures.ConfigurationExample;
+import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
@@ -81,7 +80,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), checkInServicePoint.getId());
+      ZonedDateTime.now(UTC), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -123,7 +122,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      DateTime.now(DateTimeZone.UTC), checkInServicePoint.getId());
+      ZonedDateTime.now(UTC), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -161,7 +160,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      DateTime.now(DateTimeZone.UTC), checkInServicePoint.getId());
+      ZonedDateTime.now(UTC), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -199,7 +198,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      DateTime.now(DateTimeZone.UTC), checkInServicePoint.getId());
+      ZonedDateTime.now(UTC), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -230,7 +229,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), checkInServicePoint.getId());
+      ZonedDateTime.now(UTC), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -292,7 +291,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), checkInServicePoint.getId());
+      ZonedDateTime.now(UTC), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -341,7 +340,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     final IndividualResource requestServicePoint = checkInServicePoint;
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), requestServicePoint.getId(), "Page");
+      ZonedDateTime.now(UTC), requestServicePoint.getId(), "Page");
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -378,7 +377,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), alternateCheckInServicePoint.getId());
+      ZonedDateTime.now(UTC), alternateCheckInServicePoint.getId());
 
     nod = itemsClient.get(nod);
 
@@ -416,7 +415,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     final IndividualResource requestServicePoint = alternateServicePoint;
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), requestServicePoint.getId(), "Page");
+      ZonedDateTime.now(UTC), requestServicePoint.getId(), "Page");
 
     nod = itemsClient.get(nod);
 
@@ -456,7 +455,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), alternateCheckInServicePoint.getId());
+      ZonedDateTime.now(UTC), alternateCheckInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()

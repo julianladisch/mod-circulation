@@ -4,35 +4,35 @@ import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyU
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.folio.circulation.AdjacentOpeningDays;
-import org.folio.circulation.infrastructure.storage.CalendarRepository;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.LoanAndRelatedRecords;
 import org.folio.circulation.domain.policy.LoanPolicy;
+import org.folio.circulation.infrastructure.storage.CalendarRepository;
 import org.folio.circulation.resources.context.RenewalContext;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 
 public class ClosedLibraryStrategyService {
 
   public static ClosedLibraryStrategyService using(
-    Clients clients, DateTime currentTime, boolean isRenewal) {
+    Clients clients, ZonedDateTime currentTime, boolean isRenewal) {
     return new ClosedLibraryStrategyService(new CalendarRepository(clients), currentTime, isRenewal);
   }
 
   private final CalendarRepository calendarRepository;
-  private final DateTime currentDateTime;
+  private final ZonedDateTime currentDateTime;
   private final boolean isRenewal;
 
   public ClosedLibraryStrategyService(
-    CalendarRepository calendarRepository, DateTime currentDateTime, boolean isRenewal) {
+    CalendarRepository calendarRepository, ZonedDateTime currentDateTime, boolean isRenewal) {
     this.calendarRepository = calendarRepository;
     this.currentDateTime = currentDateTime;
     this.isRenewal = isRenewal;
@@ -59,17 +59,17 @@ public class ClosedLibraryStrategyService {
       .thenApply(mapResult(renewalContext::withLoan));
   }
 
-  private CompletableFuture<Result<DateTime>> applyClosedLibraryDueDateManagement(
-    Loan loan, LoanPolicy loanPolicy, DateTimeZone timeZone) {
+  private CompletableFuture<Result<ZonedDateTime>> applyClosedLibraryDueDateManagement(
+    Loan loan, LoanPolicy loanPolicy, ZoneOffset timeZone) {
 
-    LocalDate requestedDate = loan.getDueDate().withZone(timeZone).toLocalDate();
+    LocalDate requestedDate = loan.getDueDate().withZoneSameInstant(timeZone).toLocalDate();
     return calendarRepository.lookupOpeningDays(requestedDate, loan.getCheckoutServicePointId())
       .thenApply(r -> r.next(openingDays -> applyStrategy(loan, loanPolicy, openingDays, timeZone)));
   }
 
-  private Result<DateTime> applyStrategy(
-    Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays, DateTimeZone timeZone) {
-    DateTime initialDueDate = loan.getDueDate();
+  private Result<ZonedDateTime> applyStrategy(
+    Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays, ZoneOffset timeZone) {
+    ZonedDateTime initialDueDate = loan.getDueDate();
 
     ClosedLibraryStrategy strategy = determineClosedLibraryStrategy(loanPolicy, currentDateTime, timeZone);
 
@@ -77,19 +77,19 @@ public class ClosedLibraryStrategyService {
       .next(dateTime -> applyFixedDueDateLimit(dateTime, loan, loanPolicy, openingDays, timeZone));
   }
 
-  private Result<DateTime> applyFixedDueDateLimit(
-    DateTime dueDate, Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays,
-    DateTimeZone timeZone) {
+  private Result<ZonedDateTime> applyFixedDueDateLimit(
+    ZonedDateTime dueDate, Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays,
+    ZoneOffset timeZone) {
 
-    Optional<DateTime> optionalDueDateLimit =
+    Optional<ZonedDateTime> optionalDueDateLimit =
       loanPolicy.getScheduleLimit(loan.getLoanDate(), isRenewal, currentDateTime);
     if (!optionalDueDateLimit.isPresent()) {
       return succeeded(dueDate);
     }
 
-    DateTime dueDateLimit = optionalDueDateLimit.get();
-    Comparator<DateTime> dateComparator =
-      Comparator.comparing(dateTime -> dateTime.withZone(timeZone).toLocalDate());
+    ZonedDateTime dueDateLimit = optionalDueDateLimit.get();
+    Comparator<ZonedDateTime> dateComparator =
+      Comparator.comparing(dateTime -> dateTime.withZoneSameInstant(timeZone).toLocalDate());
     if (dateComparator.compare(dueDate, dueDateLimit) <= 0) {
       return succeeded(dueDate);
     }

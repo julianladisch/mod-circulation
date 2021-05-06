@@ -24,6 +24,8 @@ import static org.folio.circulation.support.http.client.CqlQuery.exactMatchAny;
 import static org.folio.circulation.support.logging.PatronNoticeLogHelper.logResponse;
 import static org.folio.circulation.support.results.ResultBinding.flatMapResult;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -40,8 +42,6 @@ import org.folio.circulation.support.http.client.PageLimit;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.http.client.ResponseInterpreter;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import io.vertx.core.json.JsonObject;
 
@@ -74,14 +74,14 @@ public class ScheduledNoticesRepository {
   }
 
   public CompletableFuture<Result<MultipleRecords<ScheduledNotice>>> findNotices(
-    DateTime timeLimit, boolean realTime, List<TriggeringEvent> triggeringEvents,
+    ZonedDateTime timeLimit, boolean realTime, List<TriggeringEvent> triggeringEvents,
     CqlSortBy cqlSortBy, PageLimit pageLimit) {
 
     List<String> triggeringEventRepresentations = triggeringEvents.stream()
       .map(TriggeringEvent::getRepresentation)
       .collect(Collectors.toList());
 
-    return CqlQuery.lessThan("nextRunTime", timeLimit.withZone(DateTimeZone.UTC))
+    return CqlQuery.lessThan("nextRunTime", timeLimit.withZoneSameLocal(ZoneOffset.UTC))
       .combine(exactMatch("noticeConfig.sendInRealTime", Boolean.toString(realTime)), CqlQuery::and)
       .combine(exactMatchAny("triggeringEvent", triggeringEventRepresentations), CqlQuery::and)
       .map(cqlQuery -> cqlQuery.sortBy(cqlSortBy))

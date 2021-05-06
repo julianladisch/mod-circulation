@@ -2,31 +2,30 @@ package api.support.builders;
 
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import io.vertx.core.json.JsonObject;
 
 public class ClaimItemReturnedRequestBuilder implements Builder {
-  private final DateTime itemClaimedReturnedDate;
+  private final ZonedDateTime itemClaimedReturnedDate;
   private final String comment;
   private final String loanId;
 
   public ClaimItemReturnedRequestBuilder() {
-    this(null, DateTime.now(DateTimeZone.UTC), null);
+    this(null, ZonedDateTime.now(ZoneOffset.UTC), null);
   }
 
   private ClaimItemReturnedRequestBuilder(
-    String loanId, DateTime itemClaimedReturnedDate, String comment) {
+    String loanId, ZonedDateTime itemClaimedReturnedDate, String comment) {
 
     this.itemClaimedReturnedDate = itemClaimedReturnedDate;
     this.comment = comment;
     this.loanId = loanId;
   }
 
-  public ClaimItemReturnedRequestBuilder withItemClaimedReturnedDate(DateTime dateTime) {
+  public ClaimItemReturnedRequestBuilder withItemClaimedReturnedDate(ZonedDateTime dateTime) {
     return new ClaimItemReturnedRequestBuilder(this.loanId, dateTime, this.comment);
   }
 

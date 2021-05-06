@@ -1,14 +1,15 @@
 package org.folio.circulation.domain;
 
+import java.time.ZoneOffset;
+
 import org.folio.circulation.domain.policy.RequestPolicy;
-import org.joda.time.DateTimeZone;
 
 public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedRecord {
   private final Request request;
   private final Request originalRequest;
   private final RequestQueue requestQueue;
   private final RequestPolicy requestPolicy;
-  private final DateTimeZone timeZone;
+  private final ZoneOffset timeZone;
 
   private final MoveRequestRecord moveRequestRecord;
 
@@ -17,7 +18,7 @@ public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedR
     RequestQueue requestQueue,
     RequestPolicy requestPolicy,
     MoveRequestRecord moveRequestRecord,
-    DateTimeZone timeZone) {
+    ZoneOffset timeZone) {
 
     this.request = request;
     this.originalRequest = request.copy();
@@ -28,7 +29,7 @@ public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedR
   }
 
   public RequestAndRelatedRecords(Request request) {
-    this(request, null, null, null, DateTimeZone.UTC);
+    this(request, null, null, null, ZoneOffset.UTC);
   }
 
   public RequestAndRelatedRecords withRequest(Request newRequest) {
@@ -91,7 +92,7 @@ public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedR
     );
   }
 
-  RequestAndRelatedRecords withTimeZone(DateTimeZone newTimeZone) {
+  RequestAndRelatedRecords withTimeZone(ZoneOffset newTimeZone) {
     return new RequestAndRelatedRecords(request, requestQueue, requestPolicy,
       moveRequestRecord, newTimeZone);
   }
@@ -138,7 +139,7 @@ public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedR
     return request.getItemId();
   }
 
-  DateTimeZone getTimeZone() {
+  ZoneOffset getTimeZone() {
     return timeZone;
   }
 

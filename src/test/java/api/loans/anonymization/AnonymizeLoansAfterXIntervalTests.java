@@ -4,19 +4,20 @@ import static api.support.PubsubPublisherTestUtils.assertThatPublishedAnonymizeL
 import static api.support.fakes.PublishedEvents.byLogEventTypeAndAction;
 import static api.support.matchers.LoanMatchers.isAnonymized;
 import static api.support.matchers.LoanMatchers.isOpen;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.folio.circulation.domain.representations.logs.LogEventType.LOAN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.domain.representations.anonymization.LoanAnonymizationAPIResponse;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
@@ -28,7 +29,7 @@ import api.support.http.ItemResource;
 
 public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
 
-  private DateTime lastAnonymizationDateTime = null;
+  private ZonedDateTime lastAnonymizationDateTime = null;
 
   /**
    * Scenario 1
@@ -93,7 +94,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
     assertThat(loanResource.getJson(), isOpen());
 
     mockClockManagerToReturnFixedDateTime(
-      now(UTC).plus(ONE_MINUTE_AND_ONE));
+      now(UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
 
     anonymizeLoansInTenant();
 
@@ -198,7 +199,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
     createClosedAccountWithFeeFines(loanResource, now(UTC));
 
     mockClockManagerToReturnFixedDateTime(
-      now(UTC).plus(20 * ONE_MINUTE_AND_ONE));
+      now(UTC).plus(20 * ONE_MINUTE_AND_ONE, MILLIS));
     anonymizeLoansInTenant();
 
     assertThat(loansStorageClient.getById(loanID)
@@ -236,7 +237,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
     checkInFixture.checkInByBarcode(item1);
 
     mockClockManagerToReturnFixedDateTime(
-      now(UTC).plus(20 * ONE_MINUTE_AND_ONE));
+      now(UTC).plus(20 * ONE_MINUTE_AND_ONE, MILLIS));
 
     anonymizeLoansInTenant();
 
@@ -308,7 +309,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
 
     checkInFixture.checkInByBarcode(item1);
 
-    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE));
+    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
 
     anonymizeLoansInTenant();
 
@@ -369,7 +370,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
 
     checkInFixture.checkInByBarcode(item1);
 
-    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE));
+    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
     anonymizeLoansInTenant();
 
     assertThat(loansStorageClient.getById(loanID)
@@ -504,7 +505,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
 
     createOpenAccountWithFeeFines(loanResource);
 
-    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE));
+    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -521,8 +522,8 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
 
   private void setNextAnonymizationDateTime(long anonymizationInterval) {
     lastAnonymizationDateTime = lastAnonymizationDateTime == null
-      ? now(UTC).plus(anonymizationInterval)
-      : lastAnonymizationDateTime.plus(anonymizationInterval);
+      ? now(UTC).plus(anonymizationInterval, MILLIS)
+      : lastAnonymizationDateTime.plus(anonymizationInterval, MILLIS);
 
     mockClockManagerToReturnFixedDateTime(lastAnonymizationDateTime);
   }

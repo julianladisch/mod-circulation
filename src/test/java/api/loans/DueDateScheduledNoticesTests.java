@@ -1,15 +1,18 @@
 package api.loans;
 
 import static api.support.matchers.ScheduledNoticeMatchers.hasScheduledLoanNotice;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +24,6 @@ import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.json.JsonPropertyWriter;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -91,8 +92,8 @@ public class DueDateScheduledNoticesTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate =
-      new DateTime(2018, 3, 18, 11, 43, 54, DateTimeZone.UTC);
+    final ZonedDateTime loanDate =
+      ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, ZoneOffset.UTC);
 
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -100,7 +101,7 @@ public class DueDateScheduledNoticesTests extends APITests {
         .to(steve)
         .on(loanDate)
         .at(UUID.randomUUID()));
-    DateTime dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
+    ZonedDateTime dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
 
     Awaitility.await()
       .atMost(1, TimeUnit.SECONDS)
@@ -110,7 +111,7 @@ public class DueDateScheduledNoticesTests extends APITests {
     assertThat(scheduledNotices,
       hasItems(
         hasScheduledLoanNotice(
-          loan.getId(), dueDate.minus(beforePeriod.timePeriod()),
+          loan.getId(), beforePeriod.minusDate(dueDate),
           BEFORE_TIMING, beforeTemplateId,
           beforeRecurringPeriod, true),
         hasScheduledLoanNotice(
@@ -118,7 +119,7 @@ public class DueDateScheduledNoticesTests extends APITests {
           UPON_AT_TIMING, uponAtTemplateId,
           null, false),
         hasScheduledLoanNotice(
-          loan.getId(), dueDate.plus(afterPeriod.timePeriod()),
+          loan.getId(), afterPeriod.plusDate(dueDate),
           AFTER_TIMING, afterTemplateId,
           afterRecurringPeriod, true)
       ));
@@ -155,8 +156,8 @@ public class DueDateScheduledNoticesTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate =
-      new DateTime(2018, 3, 18, 11, 43, 54, DateTimeZone.UTC);
+    final ZonedDateTime loanDate =
+      ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, ZoneOffset.UTC);
 
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -164,7 +165,7 @@ public class DueDateScheduledNoticesTests extends APITests {
         .to(steve)
         .on(loanDate)
         .at(UUID.randomUUID()));
-    DateTime dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
+    ZonedDateTime dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
 
     Awaitility.await()
       .atMost(1, TimeUnit.SECONDS)
@@ -174,11 +175,11 @@ public class DueDateScheduledNoticesTests extends APITests {
     assertThat(scheduledNotices,
       hasItems(
         hasScheduledLoanNotice(
-          loan.getId(), dueDate.minus(firstBeforePeriod.timePeriod()),
+          loan.getId(), firstBeforePeriod.minusDate(dueDate),
           BEFORE_TIMING, firstBeforeTemplateId,
           null, false),
         hasScheduledLoanNotice(
-          loan.getId(), dueDate.minus(secondBeforePeriod.timePeriod()),
+          loan.getId(), secondBeforePeriod.minusDate(dueDate),
           BEFORE_TIMING, secondBeforeTemplateId,
           null, true)
       ));
@@ -208,8 +209,8 @@ public class DueDateScheduledNoticesTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate =
-      new DateTime(2018, 3, 18, 11, 43, 54, DateTimeZone.UTC);
+    final ZonedDateTime loanDate =
+      ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, ZoneOffset.UTC);
 
       checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -277,11 +278,11 @@ public class DueDateScheduledNoticesTests extends APITests {
       .until(scheduledNoticesClient::getAll, hasSize(6));
 
     IndividualResource renewedLoan = loansFixture.renewLoan(item, borrower);
-    DateTime dueDateAfterRenewal = getDateTimeProperty(renewedLoan.getJson(), "dueDate");
+    ZonedDateTime dueDateAfterRenewal = getDateTimeProperty(renewedLoan.getJson(), "dueDate");
 
     Matcher<Iterable<JsonObject>> scheduledNoticesAfterRenewalMatcher = hasItems(
       hasScheduledLoanNotice(
-        loan.getId(), dueDateAfterRenewal.minus(beforePeriod.timePeriod()),
+        loan.getId(), beforePeriod.minusDate(dueDateAfterRenewal),
         BEFORE_TIMING, beforeTemplateId,
         beforeRecurringPeriod, true),
       hasScheduledLoanNotice(
@@ -289,7 +290,7 @@ public class DueDateScheduledNoticesTests extends APITests {
         UPON_AT_TIMING, uponAtTemplateId,
         null, false),
       hasScheduledLoanNotice(
-        loan.getId(), dueDateAfterRenewal.plus(afterPeriod.timePeriod()),
+        loan.getId(), afterPeriod.plusDate(dueDateAfterRenewal),
         AFTER_TIMING, afterTemplateId,
         afterRecurringPeriod, true)
     );
@@ -351,20 +352,20 @@ public class DueDateScheduledNoticesTests extends APITests {
     final IndividualResource borrower = usersFixture.steve();
 
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(item, borrower);
-    DateTime dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
+    ZonedDateTime dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
     checkOutFixture.checkOutByBarcode(itemsFixture.basedUponNod(), usersFixture.jessica());
 
     Awaitility.await()
       .atMost(1, TimeUnit.SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(6));
 
-    DateTime dueDateAfterRenewal = dueDate.plusWeeks(3);
+    ZonedDateTime dueDateAfterRenewal = dueDate.plusWeeks(3);
     loansFixture.overrideRenewalByBarcode(item, borrower,
       "Renewal comment", dueDateAfterRenewal.toString());
 
     Matcher<Iterable<JsonObject>> scheduledNoticesAfterRenewalMatcher = hasItems(
       hasScheduledLoanNotice(
-        loan.getId(), dueDateAfterRenewal.minus(beforePeriod.timePeriod()),
+        loan.getId(), beforePeriod.minusDate(dueDateAfterRenewal),
         BEFORE_TIMING, beforeTemplateId,
         beforeRecurringPeriod, true),
       hasScheduledLoanNotice(
@@ -372,7 +373,7 @@ public class DueDateScheduledNoticesTests extends APITests {
         UPON_AT_TIMING, uponAtTemplateId,
         null, false),
       hasScheduledLoanNotice(
-        loan.getId(), dueDateAfterRenewal.plus(afterPeriod.timePeriod()),
+        loan.getId(), afterPeriod.plusDate(dueDateAfterRenewal),
         AFTER_TIMING, afterTemplateId,
         afterRecurringPeriod, true)
     );
@@ -447,11 +448,11 @@ public class DueDateScheduledNoticesTests extends APITests {
       .by(usersFixture.james())
       .withPickupServicePointId(servicePointsFixture.cd1().getId()));
     IndividualResource loanAfterRecall = loansClient.get(loan.getId());
-    DateTime dueDateAfterRecall = getDateTimeProperty(loanAfterRecall.getJson(), "dueDate");
+    ZonedDateTime dueDateAfterRecall = getDateTimeProperty(loanAfterRecall.getJson(), "dueDate");
 
     Matcher<Iterable<JsonObject>> scheduledNoticesAfterRecallMatcher = hasItems(
       hasScheduledLoanNotice(
-        loan.getId(), dueDateAfterRecall.minus(beforePeriod.timePeriod()),
+        loan.getId(), beforePeriod.minusDate(dueDateAfterRecall),
         BEFORE_TIMING, beforeTemplateId,
         beforeRecurringPeriod, true),
       hasScheduledLoanNotice(
@@ -459,7 +460,7 @@ public class DueDateScheduledNoticesTests extends APITests {
         UPON_AT_TIMING, uponAtTemplateId,
         null, false),
       hasScheduledLoanNotice(
-        loan.getId(), dueDateAfterRecall.plus(afterPeriod.timePeriod()),
+        loan.getId(), afterPeriod.plusDate(dueDateAfterRecall),
         AFTER_TIMING, afterTemplateId,
         afterRecurringPeriod, true));
 
@@ -522,15 +523,15 @@ public class DueDateScheduledNoticesTests extends APITests {
       .until(scheduledNoticesClient::getAll, hasSize(6));
 
     JsonObject loanJson = loan.getJson();
-    DateTime dueDate = getDateTimeProperty(loanJson, "dueDate");
+    ZonedDateTime dueDate = getDateTimeProperty(loanJson, "dueDate");
 
-    DateTime updatedDueDate = dueDate.plusWeeks(2);
-    JsonPropertyWriter.write(loanJson, "dueDate", updatedDueDate);
+    ZonedDateTime updatedDueDate = dueDate.plusWeeks(2);
+    JsonPropertyWriter.write(loanJson, "dueDate", toDateTimeString(updatedDueDate));
     loansClient.replace(loan.getId(), loanJson);
 
     Matcher<Iterable<JsonObject>> scheduledNoticesAfterRecallMatcher = hasItems(
       hasScheduledLoanNotice(
-        loan.getId(), updatedDueDate.minus(beforePeriod.timePeriod()),
+        loan.getId(), beforePeriod.minusDate(updatedDueDate),
         BEFORE_TIMING, beforeTemplateId,
         beforeRecurringPeriod, true),
       hasScheduledLoanNotice(
@@ -538,7 +539,7 @@ public class DueDateScheduledNoticesTests extends APITests {
         UPON_AT_TIMING, uponAtTemplateId,
         null, false),
       hasScheduledLoanNotice(
-        loan.getId(), updatedDueDate.plus(afterPeriod.timePeriod()),
+        loan.getId(), afterPeriod.plusDate(updatedDueDate),
         AFTER_TIMING, afterTemplateId,
         afterRecurringPeriod, true));
 
@@ -589,7 +590,7 @@ public class DueDateScheduledNoticesTests extends APITests {
       item -> item.withPrimaryServicePoint(checkInServicePointId));
     final IndividualResource nod = itemsFixture.basedUponNod(item ->
       item.withPermanentLocation(homeLocation.getId()));
-    DateTime loanDate = new DateTime(2020, 1, 1, 12, 0, 0, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2020, 1, 1, 12, 0, 0, 0, UTC);
 
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -598,7 +599,7 @@ public class DueDateScheduledNoticesTests extends APITests {
         .on(loanDate)
         .at(UUID.randomUUID()));
 
-    DateTime dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
+    ZonedDateTime dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
 
     Awaitility.await()
       .atMost(1, TimeUnit.SECONDS)
@@ -612,7 +613,7 @@ public class DueDateScheduledNoticesTests extends APITests {
           UPON_AT_TIMING, uponAtTemplateId,
           null, false),
         hasScheduledLoanNotice(
-          loan.getId(), dueDate.plus(afterPeriod.timePeriod()),
+          loan.getId(), afterPeriod.plusDate(dueDate),
           AFTER_TIMING, afterTemplateId,
           afterRecurringPeriod, true)));
 
@@ -620,7 +621,7 @@ public class DueDateScheduledNoticesTests extends APITests {
       UUID.fromString(homeLocation.getJson().getString("primaryServicePoint"))).getId();
     feeFineTypeFixture.overdueFine(ownerId);
 
-    DateTime checkInDate = new DateTime(2020, 1, 25, 12, 0, 0, UTC);
+    ZonedDateTime checkInDate = ZonedDateTime.of(2020, 1, 25, 12, 0, 0, 0, UTC);
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -637,7 +638,7 @@ public class DueDateScheduledNoticesTests extends APITests {
   public void scheduledOverdueNoticesShouldBeDeletedAfterAgedToLost() {
     NoticePolicyBuilder noticePolicy = createNoticePolicy();
     activatePolicies(noticePolicy);
-    createLoan(new DateTime(2020, 1, 1, 12, 0, 0, UTC));
+    createLoan(ZonedDateTime.of(2020, 1, 1, 12, 0, 0, 0, UTC));
 
     var agedToLostLoan = ageToLostFixture.createAgedToLostLoan(noticePolicy);
     var dueDate = getDateTimeProperty(agedToLostLoan.getLoan().getJson(), "dueDate");
@@ -681,7 +682,7 @@ public class DueDateScheduledNoticesTests extends APITests {
   @Test
   public void scheduledOverdueNoticesShouldBeDeletedAfterDueDateChange() {
     activatePolicies(createNoticePolicy());
-    IndividualResource loan = createLoan(new DateTime(2020, 1, 1, 12, 0, 0, UTC));
+    IndividualResource loan = createLoan(ZonedDateTime.of(2020, 1, 1, 12, 0, 0, 0, UTC));
 
     var dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
     scheduledNoticeProcessingClient.runLoanNoticesProcessing(dueDate);
@@ -755,12 +756,12 @@ public class DueDateScheduledNoticesTests extends APITests {
       .lostItemPolicy(lostItemFeePoliciesFixture.chargeFee()));
   }
 
-  private IndividualResource createLoan(DateTime loanDate) {
+  private IndividualResource createLoan(ZonedDateTime loanDate) {
     return createLoan(itemsFixture.basedUponNod(), usersFixture.steve(), loanDate);
   }
 
   private IndividualResource createLoan(ItemResource item, IndividualResource user,
-    DateTime loanDate) {
+    ZonedDateTime loanDate) {
 
     CheckOutResource loan = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()

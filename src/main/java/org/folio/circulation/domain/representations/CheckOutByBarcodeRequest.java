@@ -4,8 +4,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.folio.circulation.domain.representations.LoanProperties.CHECKOUT_SERVICE_POINT_ID;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
-import static org.joda.time.format.ISODateTimeFormat.dateTime;
 
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.folio.circulation.domain.Loan;
@@ -49,7 +49,8 @@ public class CheckOutByBarcodeRequest {
   private static String defaultLoanDate(String loanDate) {
     return isNotBlank(loanDate)
       ? loanDate
-      : ClockManager.getClockManager().getDateTime().toString(dateTime());
+      : ClockManager.getClockManager().getZonedDateTime()
+        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
   }
 
   public Loan toLoan() {

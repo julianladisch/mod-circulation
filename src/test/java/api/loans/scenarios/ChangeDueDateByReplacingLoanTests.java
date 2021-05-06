@@ -12,6 +12,7 @@ import static org.awaitility.Awaitility.waitAtMost;
 import static org.folio.HttpStatus.HTTP_NO_CONTENT;
 import static org.folio.HttpStatus.HTTP_UNPROCESSABLE_ENTITY;
 import static org.folio.circulation.domain.representations.logs.LogEventType.NOTICE;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -19,6 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 
+import java.time.Period;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +30,6 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -56,11 +57,11 @@ public class ChangeDueDateByReplacingLoanTests extends APITests {
 
     JsonObject loanToChange = fetchedLoan.getJson().copy();
 
-    DateTime dueDate = DateTime.parse(loanToChange.getString("dueDate"));
-    DateTime newDueDate = dueDate.plus(Period.days(14));
+    ZonedDateTime dueDate = ZonedDateTime.parse(loanToChange.getString("dueDate"));
+    ZonedDateTime newDueDate = dueDate.plus(Period.ofDays(14));
 
     write(loanToChange, "action", "dueDateChange");
-    write(loanToChange, "dueDate", newDueDate);
+    write(loanToChange, "dueDate", toDateTimeString(newDueDate));
 
     loansFixture.replaceLoan(loan.getId(), loanToChange);
 
@@ -116,10 +117,10 @@ public class ChangeDueDateByReplacingLoanTests extends APITests {
 
     JsonObject loanToChange = fetchedLoan.getJson().copy();
 
-    final DateTime dueDate = DateTime.parse(loanToChange.getString("dueDate"));
+    final ZonedDateTime dueDate = ZonedDateTime.parse(loanToChange.getString("dueDate"));
 
     write(loanToChange, "action", "dueDateChange");
-    write(loanToChange, "dueDate", dueDate);
+    write(loanToChange, "dueDate", toDateTimeString(dueDate));
 
     loansFixture.replaceLoan(loan.getId(), loanToChange);
   }
@@ -140,11 +141,11 @@ public class ChangeDueDateByReplacingLoanTests extends APITests {
 
     JsonObject loanToChange = fetchedLoan.getJson().copy();
 
-    DateTime dueDate = DateTime.parse(loanToChange.getString("dueDate"));
-    DateTime newDueDate = dueDate.plus(Period.days(14));
+    ZonedDateTime dueDate = ZonedDateTime.parse(loanToChange.getString("dueDate"));
+    ZonedDateTime newDueDate = dueDate.plus(Period.ofDays(14));
 
     write(loanToChange, "action", "dueDateChange");
-    write(loanToChange, "dueDate", newDueDate);
+    write(loanToChange, "dueDate", toDateTimeString(newDueDate));
 
     loansFixture.replaceLoan(loan.getId(), loanToChange);
 
@@ -233,10 +234,10 @@ public class ChangeDueDateByReplacingLoanTests extends APITests {
     IndividualResource loan = checkOutFixture.checkOutByBarcode(smallAngryPlanet, steve);
     JsonObject loanToChange = loan.getJson().copy();
 
-    DateTime dueDate = DateTime.parse(loanToChange.getString("dueDate"));
-    DateTime newDueDate = dueDate.plus(Period.weeks(2));
+    ZonedDateTime dueDate = ZonedDateTime.parse(loanToChange.getString("dueDate"));
+    ZonedDateTime newDueDate = dueDate.plus(Period.ofWeeks(2));
 
-    write(loanToChange, "dueDate", newDueDate);
+    write(loanToChange, "dueDate", toDateTimeString(newDueDate));
 
     loansClient.replace(loan.getId(), loanToChange);
 
@@ -270,10 +271,10 @@ public class ChangeDueDateByReplacingLoanTests extends APITests {
 
     Response fetchedLoan = loansClient.getById(loan.getId());
     JsonObject loanToChange = fetchedLoan.getJson().copy();
-    DateTime dueDate = DateTime.parse(loanToChange.getString("dueDate"));
-    DateTime newDueDate = dueDate.plus(Period.days(14));
+    ZonedDateTime dueDate = ZonedDateTime.parse(loanToChange.getString("dueDate"));
+    ZonedDateTime newDueDate = dueDate.plus(Period.ofDays(14));
     write(loanToChange, "action", "dueDateChange");
-    write(loanToChange, "dueDate", newDueDate);
+    write(loanToChange, "dueDate", toDateTimeString(newDueDate));
 
     Response response = loansFixture.attemptToReplaceLoan(loan.getId(), loanToChange);
 

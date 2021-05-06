@@ -9,8 +9,8 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.copyPropert
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
 import java.lang.invoke.MethodHandles;
+import java.time.format.DateTimeFormatter;
 
-import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,7 +154,7 @@ public class RequestRepresentation {
       : new JsonObject();
 
     if (loan.getDueDate() != null) {
-      String dueDate = loan.getDueDate().toString(ISODateTimeFormat.dateTime());
+      String dueDate = loan.getDueDate().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
       loanSummary.put("dueDate", dueDate);
       log.info("Adding loan properties to request {}", request.getString("id"));
     }

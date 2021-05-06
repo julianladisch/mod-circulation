@@ -11,6 +11,7 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectPr
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.results.Result.succeeded;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,6 @@ import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
 
 import io.vertx.core.json.JsonObject;
 
@@ -82,8 +82,8 @@ public class LoanPolicy extends Policy {
     return new UnknownLoanPolicy(id);
   }
 
-  public Result<DateTime> calculateInitialDueDate(Loan loan, RequestQueue requestQueue) {
-    final DateTime systemTime = ClockManager.getClockManager().getDateTime();
+  public Result<ZonedDateTime> calculateInitialDueDate(Loan loan, RequestQueue requestQueue) {
+    final ZonedDateTime systemTime = ClockManager.getClockManager().getZonedDateTime();
     return determineStrategy(requestQueue, false, false, systemTime).calculateDueDate(loan);
   }
 
@@ -139,7 +139,7 @@ public class LoanPolicy extends Policy {
     RequestQueue requestQueue,
     boolean isRenewal,
     boolean isRenewalWithHoldRequest,
-    DateTime systemDate) {
+    ZonedDateTime systemDate) {
 
     final JsonObject loansPolicy = getLoansPolicy();
     final JsonObject renewalsPolicy = getRenewalsPolicy();
@@ -400,7 +400,7 @@ public class LoanPolicy extends Policy {
     return getProperty(getRenewalsPolicy(), "alternateFixedDueDateScheduleId");
   }
 
-  public Optional<DateTime> getScheduleLimit(DateTime loanDate, boolean isRenewal, DateTime systemDate) {
+  public Optional<ZonedDateTime> getScheduleLimit(ZonedDateTime loanDate, boolean isRenewal, ZonedDateTime systemDate) {
     final JsonObject loansPolicy = getLoansPolicy();
 
     if(loansPolicy == null) {
@@ -433,13 +433,13 @@ public class LoanPolicy extends Policy {
         .getJsonObject(REQUEST_MANAGEMENT_KEY, new JsonObject())
         .getJsonObject("recalls", new JsonObject());
 
-    final Result<DateTime> minimumDueDateResult =
+    final Result<ZonedDateTime> minimumDueDateResult =
         getDueDate("minimumGuaranteedLoanPeriod", recalls,
             loan.getLoanDate(), null);
 
-    final DateTime systemDate = ClockManager.getClockManager().getDateTime();
+    final ZonedDateTime systemDate = ClockManager.getClockManager().getZonedDateTime();
 
-    final Result<DateTime> recallDueDateResult =
+    final Result<ZonedDateTime> recallDueDateResult =
         loan.isOverdue() &&
         allowRecallsToExtendOverdueLoans() &&
         getAlternateRecallReturnInterval() != null ?
@@ -459,8 +459,8 @@ public class LoanPolicy extends Policy {
     }
   }
 
-  private Result<DateTime> determineDueDate(Result<DateTime> minimumGuaranteedDueDateResult,
-    Result<DateTime> recallDueDateResult, Loan loan) {
+  private Result<ZonedDateTime> determineDueDate(Result<ZonedDateTime> minimumGuaranteedDueDateResult,
+    Result<ZonedDateTime> recallDueDateResult, Loan loan) {
 
     return minimumGuaranteedDueDateResult.combine(recallDueDateResult,
       (minimumGuaranteedDueDate, recallDueDate) -> {
@@ -478,7 +478,7 @@ public class LoanPolicy extends Policy {
       });
   }
 
-  private Loan changeDueDate(DateTime dueDate, Loan loan) {
+  private Loan changeDueDate(ZonedDateTime dueDate, Loan loan) {
     if (!loan.wasDueDateChangedByRecall()) {
       loan.changeDueDate(dueDate);
       loan.changeDueDateChangedByRecall();
@@ -487,13 +487,13 @@ public class LoanPolicy extends Policy {
     return loan;
   }
 
-  private Result<DateTime> getDueDate(
+  private Result<ZonedDateTime> getDueDate(
     String key,
     JsonObject representation,
-    DateTime initialDateTime,
-    DateTime defaultDateTime) {
+    ZonedDateTime initialDateTime,
+    ZonedDateTime defaultDateTime) {
 
-    final Result<DateTime> result;
+    final Result<ZonedDateTime> result;
 
     if (representation.containsKey(key)) {
       result = getPeriod(representation, key).addTo(initialDateTime,

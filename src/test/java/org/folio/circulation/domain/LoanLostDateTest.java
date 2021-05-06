@@ -1,9 +1,9 @@
 package org.folio.circulation.domain;
 
 import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
 import static org.hamcrest.Matchers.allOf;
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;

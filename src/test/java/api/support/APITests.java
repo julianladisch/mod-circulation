@@ -15,12 +15,11 @@ import static org.hamcrest.core.Is.is;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.folio.circulation.support.ClockManager;
-import api.support.http.IndividualResource;
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -68,6 +67,7 @@ import api.support.fixtures.TenantActivationFixture;
 import api.support.fixtures.UserManualBlocksFixture;
 import api.support.fixtures.UsersFixture;
 import api.support.fixtures.policies.PoliciesActivationFixture;
+import api.support.http.IndividualResource;
 import api.support.http.ResourceClient;
 import io.vertx.core.json.JsonObject;
 import lombok.experimental.Delegate;
@@ -376,10 +376,10 @@ public abstract class APITests {
       resource), resource.getValue(property), is(nullValue()));
   }
 
-  protected void mockClockManagerToReturnFixedDateTime(DateTime dateTime) {
+  protected void mockClockManagerToReturnFixedDateTime(ZonedDateTime dateTime) {
     ClockManager.getClockManager().setClock(
       Clock.fixed(
-        Instant.ofEpochMilli(dateTime.getMillis()),
+        Instant.ofEpochMilli(dateTime.toInstant().toEpochMilli()),
         ZoneOffset.UTC));
   }
 

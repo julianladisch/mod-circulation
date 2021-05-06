@@ -37,6 +37,7 @@ import static org.folio.circulation.domain.representations.LoanProperties.STATUS
 import static org.folio.circulation.domain.representations.LoanProperties.SYSTEM_RETURN_DATE;
 import static org.folio.circulation.domain.representations.LoanProperties.UPDATED_BY_USER_ID;
 import static org.folio.circulation.domain.representations.LoanProperties.USER_ID;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getBooleanProperty;
@@ -52,8 +53,8 @@ import static org.folio.circulation.support.results.CommonFailures.failedDueToSe
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.utils.CommonUtils.executeIfNotNull;
 import static org.folio.circulation.support.utils.DateTimeUtil.mostRecentDate;
-import static org.joda.time.DateTimeZone.UTC;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
@@ -65,7 +66,6 @@ import org.folio.circulation.domain.policy.OverdueFinePolicy;
 import org.folio.circulation.domain.policy.lostitem.LostItemPolicy;
 import org.folio.circulation.domain.representations.LoanProperties;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
 
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
@@ -80,7 +80,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   private final ServicePoint checkinServicePoint;
   private final ServicePoint checkoutServicePoint;
 
-  private final DateTime originalDueDate;
+  private final ZonedDateTime originalDueDate;
   private final Policies policies;
   private final Collection<Account> accounts;
 
@@ -110,8 +110,8 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return getAccounts().stream().allMatch(Account::isClosed);
   }
 
-  public Loan changeDueDate(DateTime newDueDate) {
-    write(representation, DUE_DATE, newDueDate.withZone(UTC));
+  public Loan changeDueDate(ZonedDateTime newDueDate) {
+    write(representation, DUE_DATE, toDateTimeString(newDueDate));
 
     return this;
   }
@@ -122,12 +122,12 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return this;
   }
 
-  private void changeReturnDate(DateTime returnDate) {
-    write(representation, RETURN_DATE, returnDate);
+  private void changeReturnDate(ZonedDateTime returnDate) {
+    write(representation, RETURN_DATE, toDateTimeString(returnDate));
   }
 
-  private void changeSystemReturnDate(DateTime systemReturnDate) {
-    write(representation, SYSTEM_RETURN_DATE, systemReturnDate);
+  private void changeSystemReturnDate(ZonedDateTime systemReturnDate) {
+    write(representation, SYSTEM_RETURN_DATE, toDateTimeString(systemReturnDate));
   }
 
   public void changeAction(LoanAction action) {
@@ -241,7 +241,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return getProperty(representation, "itemId");
   }
 
-  public DateTime getLoanDate() {
+  public ZonedDateTime getLoanDate() {
     return getDateTimeProperty(representation, "loanDate");
   }
 
@@ -398,7 +398,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return  getProperty(representation, "patronGroupIdAtCheckout");
   }
 
-  public Loan renew(DateTime dueDate, String basedUponLoanPolicyId) {
+  public Loan renew(ZonedDateTime dueDate, String basedUponLoanPolicyId) {
     changeAction(RENEWED);
     removeActionComment();
     setLoanPolicyId(basedUponLoanPolicyId);
@@ -408,7 +408,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return this;
   }
 
-  public Loan overrideRenewal(DateTime dueDate,
+  public Loan overrideRenewal(ZonedDateTime dueDate,
                               String basedUponLoanPolicyId,
                               String actionComment) {
     changeAction(RENEWED_THROUGH_OVERRIDE);
@@ -420,9 +420,8 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return this;
   }
 
-  private Loan checkIn(LoanAction action, DateTime returnDateTime,
-    DateTime systemReturnDateTime, UUID servicePointId) {
-
+  private Loan checkIn(LoanAction action, ZonedDateTime returnDateTime,
+      ZonedDateTime systemReturnDateTime, UUID servicePointId) {
     closeLoan(action);
     changeReturnDate(returnDateTime);
     changeSystemReturnDate(systemReturnDateTime);
@@ -431,19 +430,20 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return this;
   }
 
-  Loan checkIn(DateTime returnDateTime, DateTime systemReturnDateTime, UUID servicePointId) {
+  Loan checkIn(ZonedDateTime returnDateTime, ZonedDateTime systemReturnDateTime,
+      UUID servicePointId) {
     return checkIn(CHECKED_IN, returnDateTime, systemReturnDateTime,
       servicePointId);
   }
 
   Loan resolveClaimedReturned(LoanAction resolveAction,
-    DateTime returnDateTime, DateTime systemReturnDateTime, UUID servicePointId) {
-
+      ZonedDateTime returnDateTime, ZonedDateTime systemReturnDateTime,
+      UUID servicePointId) {
     return checkIn(resolveAction, returnDateTime, systemReturnDateTime, servicePointId);
   }
 
 
-  public Loan declareItemLost(String comment, DateTime dateTime) {
+  public Loan declareItemLost(String comment, ZonedDateTime dateTime) {
     changeAction(DECLARED_LOST);
     changeActionComment(comment);
     changeItemStatusForItemAndLoan(ItemStatus.DECLARED_LOST);
@@ -487,7 +487,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return getIntegerProperty(representation, "renewalCount", 0);
   }
 
-  public DateTime getDueDate() {
+  public ZonedDateTime getDueDate() {
     return getDateTimeProperty(representation, DUE_DATE);
   }
 
@@ -510,14 +510,14 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public boolean hasDueDateChanged() {
-    return !Objects.equals(originalDueDate, getDueDate());
+    return !originalDueDate.isEqual(getDueDate());
   }
 
-  public DateTime getSystemReturnDate() {
+  public ZonedDateTime getSystemReturnDate() {
     return getDateTimeProperty(representation, SYSTEM_RETURN_DATE);
   }
 
-  public DateTime getReturnDate() {
+  public ZonedDateTime getReturnDate() {
     return getDateTimeProperty(representation, RETURN_DATE);
   }
 
@@ -525,31 +525,31 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     representation.put(LoanProperties.ITEM_STATUS, itemStatus);
   }
 
-  public void changeDeclaredLostDateTime(DateTime dateTime) {
-    write(representation, DECLARED_LOST_DATE, dateTime);
+  public void changeDeclaredLostDateTime(ZonedDateTime dateTime) {
+    write(representation, DECLARED_LOST_DATE, toDateTimeString(dateTime));
   }
 
-  public DateTime getDeclareLostDateTime() {
+  public ZonedDateTime getDeclareLostDateTime() {
     return getDateTimeProperty(representation, DECLARED_LOST_DATE);
   }
 
-  public DateTime getAgedToLostDateTime() {
+  public ZonedDateTime getAgedToLostDateTime() {
     return getDateTimePropertyByPath(representation, AGED_TO_LOST_DELAYED_BILLING,
       AGED_TO_LOST_DATE);
   }
 
   public boolean isOverdue() {
-    return isOverdue(getClockManager().getDateTime());
+    return isOverdue(getClockManager().getZonedDateTime());
   }
 
-  public boolean isOverdue(DateTime systemTime) {
-    DateTime dueDate = getDueDate();
+  public boolean isOverdue(ZonedDateTime systemTime) {
+    ZonedDateTime dueDate = getDueDate();
 
     return ObjectUtils.allNotNull(dueDate, systemTime)
       && dueDate.isBefore(systemTime);
   }
 
-  public Loan claimItemReturned(String comment, DateTime claimedReturnedDate) {
+  public Loan claimItemReturned(String comment, ZonedDateTime claimedReturnedDate) {
     changeAction(CLAIMED_RETURNED);
     if (StringUtils.isNotBlank(comment)) {
       changeActionComment(comment);
@@ -561,8 +561,9 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return this;
   }
 
-  private void changeClaimedReturnedDate(DateTime claimedReturnedDate) {
-    write(representation, CLAIMED_RETURNED_DATE, claimedReturnedDate);
+  private void changeClaimedReturnedDate(ZonedDateTime claimedReturnedDate) {
+    write(representation, CLAIMED_RETURNED_DATE,
+      toDateTimeString(claimedReturnedDate));
   }
 
   public Loan closeLoan(LoanAction action) {
@@ -612,7 +613,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
       checkoutServicePoint, originalDueDate, policies, accounts);
   }
 
-  public Loan ageOverdueItemToLost(DateTime ageToLostDate) {
+  public Loan ageOverdueItemToLost(ZonedDateTime ageToLostDate) {
     changeAction(ITEM_AGED_TO_LOST);
     removeActionComment();
     changeItemStatusForItemAndLoan(ItemStatus.AGED_TO_LOST);
@@ -621,7 +622,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return this;
   }
 
-  public void setAgedToLostDelayedBilling(boolean hasBeenBilled, DateTime whenToBill) {
+  public void setAgedToLostDelayedBilling(boolean hasBeenBilled, ZonedDateTime whenToBill) {
     writeByPath(representation, hasBeenBilled, AGED_TO_LOST_DELAYED_BILLING,
       LOST_ITEM_HAS_BEEN_BILLED);
     writeByPath(representation, whenToBill, AGED_TO_LOST_DELAYED_BILLING,
@@ -643,7 +644,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     remove(billingInfo, DATE_LOST_ITEM_SHOULD_BE_BILLED);
   }
 
-  private void setAgedToLostDate(DateTime agedToLostDate) {
+  private void setAgedToLostDate(ZonedDateTime agedToLostDate) {
     writeByPath(representation, agedToLostDate, AGED_TO_LOST_DELAYED_BILLING,
       AGED_TO_LOST_DATE);
   }
@@ -654,7 +655,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return this;
   }
 
-  public DateTime getLostDate() {
+  public ZonedDateTime getLostDate() {
     return mostRecentDate(getDeclareLostDateTime(), getAgedToLostDateTime());
   }
 
@@ -662,7 +663,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     return getNestedStringProperty(representation, METADATA, UPDATED_BY_USER_ID);
   }
 
-  public DateTime getOriginalDueDate() {
+  public ZonedDateTime getOriginalDueDate() {
     return originalDueDate;
   }
 

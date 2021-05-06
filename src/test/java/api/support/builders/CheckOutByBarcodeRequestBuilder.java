@@ -1,8 +1,9 @@
 package api.support.builders;
 
-import java.util.UUID;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
@@ -11,7 +12,7 @@ public class CheckOutByBarcodeRequestBuilder extends JsonBuilder implements Buil
   private final String itemBarcode;
   private final String userBarcode;
   private final String proxyBarcode;
-  private final DateTime loanDate;
+  private final ZonedDateTime loanDate;
   private final String servicePointId;
   private final JsonObject overrideBlocks;
 
@@ -23,7 +24,7 @@ public class CheckOutByBarcodeRequestBuilder extends JsonBuilder implements Buil
     String itemBarcode,
     String userBarcode,
     String proxyBarcode,
-    DateTime loanDate,
+    ZonedDateTime loanDate,
     String servicePointId,
     JsonObject overrideBlocks) {
 
@@ -42,7 +43,7 @@ public class CheckOutByBarcodeRequestBuilder extends JsonBuilder implements Buil
     put(request, "itemBarcode", this.itemBarcode);
     put(request, "userBarcode", this.userBarcode);
     put(request, "proxyUserBarcode", this.proxyBarcode);
-    put(request, "loanDate", this.loanDate);
+    put(request, "loanDate", toDateTimeString(this.loanDate));
     put(request, "servicePointId", this.servicePointId);
     put(request, "overrideBlocks", this.overrideBlocks);
 
@@ -69,7 +70,7 @@ public class CheckOutByBarcodeRequestBuilder extends JsonBuilder implements Buil
       this.overrideBlocks);
   }
 
-  public CheckOutByBarcodeRequestBuilder on(DateTime loanDate) {
+  public CheckOutByBarcodeRequestBuilder on(ZonedDateTime loanDate) {
     return new CheckOutByBarcodeRequestBuilder(
       this.itemBarcode,
       this.userBarcode,

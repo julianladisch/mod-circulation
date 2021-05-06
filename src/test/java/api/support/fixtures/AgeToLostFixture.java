@@ -9,24 +9,22 @@ import static java.time.Clock.fixed;
 import static java.time.Instant.ofEpochMilli;
 import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.joda.time.DateTime.now;
 
 import java.time.Clock;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
-import api.support.builders.NoticePolicyBuilder;
-import api.support.http.IndividualResource;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
 
 import api.support.builders.HoldingBuilder;
 import api.support.builders.ItemBuilder;
 import api.support.builders.LostItemFeePolicyBuilder;
-import api.support.builders.OverdueFinePolicyBuilder;
+import api.support.builders.NoticePolicyBuilder;
 import api.support.fixtures.policies.PoliciesActivationFixture;
 import api.support.fixtures.policies.PoliciesToActivate;
+import api.support.http.IndividualResource;
 import api.support.http.ResourceClient;
 import api.support.http.TimedTaskClient;
 import lombok.Getter;
@@ -92,8 +90,8 @@ public final class AgeToLostFixture {
     return ageToLostResult;
   }
 
-  public AgeToLostResult createLoanAgeToLostAndChargeFeesWithOverdues(IndividualResource lostPolicy, IndividualResource overduePolicy) {   
-      return createLoanAgeToLostAndChargeFees(UnaryOperator.identity(), 
+  public AgeToLostResult createLoanAgeToLostAndChargeFeesWithOverdues(IndividualResource lostPolicy, IndividualResource overduePolicy) {
+      return createLoanAgeToLostAndChargeFees(UnaryOperator.identity(),
         PoliciesToActivate.builder()
           .lostItemPolicy(lostPolicy)
           .overduePolicy(overduePolicy)
@@ -189,8 +187,9 @@ public final class AgeToLostFixture {
   }
 
   private void moveTimeForward(int weeks) {
-    final DateTime newDateTime = now().plusWeeks(weeks);
-    final Clock fixedClocks = fixed(ofEpochMilli(newDateTime.getMillis()), ZoneOffset.UTC);
+    final ZonedDateTime newDateTime = ZonedDateTime.now().plusWeeks(weeks);
+    final Clock fixedClocks = fixed(ofEpochMilli(newDateTime
+      .toInstant().toEpochMilli()), ZoneOffset.UTC);
 
     getClockManager().setClock(fixedClocks);
   }

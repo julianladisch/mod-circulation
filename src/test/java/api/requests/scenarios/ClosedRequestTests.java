@@ -8,15 +8,15 @@ import static api.support.matchers.UUIDMatcher.is;
 import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasUUIDParameter;
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -34,12 +34,12 @@ public class ClosedRequestTests extends APITests {
 
     IndividualResource requester = usersFixture.steve();
 
-    DateTime requestDate = new DateTime(2017, 7, 22, 10, 22, 54, DateTimeZone.UTC);
+    ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
 
     final IndividualResource request =
       requestsFixture.placeHoldShelfRequest(smallAngryPlanet, requester, requestDate);
 
-    DateTime cancelDate = new DateTime(2018, 1, 14, 8, 30, 45, DateTimeZone.UTC);
+    ZonedDateTime cancelDate = ZonedDateTime.of(2018, 1, 14, 8, 30, 45, 0, UTC);
 
     final IndividualResource courseReservesCancellationReason
       = cancellationReasonsFixture.courseReserves();
@@ -68,7 +68,7 @@ public class ClosedRequestTests extends APITests {
 
     checkOutFixture.checkOutByBarcode(smallAngryPlanet, usersFixture.jessica());
 
-    DateTime requestDate = new DateTime(2017, 7, 22, 10, 22, 54, DateTimeZone.UTC);
+    ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
 
     final IndividualResource request =
       requestsFixture.placeHoldShelfRequest(smallAngryPlanet,
@@ -97,7 +97,7 @@ public class ClosedRequestTests extends APITests {
 
     checkOutFixture.checkOutByBarcode(smallAngryPlanet, jessica);
 
-    DateTime requestDate = new DateTime(2018, 6, 22, 10, 22, 54, DateTimeZone.UTC);
+    ZonedDateTime requestDate = ZonedDateTime.of(2018, 6, 22, 10, 22, 54, 0, UTC);
 
     final IndividualResource request =
       requestsFixture.placeHoldShelfRequest(smallAngryPlanet,
@@ -106,7 +106,7 @@ public class ClosedRequestTests extends APITests {
     checkInFixture.checkInByBarcode(smallAngryPlanet);
 
     checkOutFixture.checkOutByBarcode(smallAngryPlanet, steve,
-      new DateTime(2018, 7, 5, 14, 48, 23, DateTimeZone.UTC));
+      ZonedDateTime.of(2018, 7, 5, 14, 48, 23, 0, UTC));
 
     Response response = requestsClient.attemptReplace(request.getId(),
       RequestBuilder.from(request)
@@ -132,7 +132,7 @@ public class ClosedRequestTests extends APITests {
       .page()
       .fulfilToHoldShelf()
       .withItemId(smallAngryPlanet.getId())
-      .withRequestDate(DateTime.now(DateTimeZone.UTC).minusHours(4))
+      .withRequestDate(ZonedDateTime.now(UTC).minusHours(4))
       .withRequesterId(jessica.getId())
       .withPickupServicePointId(servicePointsFixture.cd1().getId()));
 
@@ -147,7 +147,7 @@ public class ClosedRequestTests extends APITests {
           .cancelled()
           .withCancellationReasonId(courseReservesCancellationReason.getId())
           .withCancelledByUserId(jessica.getId())
-          .withCancelledDate(DateTime.now(DateTimeZone.UTC).minusHours(3)));
+          .withCancelledDate(ZonedDateTime.now(UTC).minusHours(3)));
 
     smallAngryPlanet = itemsClient.get(smallAngryPlanet);
     assertThat(smallAngryPlanet, hasItemStatus(AVAILABLE));

@@ -1,6 +1,6 @@
 package org.folio.circulation.domain;
 
-import org.joda.time.DateTimeZone;
+import java.time.ZoneOffset;
 
 import io.vertx.core.json.JsonObject;
 
@@ -9,10 +9,10 @@ public class LoanAndRelatedRecords implements UserRelatedRecord {
 
   private final Loan loan;
   private final RequestQueue requestQueue;
-  private final DateTimeZone timeZone;
+  private final ZoneOffset timeZone;
   private final JsonObject logContextProperties;
 
-  private LoanAndRelatedRecords(Loan loan, RequestQueue requestQueue, DateTimeZone timeZone, JsonObject logContextProperties) {
+  private LoanAndRelatedRecords(Loan loan, RequestQueue requestQueue, ZoneOffset timeZone, JsonObject logContextProperties) {
     this.loan = loan;
     this.requestQueue = requestQueue;
     this.timeZone = timeZone;
@@ -20,10 +20,10 @@ public class LoanAndRelatedRecords implements UserRelatedRecord {
   }
 
   public LoanAndRelatedRecords(Loan loan) {
-    this(loan, DateTimeZone.UTC);
+    this(loan, ZoneOffset.UTC);
   }
 
-  public LoanAndRelatedRecords(Loan loan, DateTimeZone timeZone) {
+  public LoanAndRelatedRecords(Loan loan, ZoneOffset timeZone) {
     this(loan, null, timeZone, new JsonObject());
   }
 
@@ -57,7 +57,7 @@ public class LoanAndRelatedRecords implements UserRelatedRecord {
     return withLoan(loan.changeItemEffectiveLocationIdAtCheckOut(getItem().getLocationId()));
   }
 
-  public LoanAndRelatedRecords withTimeZone(DateTimeZone newTimeZone) {
+  public LoanAndRelatedRecords withTimeZone(ZoneOffset newTimeZone) {
     return new LoanAndRelatedRecords(loan, requestQueue, newTimeZone, logContextProperties);
   }
 
@@ -77,7 +77,7 @@ public class LoanAndRelatedRecords implements UserRelatedRecord {
     return loan.getProxy();
   }
 
-  public DateTimeZone getTimeZone() {
+  public ZoneOffset getTimeZone() {
     return timeZone;
   }
 

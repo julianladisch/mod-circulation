@@ -19,6 +19,7 @@ import static org.folio.circulation.support.results.Result.ofAsync;
 import static org.folio.circulation.support.results.Result.succeeded;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +44,6 @@ import org.folio.circulation.support.CollectionResourceClient;
 import org.folio.circulation.support.RecordNotFoundFailure;
 import org.folio.circulation.support.http.client.CqlQuery;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class LoanScheduledNoticeHandler {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String ERROR_MESSAGE_TEMPLATE = "Sending scheduled notice {} failed: {}";
 
-  public static LoanScheduledNoticeHandler using(Clients clients, DateTime systemTime) {
+  public static LoanScheduledNoticeHandler using(Clients clients, ZonedDateTime systemTime) {
     return new LoanScheduledNoticeHandler(
       new LoanRepository(clients),
       new LoanPolicyRepository(clients),
@@ -76,7 +76,7 @@ public class LoanScheduledNoticeHandler {
   private final ScheduledNoticesRepository scheduledNoticesRepository;
   private final CollectionResourceClient templateNoticesClient;
   private final AccountRepository accountRepository;
-  private final DateTime systemTime;
+  private final ZonedDateTime systemTime;
 
   public CompletableFuture<Result<Collection<ScheduledNotice>>> handleNotices(
     Collection<ScheduledNotice> scheduledNotices) {
@@ -225,7 +225,7 @@ public class LoanScheduledNoticeHandler {
   }
 
   public CompletableFuture<Result<ScheduledNotice>> updateNotice(
-    LoanAndRelatedRecords relatedRecords, ScheduledNotice notice) {
+      LoanAndRelatedRecords relatedRecords, ScheduledNotice notice) {
 
     Loan loan = relatedRecords.getLoan();
     ScheduledNoticeConfig noticeConfig = notice.getConfiguration();
@@ -234,12 +234,12 @@ public class LoanScheduledNoticeHandler {
       return scheduledNoticesRepository.delete(notice);
     }
 
-    DateTime recurringNoticeNextRunTime = notice.getNextRunTime()
-      .plus(noticeConfig.getRecurringPeriod().timePeriod());
+    ZonedDateTime recurringNoticeNextRunTime = noticeConfig
+      .getRecurringPeriod().plusDate(notice.getNextRunTime());
 
     if (recurringNoticeNextRunTime.isBefore(systemTime)) {
-      recurringNoticeNextRunTime =
-        systemTime.plus(noticeConfig.getRecurringPeriod().timePeriod());
+      recurringNoticeNextRunTime = noticeConfig
+        .getRecurringPeriod().plusDate(systemTime);
     }
 
     ScheduledNotice nextRecurringNotice = notice.withNextRunTime(recurringNoticeNextRunTime);

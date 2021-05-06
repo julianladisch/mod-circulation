@@ -1,15 +1,16 @@
 package api.support.fixtures;
 
+import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 
+import java.time.ZonedDateTime;
+
 import org.folio.circulation.domain.policy.Period;
-import api.support.http.IndividualResource;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import api.support.builders.FixedDueDateSchedule;
 import api.support.builders.FixedDueDateSchedulesBuilder;
 import api.support.builders.LoanPolicyBuilder;
+import api.support.http.IndividualResource;
 import api.support.http.ResourceClient;
 import io.vertx.core.json.JsonObject;
 
@@ -38,16 +39,16 @@ public class LoanPoliciesFixture {
   }
 
   public IndividualResource createExampleFixedDueDateSchedule() {
-    final int currentYear = DateTime.now(DateTimeZone.UTC).getYear();
+    final int currentYear = ZonedDateTime.now(UTC).getYear();
 
     FixedDueDateSchedulesBuilder fixedDueDateSchedule =
       new FixedDueDateSchedulesBuilder()
         .withName("Example Fixed Due Date Schedule")
         .withDescription("Example Fixed Due Date Schedule")
         .addSchedule(new FixedDueDateSchedule(
-          new DateTime(currentYear, 1, 1, 0, 0, 0, DateTimeZone.UTC),
-          new DateTime(currentYear, 12, 31, 23, 59, 59, DateTimeZone.UTC),
-          new DateTime(currentYear, 12, 31, 23, 59, 59, DateTimeZone.UTC)));
+          ZonedDateTime.of(currentYear, 1, 1, 0, 0, 0, 0, UTC),
+          ZonedDateTime.of(currentYear, 12, 31, 23, 59, 59, 0, UTC),
+          ZonedDateTime.of(currentYear, 12, 31, 23, 59, 59, 0, UTC)));
 
     return createSchedule(fixedDueDateSchedule);
   }

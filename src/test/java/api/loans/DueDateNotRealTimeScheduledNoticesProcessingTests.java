@@ -5,6 +5,7 @@ import static api.support.fixtures.TemplateContextMatchers.getLoanPolicyContextM
 import static api.support.fixtures.TemplateContextMatchers.getMultipleLoansContextMatcher;
 import static api.support.matchers.JsonObjectMatcher.toStringMatcher;
 import static api.support.matchers.PatronNoticeMatcher.hasEmailNoticeProperties;
+import static java.time.ZoneOffset.UTC;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.waitAtMost;
 import static org.folio.circulation.domain.representations.logs.LogEventType.NOTICE;
@@ -15,6 +16,9 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -24,9 +28,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.folio.circulation.domain.policy.Period;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -61,7 +62,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
       .withLoanNotices(Collections.singletonList(uponAtDueDateNoticeConfig));
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2019, 8, 23, 10, 30);
+    ZonedDateTime loanDate = ZonedDateTime.of(2019, 8, 23, 10, 30, 0, 0, UTC);
 
     IndividualResource james = usersFixture.james();
     ItemResource nod = itemsFixture.basedUponNod();
@@ -79,8 +80,8 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(4));
 
-    DateTime dueDate = new DateTime(nodToJamesLoan.getJson().getString("dueDate"));
-    DateTime afterLoanDueDateTime = dueDate.plusDays(1);
+    ZonedDateTime dueDate = ZonedDateTime.parse(nodToJamesLoan.getJson().getString("dueDate"));
+    ZonedDateTime afterLoanDueDateTime = dueDate.plusDays(1);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(afterLoanDueDateTime);
 
@@ -133,7 +134,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
       .withLoanNotices(Collections.singletonList(uponAtDueDateNoticeConfig));
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2019, 8, 23, 10, 30);
+    ZonedDateTime loanDate = ZonedDateTime.of(2019, 8, 23, 10, 30, 0, 0, UTC);
 
     IndividualResource james = usersFixture.james();
     IndividualResource nodToJamesLoan = checkOutFixture.checkOutByBarcode(itemsFixture.basedUponNod(), james, loanDate);
@@ -142,20 +143,22 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(2));
 
-    DateTime dueDate = new DateTime(nodToJamesLoan.getJson().getString("dueDate"));
+    ZonedDateTime dueDate = ZonedDateTime.parse(nodToJamesLoan.getJson().getString("dueDate"));
 
-    DateTime timeForNoticeToBeSent = dueDate.minusWeeks(1);
-    DateTime nextDayAfterBeforeNoticeShouldBeSend = timeForNoticeToBeSent.withTime(LocalTime.MIDNIGHT).plusDays(1);
+    ZonedDateTime timeForNoticeToBeSent = dueDate.minusWeeks(1);
+    ZonedDateTime nextDayAfterBeforeNoticeShouldBeSend = ZonedDateTime.of(
+      timeForNoticeToBeSent.toLocalDate(), LocalTime.MIDNIGHT,
+      timeForNoticeToBeSent.getZone()).plusDays(1);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(nextDayAfterBeforeNoticeShouldBeSend);
 
     List<JsonObject> scheduledNotices = scheduledNoticesClient.getAll();
 
-    DateTime newNextRunTime = timeForNoticeToBeSent.plus(recurringPeriod.timePeriod());
+    ZonedDateTime newNextRunTime = recurringPeriod.plusDate(timeForNoticeToBeSent);
 
     assertTrue("all scheduled notices are rescheduled", scheduledNotices.stream()
       .map(entries -> entries.getString("nextRunTime"))
-      .map(DateTime::parse)
+      .map(ZonedDateTime::parse)
       .allMatch(newNextRunTime::isEqual));
 
     assertThat(patronNoticesClient.getAll(), hasSize(1));
@@ -179,7 +182,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
       .withLoanNotices(Collections.singletonList(uponAtDueDateNoticeConfig));
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2019, 8, 23, 10, 30);
+    ZonedDateTime loanDate = ZonedDateTime.of(2019, 8, 23, 10, 30, 0, 0, UTC);
 
     IndividualResource james = usersFixture.james();
     ItemResource nod = itemsFixture.basedUponNod();
@@ -188,12 +191,14 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
-    DateTime dueDate = new DateTime(nodToJamesLoan.getJson().getString("dueDate"));
+    ZonedDateTime dueDate = ZonedDateTime.parse(nodToJamesLoan.getJson().getString("dueDate"));
 
     checkInFixture.checkInByBarcode(nod);
 
-    DateTime timeForNoticeToBeSent = dueDate.minusWeeks(1);
-    DateTime nextDayAfterBeforeNoticeShouldBeSend = timeForNoticeToBeSent.withTime(LocalTime.MIDNIGHT).plusDays(1);
+    ZonedDateTime timeForNoticeToBeSent = dueDate.minusWeeks(1);
+    ZonedDateTime nextDayAfterBeforeNoticeShouldBeSend = ZonedDateTime.of(
+      timeForNoticeToBeSent.toLocalDate(), LocalTime.MIDNIGHT,
+      timeForNoticeToBeSent.getZone()).plusDays(1);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(nextDayAfterBeforeNoticeShouldBeSend);
 
@@ -242,7 +247,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
 
     //Should fetch 10 notices, when total records is 12
     //So that notices for one of the users should not be processed
-    final DateTime runTime = DateTime.now(DateTimeZone.UTC).plusDays(15);
+    final ZonedDateTime runTime = ZonedDateTime.now(UTC).plusDays(15);
     mockClockManagerToReturnFixedDateTime(runTime);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(runTime);
@@ -272,7 +277,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
 
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2019, 8, 23, 10, 30);
+    ZonedDateTime loanDate = ZonedDateTime.of(2019, 8, 23, 10, 30, 0, 0, UTC);
 
     IndividualResource james = usersFixture.james();
     ItemResource nod = itemsFixture.basedUponNod();
@@ -283,8 +288,8 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
-    DateTime dueDate = new DateTime(nodToJamesLoan.getJson().getString("dueDate"));
-    DateTime afterLoanDueDateTime = dueDate.plusDays(1);
+    ZonedDateTime dueDate = ZonedDateTime.parse(nodToJamesLoan.getJson().getString("dueDate"));
+    ZonedDateTime afterLoanDueDateTime = dueDate.plusDays(1);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(afterLoanDueDateTime);
 
@@ -310,7 +315,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
 
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2019, 8, 23, 10, 30);
+    ZonedDateTime loanDate = ZonedDateTime.of(2019, 8, 23, 10, 30, 0, 0, UTC);
 
     IndividualResource james = usersFixture.james();
     ItemResource nod = itemsFixture.basedUponNod();
@@ -321,8 +326,8 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
-    DateTime dueDate = new DateTime(nodToJamesLoan.getJson().getString("dueDate"));
-    DateTime afterLoanDueDateTime = dueDate.plusDays(1);
+    ZonedDateTime dueDate = ZonedDateTime.parse(nodToJamesLoan.getJson().getString("dueDate"));
+    ZonedDateTime afterLoanDueDateTime = dueDate.plusDays(1);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(afterLoanDueDateTime);
 
@@ -348,7 +353,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
 
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2019, 8, 23, 10, 30);
+    ZonedDateTime loanDate = ZonedDateTime.of(2019, 8, 23, 10, 30, 0, 0, UTC);
 
     val james = usersFixture.james();
     val nod = itemsFixture.basedUponNod();
@@ -359,8 +364,8 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
-    DateTime dueDate = new DateTime(nodToJamesLoan.getJson().getString("dueDate"));
-    DateTime afterLoanDueDateTime = dueDate.plusDays(1);
+    ZonedDateTime dueDate = ZonedDateTime.parse(nodToJamesLoan.getJson().getString("dueDate"));
+    ZonedDateTime afterLoanDueDateTime = dueDate.plusDays(1);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(afterLoanDueDateTime);
 
@@ -384,7 +389,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
 
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2019, 8, 23, 10, 30);
+    ZonedDateTime loanDate = ZonedDateTime.of(2019, 8, 23, 10, 30, 0, 0, UTC);
 
     // users
     val james = usersFixture.james();
@@ -414,7 +419,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(6));
 
-    DateTime dueDate = new DateTime(nodToJames.getJson().getString("dueDate"));
+    ZonedDateTime dueDate = ZonedDateTime.parse(nodToJames.getJson().getString("dueDate"));
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(dueDate.plusDays(1));
 
@@ -461,7 +466,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
 
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2019, 8, 23, 10, 30);
+    ZonedDateTime loanDate = ZonedDateTime.of(2019, 8, 23, 10, 30, 0, 0, UTC);
 
     IndividualResource james = usersFixture.james();
     ItemResource nod = itemsFixture.basedUponNod();
@@ -472,8 +477,8 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
-    DateTime dueDate = new DateTime(nodToJamesLoan.getJson().getString("dueDate"));
-    DateTime afterLoanDueDateTime = dueDate.plusDays(1);
+    ZonedDateTime dueDate = ZonedDateTime.parse(nodToJamesLoan.getJson().getString("dueDate"));
+    ZonedDateTime afterLoanDueDateTime = dueDate.plusDays(1);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(afterLoanDueDateTime);
 
@@ -509,7 +514,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
       .withLoanNotices(Collections.singletonList(afterDueDateNoticeConfig));
     use(noticePolicy);
 
-    DateTime loanDate = DateTime.now().minusMonths(1);
+    ZonedDateTime loanDate = ZonedDateTime.now().minusMonths(1);
 
     IndividualResource steve = usersFixture.steve();
     ItemResource dunkirk = itemsFixture.basedUponDunkirk();
@@ -534,9 +539,9 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     int plusMinutes, int scheduledNoticesNumber, int sentNoticesNumber) {
 
     String timeZoneId = "America/New_York";
-    DateTime systemTime = new DateTime(2020, 6, 25, 0, 0)
+    ZonedDateTime systemTime = ZonedDateTime.of(2020, 6, 25, 0, 0, 0, 0, UTC)
       .plusMinutes(plusMinutes)
-      .withZoneRetainFields(DateTimeZone.forID(timeZoneId));
+      .withZoneSameLocal(ZoneId.of(timeZoneId));
     mockClockManagerToReturnFixedDateTime(systemTime);
     configClient.create(ConfigurationExample.timezoneConfigurationFor(timeZoneId));
 
@@ -552,8 +557,8 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
       .withLoanNotices(Collections.singletonList(uponAtDueDateNoticeConfig));
     use(noticePolicy);
 
-    DateTime loanDate = new DateTime(2020, 6, 3, 6, 0)
-      .withZoneRetainFields(DateTimeZone.forID(timeZoneId));
+    ZonedDateTime loanDate = ZonedDateTime.of(2020, 6, 3, 6, 0, 0, 0, UTC)
+      .withZoneSameInstant(ZoneId.of(timeZoneId));
 
     IndividualResource james = usersFixture.james();
     ItemResource nod = itemsFixture.basedUponNod();

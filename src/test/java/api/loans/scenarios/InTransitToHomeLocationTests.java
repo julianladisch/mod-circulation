@@ -8,18 +8,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import api.support.http.IndividualResource;
 import org.hamcrest.Matcher;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import api.support.APITests;
 import api.support.CheckInByBarcodeResponse;
 import api.support.builders.CheckInByBarcodeRequestBuilder;
+import api.support.http.IndividualResource;
 import api.support.http.ItemResource;
 import api.support.matchers.JsonObjectMatcher;
 import io.vertx.core.json.JsonObject;
@@ -528,7 +528,7 @@ public class InTransitToHomeLocationTests extends APITests {
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(nod, james);
 
     requestsFixture.placeHoldShelfRequest(
-      nod, jessica, DateTime.now(DateTimeZone.UTC), otherServicePoint.getId());
+      nod, jessica, ZonedDateTime.now(ZoneOffset.UTC), otherServicePoint.getId());
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()

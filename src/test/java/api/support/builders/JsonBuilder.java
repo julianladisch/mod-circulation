@@ -1,13 +1,13 @@
 package api.support.builders;
 
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateString;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -43,9 +43,9 @@ public class JsonBuilder {
     }
   }
 
-  protected void put(JsonObject representation, String property, DateTime value) {
+  protected void put(JsonObject representation, String property, ZonedDateTime value) {
     if(value != null) {
-      representation.put(property, value.toString(ISODateTimeFormat.dateTime()));
+      representation.put(property, toDateTimeString(value));
     }
   }
 
@@ -93,6 +93,6 @@ public class JsonBuilder {
   }
 
   private String formatDateOnly(LocalDate date) {
-    return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    return toDateString(date);
   }
 }

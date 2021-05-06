@@ -3,6 +3,8 @@ package org.folio.circulation.resources;
 import static java.lang.Math.max;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,8 +26,6 @@ import org.folio.circulation.support.CqlSortBy;
 import org.folio.circulation.support.CqlSortClause;
 import org.folio.circulation.support.http.client.PageLimit;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import io.vertx.core.http.HttpClient;
 
@@ -56,15 +56,14 @@ public class DueDateNotRealTimeScheduledNoticeProcessingResource extends Schedul
         pageLimit, timeLimit)));
   }
 
-  private DateTime startOfTodayInTimeZone(DateTimeZone zone) {
-    return ClockManager.getClockManager().getDateTime()
-      .withZone(zone)
-      .withTimeAtStartOfDay();
+  private ZonedDateTime startOfTodayInTimeZone(ZoneOffset zone) {
+    return ClockManager.getClockManager().getZonedDateTime().toLocalDate()
+      .atStartOfDay(zone);
   }
 
   private CompletableFuture<Result<MultipleRecords<ScheduledNotice>>> findNotices(
     ScheduledNoticesRepository scheduledNoticesRepository, PageLimit pageLimit,
-    DateTime timeLimit) {
+    ZonedDateTime timeLimit) {
 
     return scheduledNoticesRepository.findNotices(timeLimit,
       false, Collections.singletonList(TriggeringEvent.DUE_DATE),
@@ -76,7 +75,7 @@ public class DueDateNotRealTimeScheduledNoticeProcessingResource extends Schedul
     Clients clients, MultipleRecords<ScheduledNotice> notices) {
 
     final DueDateNotRealTimeScheduledNoticeHandler dueDateNoticeHandler =
-      DueDateNotRealTimeScheduledNoticeHandler.using(clients, DateTime.now(DateTimeZone.UTC));
+      DueDateNotRealTimeScheduledNoticeHandler.using(clients, ZonedDateTime.now(ZoneOffset.UTC));
 
     Map<ScheduledNoticeGroupDefinition, List<ScheduledNotice>> orderedGroups =
       notices.getRecords().stream().collect(Collectors.groupingBy(

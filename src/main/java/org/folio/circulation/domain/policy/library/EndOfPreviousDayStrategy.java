@@ -5,32 +5,37 @@ import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyU
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import org.folio.circulation.AdjacentOpeningDays;
 import org.folio.circulation.domain.OpeningDay;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 public class EndOfPreviousDayStrategy implements ClosedLibraryStrategy {
 
-  private final DateTimeZone zone;
+  private final ZoneOffset zone;
 
-  public EndOfPreviousDayStrategy(DateTimeZone zone) {
+  public EndOfPreviousDayStrategy(ZoneOffset zone) {
     this.zone = zone;
   }
 
   @Override
-  public Result<DateTime> calculateDueDate(DateTime requestedDate, AdjacentOpeningDays openingDays) {
+  public Result<ZonedDateTime> calculateDueDate(ZonedDateTime requestedDate,
+    AdjacentOpeningDays openingDays) {
+
     Objects.requireNonNull(openingDays);
     if (openingDays.getRequestedDay().getOpen()) {
-      return succeeded(requestedDate.withZone(zone).withTime(END_OF_A_DAY));
+      LocalDate date = requestedDate.toLocalDate();
+      return succeeded(ZonedDateTime.of(date, END_OF_A_DAY, zone));
     }
     OpeningDay previousDay = openingDays.getPreviousDay();
     if (!previousDay.getOpen()) {
       return failed(failureForAbsentTimetable());
     }
-    return succeeded(previousDay.getDate().toDateTime(END_OF_A_DAY, zone));
+    LocalDate date = previousDay.getDayWithTimeZone().toLocalDate();
+    return succeeded(ZonedDateTime.of(date, END_OF_A_DAY, zone));
   }
 }

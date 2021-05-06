@@ -4,24 +4,19 @@ import static api.support.builders.FixedDueDateSchedule.wholeMonth;
 import static api.support.matchers.TextDateTimeMatcher.withinSecondsAfter;
 import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
+import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.resources.RenewalValidator.CAN_NOT_RENEW_ITEM_ERROR;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.joda.time.DateTimeConstants.APRIL;
+import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.folio.circulation.domain.policy.Period;
-import api.support.http.IndividualResource;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Seconds;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -29,6 +24,7 @@ import api.support.builders.FixedDueDateSchedule;
 import api.support.builders.FixedDueDateSchedulesBuilder;
 import api.support.builders.LoanPolicyBuilder;
 import api.support.builders.RequestBuilder;
+import api.support.http.IndividualResource;
 import api.support.http.ItemResource;
 import io.vertx.core.json.JsonObject;
 
@@ -61,7 +57,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
 
   @Test
   public void allowRenewalLoanByBarcodeWhenProfileIsRollingFirstRequestInQueueIsHoldAndRenewingIsAllowedInLoanPolicy() {
-    final DateTime expectedDueDate = DateTime.now(DateTimeZone.UTC)
+    final ZonedDateTime expectedDueDate = ZonedDateTime.now(UTC)
       .plusWeeks(DEFAULT_HOLD_RENEWAL_PERIOD);
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
@@ -83,7 +79,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
     assertThat(response.getJson().getJsonArray("errors"), nullValue());
 
     assertThat(response.getJson().getString("dueDate"),
-      is(withinSecondsAfter(Seconds.seconds(15), expectedDueDate)));
+      is(withinSecondsAfter(15, expectedDueDate)));
   }
 
   @Test
@@ -109,7 +105,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
   @Test
   public void allowRenewalWithHoldsWhenProfileIsRollingUseLoanPeriod() {
     final int renewalPeriod = 90;
-    final DateTime expectedDueDate = DateTime.now(DateTimeZone.UTC).plusWeeks(renewalPeriod);
+    final ZonedDateTime expectedDueDate = ZonedDateTime.now(UTC).plusWeeks(renewalPeriod);
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
 
@@ -138,13 +134,13 @@ public class RequestsAPILoanRenewalTests extends APITests {
     assertThat(response.getJson().getJsonArray("errors"), nullValue());
 
     assertThat(response.getJson().getString("dueDate"),
-      is(withinSecondsAfter(Seconds.seconds(15), expectedDueDate)));
+      is(withinSecondsAfter(15, expectedDueDate)));
   }
 
   @Test
   public void allowRenewalWithHoldsWhenProfileIsRollingUseRenewalPeriod() {
     final int renewalPeriod = 60;
-    final DateTime expectedDueDate = DateTime.now(DateTimeZone.UTC).plusWeeks(renewalPeriod);
+    final ZonedDateTime expectedDueDate = ZonedDateTime.now(UTC).plusWeeks(renewalPeriod);
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
 
@@ -174,7 +170,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
     assertThat(response.getJson().getJsonArray("errors"), nullValue());
 
     assertThat(response.getJson().getString("dueDate"),
-      is(withinSecondsAfter(Seconds.seconds(15), expectedDueDate)));
+      is(withinSecondsAfter(15, expectedDueDate)));
   }
 
 
@@ -222,7 +218,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
 
   @Test
   public void allowRenewalLoanByIdWhenProfileIsRollingFirstRequestInQueueIsHoldAndRenewingIsAllowedInLoanPolicy() {
-    final DateTime expectedDueDate = DateTime.now(DateTimeZone.UTC)
+    final ZonedDateTime expectedDueDate = ZonedDateTime.now(UTC)
       .plusWeeks(DEFAULT_HOLD_RENEWAL_PERIOD);
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
@@ -245,7 +241,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
     assertThat(response.getJson().getJsonArray("error"), nullValue());
 
     assertThat(response.getJson().getString("dueDate"),
-      is(withinSecondsAfter(Seconds.seconds(15), expectedDueDate)));
+      is(withinSecondsAfter(15, expectedDueDate)));
   }
 
   @Test
@@ -294,9 +290,9 @@ public class RequestsAPILoanRenewalTests extends APITests {
 
   @Test
   public void allowRenewalWithHoldsWhenProfileIsFixedUseRenewalSchedule() {
-    final DateTime from = DateTime.now(DateTimeZone.UTC).minusMonths(3);
-    final DateTime to = DateTime.now(DateTimeZone.UTC).plusMonths(3);
-    final DateTime dueDate = to.plusDays(15);
+    final ZonedDateTime from = ZonedDateTime.now(UTC).minusMonths(3);
+    final ZonedDateTime to = ZonedDateTime.now(UTC).plusMonths(3);
+    final ZonedDateTime dueDate = to.plusDays(15);
 
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
@@ -332,14 +328,14 @@ public class RequestsAPILoanRenewalTests extends APITests {
 
     assertThat(response.getJson().getString("action"), is("renewed"));
     assertThat(response.getJson().getString("dueDate"),
-      is(withinSecondsAfter(Seconds.seconds(15), dueDate)));
+      is(withinSecondsAfter(15, dueDate)));
    }
 
   @Test
   public void allowRenewalWithHoldsWhenProfileIsFixedUseLoanSchedule() {
-    final DateTime from = DateTime.now(DateTimeZone.UTC).minusMonths(3);
-    final DateTime to = DateTime.now(DateTimeZone.UTC).plusMonths(3);
-    final DateTime dueDate = to.plusDays(15);
+    final ZonedDateTime from = ZonedDateTime.now(UTC).minusMonths(3);
+    final ZonedDateTime to = ZonedDateTime.now(UTC).plusMonths(3);
+    final ZonedDateTime dueDate = to.plusDays(15);
 
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
@@ -374,7 +370,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
 
     assertThat(response.getJson().getString("action"), is("renewed"));
     assertThat(response.getJson().getString("dueDate"),
-      is(withinSecondsAfter(Seconds.seconds(15), dueDate)));
+      is(withinSecondsAfter(15, dueDate)));
   }
 
   @Test
@@ -383,7 +379,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
 
-    DateTime loanDate = new DateTime(2018, APRIL, 21, 11, 21, 43);
+    ZonedDateTime loanDate = ZonedDateTime.of(2018, 4, 21, 11, 21, 43, 0, UTC);
     checkOutFixture.checkOutByBarcode(smallAngryPlanet, rebecca, loanDate);
 
     requestsFixture.place(new RequestBuilder()
@@ -415,7 +411,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
 
-    DateTime loanDate = new DateTime(2018, APRIL, 21, 11, 21, 43);
+    ZonedDateTime loanDate = ZonedDateTime.of(2018, 4, 21, 11, 21, 43, 0, UTC);
     checkOutFixture.checkOutByBarcode(smallAngryPlanet, rebecca, loanDate);
 
     requestsFixture.place(new RequestBuilder()
@@ -505,9 +501,9 @@ public class RequestsAPILoanRenewalTests extends APITests {
 
   @Test
   public void validationErrorWhenRenewalPeriodForHoldsSpecifiedForFixedPolicy() {
-    final DateTime from = DateTime.now(DateTimeZone.UTC).minusMonths(3);
-    final DateTime to = DateTime.now(DateTimeZone.UTC).plusMonths(3);
-    final DateTime dueDate = to.plusDays(15);
+    final ZonedDateTime from = ZonedDateTime.now(UTC).minusMonths(3);
+    final ZonedDateTime to = ZonedDateTime.now(UTC).plusMonths(3);
+    final ZonedDateTime dueDate = to.plusDays(15);
 
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();
@@ -549,9 +545,9 @@ public class RequestsAPILoanRenewalTests extends APITests {
 
   @Test
   public void validationErrorWhenRenewalPeriodSpecifiedForFixedPolicy() {
-    final DateTime from = DateTime.now(DateTimeZone.UTC).minusMonths(3);
-    final DateTime to = DateTime.now(DateTimeZone.UTC).plusMonths(3);
-    final DateTime dueDate = to.plusDays(15);
+    final ZonedDateTime from = ZonedDateTime.now(UTC).minusMonths(3);
+    final ZonedDateTime to = ZonedDateTime.now(UTC).plusMonths(3);
+    final ZonedDateTime dueDate = to.plusDays(15);
 
     final ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource rebecca = usersFixture.rebecca();

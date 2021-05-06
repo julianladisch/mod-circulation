@@ -1,20 +1,46 @@
 package org.folio.circulation.domain.representations.logs;
 
 import static java.util.Optional.ofNullable;
-import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.*;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.CLAIMED_RETURNED_RESOLUTION;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.DESTINATION_SERVICE_POINT;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.DUE_DATE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.HOLDINGS_RECORD_ID;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.INSTANCE_ID;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.IS_LOAN_CLOSED;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.ITEM_BARCODE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.ITEM_ID;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.ITEM_STATUS_NAME;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.LOAN_ID;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.LOG_EVENT_TYPE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.NEW_REQUEST_STATUS;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.OLD_REQUEST_STATUS;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.PICK_UP_SERVICE_POINT;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.PROXY_BARCODE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.REQUESTS;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.REQUEST_ADDRESS_TYPE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.REQUEST_ID;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.REQUEST_TYPE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.RETURN_DATE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.SERVICE_POINT_ID;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.SOURCE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.SYSTEM_RETURN_DATE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.USER_BARCODE;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.USER_ID;
 import static org.folio.circulation.domain.representations.logs.LogEventType.CHECK_IN;
 import static org.folio.circulation.domain.representations.logs.LogEventType.CHECK_OUT;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.folio.circulation.domain.CheckInContext;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.LoanAndRelatedRecords;
 import org.folio.circulation.domain.UpdatedRequestPair;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 public class CirculationCheckInCheckOutLogEventMapper {
   public static final String ITEM_SOURCE = "source";
@@ -105,9 +131,9 @@ public class CirculationCheckInCheckOutLogEventMapper {
       .ifPresent(loan -> {
         write(logEventPayload, LOAN_ID.value(), loan.getId());
         write(logEventPayload, IS_LOAN_CLOSED.value(), loan.isClosed());
-        write(logEventPayload, SYSTEM_RETURN_DATE.value(), loan.getSystemReturnDate());
-        write(logEventPayload, RETURN_DATE.value(), loan.getReturnDate());
-        write(logEventPayload, DUE_DATE.value(), loan.getDueDate());
+        write(logEventPayload, SYSTEM_RETURN_DATE.value(), toDateTimeString(loan.getSystemReturnDate()));
+        write(logEventPayload, RETURN_DATE.value(), toDateTimeString(loan.getReturnDate()));
+        write(logEventPayload, DUE_DATE.value(), toDateTimeString(loan.getDueDate()));
         ofNullable(loan.getUser())
           .ifPresent(user -> {
             write(logEventPayload, USER_ID.value(), user.getId());

@@ -10,22 +10,23 @@ import static org.folio.circulation.domain.representations.logs.LogEventPayloadF
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.USER_BARCODE;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.folio.circulation.domain.Item;
+import org.folio.circulation.domain.Loan;
+import org.folio.circulation.domain.Request;
+import org.folio.circulation.domain.User;
+
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.With;
-import org.folio.circulation.domain.Item;
-import org.folio.circulation.domain.Loan;
-import org.folio.circulation.domain.Request;
-import org.folio.circulation.domain.User;
-import org.joda.time.DateTime;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,7 +35,7 @@ public class NoticeLogContext {
   private String userBarcode;
   private String userId;
   @Getter private List<NoticeLogContextItem> items = new ArrayList<>();
-  private DateTime date;
+  private ZonedDateTime date;
   private String requestId;
   private String accountId;
 

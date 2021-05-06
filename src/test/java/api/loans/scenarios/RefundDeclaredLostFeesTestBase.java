@@ -10,12 +10,13 @@ import static api.support.matchers.LoanAccountMatcher.hasLostItemProcessingFee;
 import static api.support.matchers.LoanAccountMatcher.hasNoOverdueFine;
 import static api.support.matchers.LoanAccountMatcher.hasOverdueFine;
 import static api.support.matchers.LoanMatchers.isClosed;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
+
+import java.time.ZonedDateTime;
 
 import org.hamcrest.Matcher;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,10 +36,10 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
   }
 
   protected void performActionThatRequiresRefund() {
-    performActionThatRequiresRefund(DateTime.now(UTC));
+    performActionThatRequiresRefund(ZonedDateTime.now(UTC));
   }
 
-  protected abstract void performActionThatRequiresRefund(DateTime actionDate);
+  protected abstract void performActionThatRequiresRefund(ZonedDateTime actionDate);
 
   @Before
   public void activateChargeableLostItemFeePolicy() {
@@ -288,7 +289,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
 
     declareItemLost();
 
-    performActionThatRequiresRefund(DateTime.now(UTC).plusMinutes(2));
+    performActionThatRequiresRefund(ZonedDateTime.now(UTC).plusMinutes(2));
 
     assertThat(loan, hasLostItemFee(isOpen(itemFee)));
     assertThat(loan, hasNoOverdueFine());

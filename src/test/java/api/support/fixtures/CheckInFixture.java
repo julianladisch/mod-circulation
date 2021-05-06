@@ -3,16 +3,16 @@ package api.support.fixtures;
 import static api.support.APITestContext.getOkapiHeadersFromContext;
 import static api.support.http.InterfaceUrls.checkInByBarcodeUrl;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import api.support.http.IndividualResource;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import api.support.CheckInByBarcodeResponse;
 import api.support.RestAssuredClient;
 import api.support.builders.CheckInByBarcodeRequestBuilder;
+import api.support.http.IndividualResource;
 import api.support.http.OkapiHeaders;
 import io.vertx.core.json.JsonObject;
 
@@ -45,12 +45,12 @@ public class CheckInFixture {
   public CheckInByBarcodeResponse checkInByBarcode(IndividualResource item) {
     return checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(item)
-      .on(DateTime.now(DateTimeZone.UTC))
+      .on(ZonedDateTime.now(ZoneOffset.UTC))
       .at(defaultServicePoint()));
   }
 
   public CheckInByBarcodeResponse checkInByBarcode(IndividualResource item,
-    DateTime checkInDate, UUID servicePointId) {
+    ZonedDateTime checkInDate, UUID servicePointId) {
 
     return checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(item)
@@ -58,7 +58,7 @@ public class CheckInFixture {
       .at(servicePointId));
   }
 
-  public CheckInByBarcodeResponse checkInByBarcode(IndividualResource item, DateTime checkInDate) {
+  public CheckInByBarcodeResponse checkInByBarcode(IndividualResource item, ZonedDateTime checkInDate) {
     return checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(item)
       .on(checkInDate)
@@ -68,10 +68,10 @@ public class CheckInFixture {
   public CheckInByBarcodeResponse checkInByBarcode(IndividualResource item,
     UUID servicePointId) {
 
-    return checkInByBarcode(item, DateTime.now(DateTimeZone.UTC), servicePointId);
+    return checkInByBarcode(item, ZonedDateTime.now(ZoneOffset.UTC), servicePointId);
   }
 
-  public void checkInByBarcode(IndividualResource item, DateTime checkInDate,
+  public void checkInByBarcode(IndividualResource item, ZonedDateTime checkInDate,
     UUID servicePointId, OkapiHeaders okapiHeaders) {
 
     final JsonObject representation = new CheckInByBarcodeRequestBuilder()

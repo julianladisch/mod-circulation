@@ -5,6 +5,7 @@ import static api.support.matchers.ResultMatchers.succeeded;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasParameter;
 import static api.support.matchers.ValidationErrorMatchers.isErrorWith;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -12,11 +13,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.support.BadRequestFailure;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import api.support.builders.CheckInByBarcodeRequestBuilder;
@@ -31,7 +32,7 @@ public class JsonSchemaValidationTest {
 
     final JsonObject checkInRequest = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("246650492")
-      .on(DateTime.now())
+      .on(ZonedDateTime.now())
       .at(UUID.randomUUID())
       .create();
 
@@ -48,7 +49,7 @@ public class JsonSchemaValidationTest {
       .withItemId(UUID.randomUUID())
       .withRequesterId(UUID.randomUUID())
       .fulfilToHoldShelf(UUID.randomUUID())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .create();
 
     assertThat(validator.validate(request.encode()), succeeded());
@@ -62,7 +63,7 @@ public class JsonSchemaValidationTest {
 
     write(storageLoanRequest, "itemId", UUID.randomUUID());
     write(storageLoanRequest, "userId", UUID.randomUUID());
-    write(storageLoanRequest, "loanDate", DateTime.now());
+    write(storageLoanRequest, "loanDate", toDateTimeString(ZonedDateTime.now()));
     write(storageLoanRequest, "action", "checkedout");
 
     assertThat(validator.validate(storageLoanRequest.encode()), succeeded());
@@ -91,7 +92,7 @@ public class JsonSchemaValidationTest {
 
     final JsonObject checkInRequest = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("246650492")
-      .on(DateTime.now())
+      .on(ZonedDateTime.now())
       .atNoServicePoint()
       .create();
 
@@ -111,7 +112,7 @@ public class JsonSchemaValidationTest {
 
     final JsonObject checkInRequest = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("246650492")
-      .on(DateTime.now())
+      .on(ZonedDateTime.now())
       .at(UUID.randomUUID())
       .create();
 
@@ -133,7 +134,7 @@ public class JsonSchemaValidationTest {
 
     final JsonObject checkInRequest = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("246650492")
-      .on(DateTime.now())
+      .on(ZonedDateTime.now())
       .atNoServicePoint()
       .create();
 

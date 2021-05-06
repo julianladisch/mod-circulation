@@ -1,8 +1,11 @@
 package org.folio.circulation.resources;
 
+import static java.time.ZoneOffset.UTC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,13 +15,14 @@ import org.folio.circulation.domain.InstanceRequestRelatedRecords;
 import org.folio.circulation.domain.Item;
 import org.folio.circulation.domain.RequestType;
 import org.folio.circulation.domain.representations.RequestByInstanceIdRequest;
-import org.folio.circulation.support.*;
+import org.folio.circulation.support.BadRequestFailure;
+import org.folio.circulation.support.ForwardOnFailure;
+import org.folio.circulation.support.HttpFailure;
+import org.folio.circulation.support.ServerErrorFailure;
+import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 
 import api.support.fixtures.ItemExamples;
@@ -88,16 +92,16 @@ public class RequestByInstanceIdResourceTests {
   }
 
   public static JsonObject getJsonInstanceRequest(UUID pickupServicePointId) {
-    DateTime requestDate = new DateTime(2017, 7, 22, 10, 22, 54, DateTimeZone.UTC);
-    DateTime requestExpirationDate = requestDate.plusDays(30);
+    ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
+    ZonedDateTime requestExpirationDate = requestDate.plusDays(30);
 
     JsonObject instanceRequest = new JsonObject();
     instanceRequest.put("instanceId", UUID.randomUUID().toString());
-    instanceRequest.put("requestDate", requestDate.toString(ISODateTimeFormat.dateTime()));
+    instanceRequest.put("requestDate", requestDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
     instanceRequest.put("requesterId", UUID.randomUUID().toString());
     instanceRequest.put("pickupServicePointId", pickupServicePointId == null ? UUID.randomUUID().toString() : pickupServicePointId.toString());
     instanceRequest.put("fulfilmentPreference", "Hold Shelf");
-    instanceRequest.put("requestExpirationDate",requestExpirationDate.toString(ISODateTimeFormat.dateTime()));
+    instanceRequest.put("requestExpirationDate",requestExpirationDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
 
     return instanceRequest;
   }

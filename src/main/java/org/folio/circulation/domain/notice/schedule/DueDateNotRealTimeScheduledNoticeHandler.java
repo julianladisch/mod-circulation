@@ -8,21 +8,21 @@ import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.LoanAndRelatedRecords;
-import org.folio.circulation.domain.representations.logs.NoticeLogContext;
-import org.folio.circulation.domain.representations.logs.NoticeLogContextItem;
 import org.folio.circulation.domain.User;
 import org.folio.circulation.domain.notice.PatronNoticeService;
 import org.folio.circulation.domain.notice.TemplateContextUtil;
+import org.folio.circulation.domain.representations.logs.NoticeLogContext;
+import org.folio.circulation.domain.representations.logs.NoticeLogContextItem;
 import org.folio.circulation.infrastructure.storage.notices.PatronNoticePolicyRepository;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import lombok.AllArgsConstructor;
 public class DueDateNotRealTimeScheduledNoticeHandler {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public static DueDateNotRealTimeScheduledNoticeHandler using(Clients clients, DateTime systemTime) {
+  public static DueDateNotRealTimeScheduledNoticeHandler using(Clients clients, ZonedDateTime systemTime) {
     return new DueDateNotRealTimeScheduledNoticeHandler(
       LoanScheduledNoticeHandler.using(clients, systemTime),
       PatronNoticeService.using(clients),

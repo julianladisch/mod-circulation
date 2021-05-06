@@ -9,36 +9,38 @@ import static org.folio.circulation.domain.EventType.ITEM_DECLARED_LOST;
 import static org.folio.circulation.domain.EventType.LOAN_DUE_DATE_CHANGED;
 import static org.folio.circulation.domain.EventType.LOG_RECORD;
 import static org.folio.circulation.domain.LoanAction.CHECKED_IN;
-import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.LOG_EVENT_TYPE;
 import static org.folio.circulation.domain.representations.logs.CirculationCheckInCheckOutLogEventMapper.mapToCheckInLogEventJson;
 import static org.folio.circulation.domain.representations.logs.CirculationCheckInCheckOutLogEventMapper.mapToCheckOutLogEventJson;
+import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.LOG_EVENT_TYPE;
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.PAYLOAD;
 import static org.folio.circulation.domain.representations.logs.LogEventType.LOAN;
-import static org.folio.circulation.support.AsyncCoordinationUtil.allOf;
 import static org.folio.circulation.domain.representations.logs.RequestUpdateLogEventMapper.mapToRequestLogEventJson;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.AsyncCoordinationUtil.allOf;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.results.Result.succeeded;
 
-import io.vertx.core.json.JsonObject;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.web.RoutingContext;
+import java.util.concurrent.CompletableFuture;
+
 import org.folio.circulation.domain.CheckInContext;
 import org.folio.circulation.domain.EventType;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.LoanAndRelatedRecords;
+import org.folio.circulation.domain.Request;
 import org.folio.circulation.domain.RequestAndRelatedRecords;
 import org.folio.circulation.domain.anonymization.LoanAnonymizationRecords;
 import org.folio.circulation.domain.representations.logs.LoanLogContext;
 import org.folio.circulation.domain.representations.logs.LogContextActionResolver;
 import org.folio.circulation.domain.representations.logs.LogEventType;
-import org.folio.circulation.domain.Request;
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
 import org.folio.circulation.resources.context.RenewalContext;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.results.Result;
 
-import java.util.concurrent.CompletableFuture;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.web.RoutingContext;
 
 public class EventPublisher {
   private static final Logger logger = LoggerFactory.getLogger(EventPublisher.class);
@@ -70,7 +72,7 @@ public class EventPublisher {
       JsonObject payloadJsonObject = new JsonObject();
       write(payloadJsonObject, USER_ID_FIELD, loan.getUserId());
       write(payloadJsonObject, LOAN_ID_FIELD, loan.getId());
-      write(payloadJsonObject, DUE_DATE_FIELD, loan.getDueDate());
+      write(payloadJsonObject, DUE_DATE_FIELD, toDateTimeString(loan.getDueDate()));
 
       JsonObject logEventPayload = mapToCheckOutLogEventJson(loanAndRelatedRecords);
       CompletableFuture.runAsync(() -> pubSubPublishingService.publishEvent(LOG_RECORD.name(), logEventPayload.encode()));
@@ -97,7 +99,7 @@ public class EventPublisher {
       JsonObject payloadJsonObject = new JsonObject();
       write(payloadJsonObject, USER_ID_FIELD, loan.getUserId());
       write(payloadJsonObject, LOAN_ID_FIELD, loan.getId());
-      write(payloadJsonObject, RETURN_DATE_FIELD, loan.getReturnDate());
+      write(payloadJsonObject, RETURN_DATE_FIELD, toDateTimeString(loan.getReturnDate()));
 
       return
         pubSubPublishingService.publishEvent(ITEM_CHECKED_IN.name(),
@@ -144,13 +146,13 @@ public class EventPublisher {
       JsonObject payloadJsonObject = new JsonObject();
       write(payloadJsonObject, USER_ID_FIELD, loan.getUserId());
       write(payloadJsonObject, LOAN_ID_FIELD, loan.getId());
-      write(payloadJsonObject, DUE_DATE_FIELD, loan.getDueDate());
+      write(payloadJsonObject, DUE_DATE_FIELD, toDateTimeString(loan.getDueDate()));
       write(payloadJsonObject, DUE_DATE_CHANGED_BY_RECALL_FIELD, loan.wasDueDateChangedByRecall());
 
       LoanLogContext loanLogContext = LoanLogContext.from(loan)
         .withAction(LogContextActionResolver.resolveAction(loan.getAction()))
         .withDescription(String.format("New due date: %s (from %s)",
-          loan.getDueDate(), loan.getOriginalDueDate()));
+          toDateTimeString(loan.getDueDate()), toDateTimeString(loan.getOriginalDueDate())));
       CompletableFuture.runAsync(() -> publishLogRecord(loanLogContext.asJson(), LOAN));
 
       return pubSubPublishingService.publishEvent(LOAN_DUE_DATE_CHANGED.name(),
@@ -195,7 +197,7 @@ public class EventPublisher {
 
   public CompletableFuture<Result<Loan>> publishAgedToLostEvents(Loan loan) {
     return publishLogRecord(LoanLogContext.from(loan)
-      .withDescription(String.format("Due date: %s", loan.getAgedToLostDateTime())).asJson(), LOAN)
+      .withDescription(String.format("Due date: %s", toDateTimeString(loan.getAgedToLostDateTime()))).asJson(), LOAN)
       .thenCompose(r -> r.after(v -> publishStatusChangeEvent(ITEM_AGED_TO_LOST, loan)));
 
   }
@@ -226,7 +228,7 @@ public class EventPublisher {
   public CompletableFuture<Result<Void>> publishRecallRequestedEvent(Loan loan) {
     return publishLogRecord(LoanLogContext.from(loan)
       .withAction("Recall requested")
-      .withDescription(String.format("New due date: %s (from %s)", loan.getDueDate(), loan.getOriginalDueDate())).asJson(), LOAN);
+      .withDescription(String.format("New due date: %s (from %s)", toDateTimeString(loan.getDueDate()), toDateTimeString(loan.getOriginalDueDate()))).asJson(), LOAN);
   }
 
   public CompletableFuture<Result<Void>> publishLogRecord(JsonObject context, LogEventType payloadType) {

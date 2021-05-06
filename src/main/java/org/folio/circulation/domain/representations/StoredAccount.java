@@ -1,6 +1,7 @@
 package org.folio.circulation.domain.representations;
 
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 
 import java.util.UUID;
 
@@ -34,8 +35,8 @@ public class StoredAccount extends JsonObject {
     this.put("loanId", loan.getId());
     this.put("userId", loan.getUserId());
     this.put("itemId", item.getItemId());
-    write(this, "dueDate", loan.getDueDate());
-    write(this, "returnedDate", loan.getReturnDate());
+    write(this, "dueDate", toDateTimeString(loan.getDueDate()));
+    write(this, "returnedDate", toDateTimeString(loan.getReturnDate()));
 
     this.put("paymentStatus", createNamedObject("Outstanding"));
     this.put("status", createNamedObject("Open"));

@@ -6,11 +6,11 @@ import static org.folio.circulation.support.ClockManager.getClockManager;
 
 import java.net.URL;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeUtils;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import api.support.http.TimedTaskClient;
 
@@ -21,7 +21,7 @@ public class ScheduledNoticeProcessingClient {
     timedTaskClient = new TimedTaskClient(getOkapiHeadersFromContext());
   }
 
-  public void runLoanNoticesProcessing(DateTime mockSystemTime) {
+  public void runLoanNoticesProcessing(ZonedDateTime mockSystemTime) {
     runWithFrozenTime(this::runLoanNoticesProcessing, mockSystemTime);
   }
 
@@ -33,7 +33,7 @@ public class ScheduledNoticeProcessingClient {
       "loan-scheduled-notices-processing-request");
   }
 
-  public void runDueDateNotRealTimeNoticesProcessing(DateTime mockSystemTime) {
+  public void runDueDateNotRealTimeNoticesProcessing(ZonedDateTime mockSystemTime) {
     runWithFrozenTime(this::runDueDateNotRealTimeNoticesProcessing, mockSystemTime);
   }
 
@@ -45,7 +45,7 @@ public class ScheduledNoticeProcessingClient {
       "due-date-not-real-time-scheduled-notices-processing-request");
   }
 
-  public void runRequestNoticesProcessing(DateTime mockSystemTime) {
+  public void runRequestNoticesProcessing(ZonedDateTime mockSystemTime) {
     runWithFrozenTime(this::runRequestNoticesProcessing, mockSystemTime);
   }
 
@@ -57,7 +57,7 @@ public class ScheduledNoticeProcessingClient {
       "request-scheduled-notices-processing-request");
   }
 
-  public void runFeeFineNoticesProcessing(DateTime mockSystemTime) {
+  public void runFeeFineNoticesProcessing(ZonedDateTime mockSystemTime) {
     runWithFrozenClock(this::runFeeFineNoticesProcessing, mockSystemTime);
   }
 
@@ -69,20 +69,19 @@ public class ScheduledNoticeProcessingClient {
       "fee-fine-scheduled-notices-processing-request");
   }
 
-  private void runWithFrozenTime(Runnable runnable, DateTime mockSystemTime) {
-    try {
-      DateTimeUtils.setCurrentMillisFixed(mockSystemTime.getMillis());
+  private void runWithFrozenTime(Runnable runnable, ZonedDateTime mockSystemTime) {
+    try (MockedStatic<System> system = Mockito.mockStatic(System.class)) {
+      system.when(System::currentTimeMillis).thenReturn(mockSystemTime
+        .toInstant().toEpochMilli());
       runnable.run();
-    } finally {
-      DateTimeUtils.setCurrentMillisSystem();
     }
   }
 
-    private void runWithFrozenClock(Runnable runnable, DateTime mockSystemTime) {
+  private void runWithFrozenClock(Runnable runnable, ZonedDateTime mockSystemTime) {
     try {
       getClockManager().setClock(
         Clock.fixed(
-          Instant.ofEpochMilli(mockSystemTime.getMillis()),
+          mockSystemTime.toInstant(),
           ZoneOffset.UTC));
       runnable.run();
     } finally {

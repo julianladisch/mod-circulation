@@ -3,6 +3,7 @@ package api.support.fakes;
 import static api.support.fakes.Storage.getStorage;
 import static api.support.fakes.StorageSchema.validatorForFeeFineCancelOperationSchema;
 import static api.support.fakes.StorageSchema.validatorForFeeFineOperationSchema;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.http.server.JsonHttpResponse.created;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
@@ -116,7 +117,8 @@ public class FakeFeeFineOperationsModule {
     final String feeFineActionId = UUID.randomUUID().toString();
 
     final JsonObject feeFineAction = new JsonObject()
-      .put("dateAction", ClockManager.getClockManager().getDateTime().toString())
+      .put("dateAction",
+        toDateTimeString(ClockManager.getClockManager().getZonedDateTime()))
       .put("typeAction", actionType)
       .put("notify", false)
       .put("amountAction", actionAmount)

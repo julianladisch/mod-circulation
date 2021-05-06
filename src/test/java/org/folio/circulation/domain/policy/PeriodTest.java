@@ -1,17 +1,18 @@
 package org.folio.circulation.domain.policy;
 
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
+import static java.time.ZonedDateTime.now;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.time.ZonedDateTime;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import lombok.val;
 
 @RunWith(JUnitParamsRunner.class)
 public class PeriodTest {
@@ -55,8 +56,8 @@ public class PeriodTest {
     "Months, 10"
   })
   public void hasPassedSinceDateTillNowWhenNowAfterTheDate(String interval, int duration) {
-    val period = Period.from(duration, interval);
-    val startDate = now(UTC).minus(period.timePeriod()).minusSeconds(1);
+    Period period = Period.from(duration, interval);
+    ZonedDateTime startDate = period.minusDate(now(UTC)).minusSeconds(1);
 
     assertTrue(period.hasPassedSinceDateTillNow(startDate));
     assertFalse(period.hasNotPassedSinceDateTillNow(startDate));
@@ -71,8 +72,8 @@ public class PeriodTest {
     "Months, 23"
   })
   public void hasPassedSinceDateTillNowWhenNowIsTheDate(String interval, int duration) {
-    val period = Period.from(duration, interval);
-    val startDate = now(UTC).minus(period.timePeriod());
+    Period period = Period.from(duration, interval);
+    ZonedDateTime startDate = period.minusDate(now(UTC));
 
     assertTrue(period.hasPassedSinceDateTillNow(startDate));
     assertFalse(period.hasNotPassedSinceDateTillNow(startDate));
@@ -87,8 +88,8 @@ public class PeriodTest {
     "Months, 3"
   })
   public void hasPassedSinceDateTillNowIsFalse(String interval, int duration) {
-    val period = Period.from(duration, interval);
-    val startDate = now(UTC);
+    Period period = Period.from(duration, interval);
+    ZonedDateTime startDate = now(UTC);
 
     assertFalse(period.hasPassedSinceDateTillNow(startDate));
     assertTrue(period.hasNotPassedSinceDateTillNow(startDate));
@@ -103,8 +104,8 @@ public class PeriodTest {
     "Months, 4"
   })
   public void hasNotPassedSinceDateTillNow(String interval, int duration) {
-    val period = Period.from(duration, interval);
-    val startDate = now(UTC).plus(period.timePeriod());
+    Period period = Period.from(duration, interval);
+    ZonedDateTime startDate = period.plusDate(now(UTC));
 
     assertTrue(period.hasNotPassedSinceDateTillNow(startDate));
     assertFalse(period.hasPassedSinceDateTillNow(startDate));
@@ -119,8 +120,8 @@ public class PeriodTest {
     "Months, 9"
   })
   public void hasNotPassedSinceDateTillNowIsFalseWhenPassed(String interval, int duration) {
-    val period = Period.from(duration, interval);
-    val startDate = now(UTC).minus(period.timePeriod()).minusSeconds(1);
+    Period period = Period.from(duration, interval);
+    ZonedDateTime startDate = period.minusDate(now(UTC)).minusSeconds(1);
 
     assertFalse(period.hasNotPassedSinceDateTillNow(startDate));
     assertTrue(period.hasPassedSinceDateTillNow(startDate));
@@ -135,8 +136,8 @@ public class PeriodTest {
     "Months, 3"
   })
   public void isEqualToDateTillNow(String interval, int duration) {
-    val period = Period.from(duration, interval);
-    val startDate = now(UTC).minus(period.timePeriod());
+    Period period = Period.from(duration, interval);
+    ZonedDateTime startDate = period.minusDate(now(UTC));
 
     assertTrue(period.isEqualToDateTillNow(startDate)
       // Sometimes there is difference in mss

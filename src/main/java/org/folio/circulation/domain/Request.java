@@ -21,15 +21,16 @@ import static org.folio.circulation.domain.representations.RequestProperties.REQ
 import static org.folio.circulation.domain.representations.RequestProperties.REQUEST_EXPIRATION_DATE;
 import static org.folio.circulation.domain.representations.RequestProperties.REQUEST_TYPE;
 import static org.folio.circulation.domain.representations.RequestProperties.STATUS;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getIntegerProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
@@ -283,9 +284,9 @@ public class Request implements ItemRelatedRecord, UserRelatedRecord {
     return requestRepresentation.getString("deliveryAddressTypeId");
   }
 
-  void changeHoldShelfExpirationDate(DateTime holdShelfExpirationDate) {
+  void changeHoldShelfExpirationDate(ZonedDateTime holdShelfExpirationDate) {
     write(requestRepresentation, HOLD_SHELF_EXPIRATION_DATE,
-      holdShelfExpirationDate);
+      toDateTimeString(holdShelfExpirationDate));
 
   }
 
@@ -293,15 +294,15 @@ public class Request implements ItemRelatedRecord, UserRelatedRecord {
     requestRepresentation.remove(HOLD_SHELF_EXPIRATION_DATE);
   }
 
-  public DateTime getRequestDate() {
+  public ZonedDateTime getRequestDate() {
     return getDateTimeProperty(requestRepresentation, REQUEST_DATE);
   }
 
-  public DateTime getHoldShelfExpirationDate() {
+  public ZonedDateTime getHoldShelfExpirationDate() {
     return getDateTimeProperty(requestRepresentation, HOLD_SHELF_EXPIRATION_DATE);
   }
 
-  public DateTime getRequestExpirationDate() {
+  public ZonedDateTime getRequestExpirationDate() {
     return getDateTimeProperty(requestRepresentation, REQUEST_EXPIRATION_DATE);
   }
 

@@ -1,39 +1,38 @@
 package org.folio.circulation.domain.policy.library;
 
+import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyUtils.END_OF_A_DAY;
-import static org.joda.time.DateTimeConstants.JANUARY;
-import static org.joda.time.DateTimeZone.UTC;
-import static org.joda.time.DateTimeZone.forOffsetHours;
 import static org.junit.Assert.assertEquals;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.stream.IntStream;
 
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 public class KeepCurrentStrategyTest {
 
   @Test
   public void testKeepCurrentDateStrategy() {
-    ClosedLibraryStrategy keepCurrentStrategy = new KeepCurrentDateStrategy(UTC);
-    DateTime requestDate = new DateTime(2019, JANUARY, 1, 0, 0)
-      .withZoneRetainFields(UTC);
+    ClosedLibraryStrategy keepCurrentStrategy =
+      new KeepCurrentDateStrategy(UTC);
+    ZonedDateTime requestDate = ZonedDateTime.of(2019, 1, 1, 0, 0, 0, 0, UTC);
 
-    Result<DateTime> calculatedDateTime = keepCurrentStrategy.calculateDueDate(requestDate, null);
+    Result<ZonedDateTime> calculatedDateTime = keepCurrentStrategy
+      .calculateDueDate(requestDate, null);
 
-    DateTime expectedDate = requestDate.withTime(END_OF_A_DAY);
+    ZonedDateTime expectedDate = ZonedDateTime.of(requestDate.toLocalDate(),
+      END_OF_A_DAY, requestDate.getZone());
     assertEquals(expectedDate, calculatedDateTime.value());
   }
 
   @Test
   public void testKeepCurrentDateTimeStrategy() {
     ClosedLibraryStrategy keepCurrentStrategy = new KeepCurrentDateTimeStrategy();
-    DateTime requestDate = new DateTime(2019, JANUARY, 1, 0, 0)
-      .withZoneRetainFields(UTC);
+     ZonedDateTime requestDate = ZonedDateTime.of(2019, 1, 1, 0, 0, 0, 0, UTC);
 
-    Result<DateTime> calculatedDateTime = keepCurrentStrategy.calculateDueDate(requestDate, null);
+    Result<ZonedDateTime> calculatedDateTime = keepCurrentStrategy.calculateDueDate(requestDate, null);
 
     assertEquals(requestDate, calculatedDateTime.value());
   }
@@ -44,25 +43,25 @@ public class KeepCurrentStrategyTest {
     final int month = 11;
     final int dayOfMonth = 17;
 
-    final DateTime now = new DateTime(year, month, dayOfMonth, 9, 47, UTC);
+    final ZonedDateTime now = ZonedDateTime.of(year, month, dayOfMonth, 9, 47, 0, 0, UTC);
 
     IntStream.rangeClosed(-12, 12)
       .forEach(zoneOffset -> {
-        final DateTimeZone timeZone = forOffsetHours(zoneOffset);
+        final ZoneOffset timeZone = ZoneOffset.ofHours(zoneOffset);
         final KeepCurrentDateStrategy strategy = new KeepCurrentDateStrategy(timeZone);
 
-        final DateTime newDueDate = strategy.calculateDueDate(now, null).value();
+        final ZonedDateTime newDueDate = strategy.calculateDueDate(now, null).value();
 
         assertEquals(year, newDueDate.getYear());
-        assertEquals(month, newDueDate.getMonthOfYear());
+        assertEquals(month, newDueDate.getMonth());
         assertEquals(dayOfMonth, newDueDate.getDayOfMonth());
 
-        assertEquals(23, newDueDate.getHourOfDay());
-        assertEquals(59, newDueDate.getMinuteOfHour());
-        assertEquals(59, newDueDate.getSecondOfMinute());
+        assertEquals(23, newDueDate.getHour());
+        assertEquals(59, newDueDate.getMinute());
+        assertEquals(59, newDueDate.getSecond());
 
-        final int zoneOffsetInMs = zoneOffset * 60 * 60 * 1000;
-        assertEquals(zoneOffsetInMs, newDueDate.getZone().getOffset(now));
+        final int zoneOffsetInS = zoneOffset * 60 * 60;
+        assertEquals(zoneOffsetInS, newDueDate.getOffset().getTotalSeconds());
       });
   }
 }

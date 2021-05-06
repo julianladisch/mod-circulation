@@ -15,21 +15,21 @@ import static api.support.matchers.LoanAccountMatcher.hasLostItemFees;
 import static api.support.matchers.LoanAccountMatcher.hasLostItemProcessingFee;
 import static api.support.matchers.LoanAccountMatcher.hasNoLostItemFee;
 import static api.support.matchers.LoanAccountMatcher.hasNoLostItemProcessingFee;
-import static api.support.matchers.LoanHistoryMatcher.hasLoanHistoryInOrder;
 import static api.support.matchers.LoanAccountMatcher.hasNoOverdueFine;
+import static api.support.matchers.LoanHistoryMatcher.hasLoanHistoryInOrder;
 import static api.support.matchers.LoanMatchers.isClosed;
 import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static java.lang.Boolean.TRUE;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.iterableWithSize;
 
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
-
+import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 import org.folio.circulation.domain.policy.Period;
 import org.hamcrest.Matcher;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -347,7 +346,7 @@ public class ScheduledAgeToLostFeeChargingApiTest extends SpringApiTest {
     // the creation function ages the loan eight weeks into the future.
     // it must be checked in after that timeframe to properly examine the
     // overdue charges
-    final DateTime checkInDate = now(UTC).plusWeeks(9);
+    final ZonedDateTime checkInDate = now(UTC).plusWeeks(9);
     mockClockManagerToReturnFixedDateTime(checkInDate);
     checkInFixture.checkInByBarcode(result.getItem(), checkInDate);
     assertThat(loansFixture.getLoanById(loanId), hasNoOverdueFine());

@@ -26,8 +26,9 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.joda.time.Period.weeks;
 
+import java.time.Period;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +37,6 @@ import java.util.UUID;
 import org.awaitility.Awaitility;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +58,7 @@ import io.vertx.core.json.JsonObject;
 public class ChangeDueDateAPITests extends APITests {
   private ItemResource item;
   private IndividualResource loan;
-  private DateTime dueDate;
+  private ZonedDateTime dueDate;
 
   @Before
   public void setUpItemAndLoan() {
@@ -67,12 +66,12 @@ public class ChangeDueDateAPITests extends APITests {
 
     item = itemsFixture.basedUponNod();
     loan = checkOutFixture.checkOutByBarcode(item);
-    dueDate = DateTime.parse(loan.getJson().getString("dueDate"));
+    dueDate = ZonedDateTime.parse(loan.getJson().getString("dueDate"));
   }
 
   @Test
   public void canChangeTheDueDate() {
-    final DateTime newDueDate = dueDate.plus(Period.days(14));
+    final ZonedDateTime newDueDate = dueDate.plus(Period.ofDays(14));
 
     changeDueDateFixture.changeDueDate(new ChangeDueDateRequestBuilder()
       .forLoan(loan.getId())
@@ -103,7 +102,7 @@ public class ChangeDueDateAPITests extends APITests {
   @Test
   public void cannotChangeDueDateWhenLoanIsNotFound() {
     final String nonExistentLoanId = UUID.randomUUID().toString();
-    final DateTime newDueDate = dueDate.plus(Period.days(14));
+    final ZonedDateTime newDueDate = dueDate.plusDays(14);
 
     final Response response = changeDueDateFixture
       .attemptChangeDueDate(new ChangeDueDateRequestBuilder()
@@ -115,7 +114,7 @@ public class ChangeDueDateAPITests extends APITests {
 
   @Test
   public void cannotChangeDueDateWhenLoanIsClosed() {
-    final DateTime newDueDate = dueDate.plus(Period.days(14));
+    final ZonedDateTime newDueDate = dueDate.plusDays(14);
 
     checkInFixture.checkInByBarcode(item);
 
@@ -133,7 +132,7 @@ public class ChangeDueDateAPITests extends APITests {
 
   @Test
   public void shouldRejectDueDateChangeWhenItemIsInDisallowedStatus() {
-    final DateTime newDueDate = dueDate.plus(Period.days(14));
+    final ZonedDateTime newDueDate = dueDate.plusDays(14);
 
     claimItemReturnedFixture.claimItemReturned(new ClaimItemReturnedRequestBuilder()
       .forLoan(loan.getId().toString()));
@@ -154,7 +153,7 @@ public class ChangeDueDateAPITests extends APITests {
 
   @Test
   public void canChangeDueDateWithOpenRequest() {
-    final DateTime newDueDate = dueDate.plus(Period.days(14));
+    final ZonedDateTime newDueDate = dueDate.plusDays(14);
 
     requestsFixture.place(new RequestBuilder()
       .hold()
@@ -219,7 +218,7 @@ public class ChangeDueDateAPITests extends APITests {
 
     IndividualResource loan = checkOutFixture.checkOutByBarcode(smallAngryPlanet, steve);
 
-    DateTime newDueDate = dueDate.plus(weeks(2));
+    ZonedDateTime newDueDate = dueDate.plusWeeks(2);
 
     changeDueDateFixture.changeDueDate(new ChangeDueDateRequestBuilder()
       .forLoan(loan.getId())
@@ -245,7 +244,7 @@ public class ChangeDueDateAPITests extends APITests {
 
   @Test
   public void dueDateChangedEventIsPublished() {
-    final DateTime newDueDate = dueDate.plus(Period.days(14));
+    final ZonedDateTime newDueDate = dueDate.plusDays(14);
     changeDueDateFixture.changeDueDate(new ChangeDueDateRequestBuilder()
       .forLoan(loan.getId())
       .withDueDate(newDueDate));

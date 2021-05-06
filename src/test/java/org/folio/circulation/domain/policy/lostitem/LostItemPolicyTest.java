@@ -1,21 +1,20 @@
 package org.folio.circulation.domain.policy.lostitem;
 
 import static java.time.Clock.fixed;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
 import static org.folio.circulation.domain.policy.Period.from;
 import static org.folio.circulation.domain.policy.Period.minutes;
 import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.policy.Period;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +61,7 @@ public class LostItemPolicyTest {
     final Period period = from(duration, interval);
     final LostItemPolicy lostItemPolicy = lostItemPolicyWithAgePeriod(period);
 
-    final DateTime loanDueDate = now(UTC).minus(period.timePeriod()).minusSeconds(1);
+    final ZonedDateTime loanDueDate = period.minusDate(now(UTC)).minusSeconds(1);
 
     assertTrue(lostItemPolicy.canAgeLoanToLost(false, loanDueDate));
   }
@@ -81,7 +80,7 @@ public class LostItemPolicyTest {
     final Period period = from(duration, interval);
     final LostItemPolicy lostItemPolicy = lostItemPolicyWithRecallAgePeriod(period);
 
-    final DateTime loanDueDate = now(UTC).minus(period.timePeriod()).minusSeconds(1);
+    final ZonedDateTime loanDueDate = period.minusDate(now(UTC)).minusSeconds(1);
 
     assertTrue(lostItemPolicy.canAgeLoanToLost(true, loanDueDate));
   }
@@ -100,7 +99,7 @@ public class LostItemPolicyTest {
     final Period period = from(duration, interval);
     final LostItemPolicy lostItemPolicy = lostItemPolicyWithAgePeriod(period);
 
-    final DateTime loanDueDate = now(UTC).minus(period.timePeriod());
+    final ZonedDateTime loanDueDate = period.minusDate(now(UTC));
 
     assertTrue(lostItemPolicy.canAgeLoanToLost(false, loanDueDate));
   }
@@ -127,7 +126,7 @@ public class LostItemPolicyTest {
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(builder.create());
 
-    final DateTime lostDateTime = now(UTC).minus(from(duration / 2, interval).timePeriod());
+    final ZonedDateTime lostDateTime = from(duration / 2, interval).minusDate(now(UTC));
     assertTrue(lostItemPolicy.shouldRefundFees(lostDateTime));
   }
 
@@ -146,10 +145,11 @@ public class LostItemPolicyTest {
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(builder.create());
 
-    final DateTime now = now(UTC);
-    getClockManager().setClock(fixed(Instant.ofEpochMilli(now.getMillis()), ZoneOffset.UTC));
+    final ZonedDateTime now = now(UTC);
+    getClockManager().setClock(fixed(Instant.ofEpochMilli(
+      now.toInstant().toEpochMilli()), UTC));
 
-    final DateTime lostDateTime = now.minus(period.timePeriod());
+    final ZonedDateTime lostDateTime = period.minusDate(now());
     assertTrue(lostItemPolicy.shouldRefundFees(lostDateTime));
   }
 
@@ -168,7 +168,7 @@ public class LostItemPolicyTest {
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(builder.create());
 
-    final DateTime lostDateTime = now(UTC).minus(period.timePeriod()).minusSeconds(1);
+    final ZonedDateTime lostDateTime = period.minusDate(now(UTC)).minusSeconds(1);
     assertFalse(lostItemPolicy.shouldRefundFees(lostDateTime));
   }
 
@@ -198,7 +198,7 @@ public class LostItemPolicyTest {
     final Period billPatronInterval = duration == null && interval == null
       ? null : Period.from(duration, interval);
 
-    final DateTime agedToLostDate = DateTime.now();
+    final ZonedDateTime agedToLostDate = ZonedDateTime.now();
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(
       new LostItemFeePolicyBuilder()
@@ -207,7 +207,7 @@ public class LostItemPolicyTest {
         .doNotChargeProcessingFeeWhenAgedToLost()
         .create());
 
-    final DateTime actualBillingDate = lostItemPolicy
+    final ZonedDateTime actualBillingDate = lostItemPolicy
       .calculateDateTimeWhenPatronBilledForAgedToLost(false, agedToLostDate);
 
     assertThat(actualBillingDate, is(agedToLostDate));
@@ -216,8 +216,9 @@ public class LostItemPolicyTest {
   @Test
   public void canCalculateBillingDateWhenPatronBillingIsDelayedForNotRecalledItem() {
     final Period billPatronAfterPeriod = Period.weeks(1);
-    final DateTime ageToLostDate = DateTime.now();
-    final DateTime expectedBillingDate = ageToLostDate.plus(billPatronAfterPeriod.timePeriod());
+    final ZonedDateTime ageToLostDate = ZonedDateTime.now();
+    final ZonedDateTime expectedBillingDate = billPatronAfterPeriod
+      .plusDate(ageToLostDate);
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(
       new LostItemFeePolicyBuilder()
@@ -226,7 +227,7 @@ public class LostItemPolicyTest {
         .doNotChargeProcessingFeeWhenAgedToLost()
         .create());
 
-    final DateTime actualBillingDate = lostItemPolicy
+    final ZonedDateTime actualBillingDate = lostItemPolicy
       .calculateDateTimeWhenPatronBilledForAgedToLost(false, ageToLostDate);
 
     assertThat(actualBillingDate, is(expectedBillingDate));
@@ -235,8 +236,9 @@ public class LostItemPolicyTest {
   @Test
   public void shouldUseRecallIntervalForBillingDateWhenItemRecalled() {
     final Period billPatronAfterPeriod = Period.weeks(2);
-    final DateTime ageToLostDate = DateTime.now();
-    final DateTime expectedBillingDate = ageToLostDate.plus(billPatronAfterPeriod.timePeriod());
+    final ZonedDateTime ageToLostDate = ZonedDateTime.now();
+    final ZonedDateTime expectedBillingDate = billPatronAfterPeriod
+      .plusDate(ageToLostDate);
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(
       new LostItemFeePolicyBuilder()
@@ -245,7 +247,7 @@ public class LostItemPolicyTest {
         .doNotChargeProcessingFeeWhenAgedToLost()
         .create());
 
-    final DateTime actualBillingDate = lostItemPolicy
+    final ZonedDateTime actualBillingDate = lostItemPolicy
       .calculateDateTimeWhenPatronBilledForAgedToLost(true, ageToLostDate);
 
     assertThat(actualBillingDate, is(expectedBillingDate));
@@ -255,8 +257,9 @@ public class LostItemPolicyTest {
   public void shouldNotUseRecallIntervalForNotRecalledItem() {
     final Period ageToLostBillingPeriod = Period.weeks(1);
     final Period recallBillingPeriod = Period.weeks(2);
-    final DateTime ageToLostDate = DateTime.now();
-    final DateTime expectedBillingDate = ageToLostDate.plus(ageToLostBillingPeriod.timePeriod());
+    final ZonedDateTime ageToLostDate = ZonedDateTime.now();
+    final ZonedDateTime expectedBillingDate = ageToLostBillingPeriod
+      .plusDate(ageToLostDate);
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(
       new LostItemFeePolicyBuilder()
@@ -266,7 +269,7 @@ public class LostItemPolicyTest {
         .doNotChargeProcessingFeeWhenAgedToLost()
         .create());
 
-    final DateTime actualBillingDate = lostItemPolicy
+    final ZonedDateTime actualBillingDate = lostItemPolicy
       .calculateDateTimeWhenPatronBilledForAgedToLost(false, ageToLostDate);
 
     assertThat(actualBillingDate, is(expectedBillingDate));

@@ -12,6 +12,7 @@ import static api.support.matchers.JsonObjectMatcher.hasNoJsonPath;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
 import static api.support.matchers.UUIDMatcher.is;
 import static java.lang.String.format;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static java.util.function.Function.identity;
 import static org.folio.circulation.domain.representations.ItemProperties.CALL_NUMBER_COMPONENTS;
@@ -22,16 +23,15 @@ import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
-import static org.joda.time.DateTimeZone.UTC;
 import static org.junit.Assert.assertTrue;
 
 import java.net.HttpURLConnection;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.CoreMatchers;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -81,7 +81,7 @@ public class RequestsAPIRetrievalTests extends APITests {
 
     checkOutFixture.checkOutByBarcode(smallAngryPlanet);
 
-    DateTime requestDate = new DateTime(2017, 7, 22, 10, 22, 54, UTC);
+    ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
 
     final IndividualResource createdRequest = requestsFixture.place(
       new RequestBuilder()

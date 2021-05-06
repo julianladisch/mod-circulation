@@ -16,14 +16,16 @@ import static org.folio.circulation.domain.representations.logs.LogEventPayloadF
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.USER_ID;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
+import java.time.ZonedDateTime;
+
+import org.folio.circulation.domain.Item;
+import org.folio.circulation.domain.Loan;
+import org.folio.circulation.domain.User;
+
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.With;
-import org.folio.circulation.domain.Item;
-import org.folio.circulation.domain.Loan;
-import org.folio.circulation.domain.User;
-import org.joda.time.DateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,7 +39,7 @@ public class LoanLogContext {
   private String holdingsRecordId;
   private String action;
   private String actionComment;
-  private DateTime date;
+  private ZonedDateTime date;
   private String servicePointId;
   private String updatedByUserId;
   private String description;
@@ -50,7 +52,7 @@ public class LoanLogContext {
       .withItem(ofNullable(loan.getItem())
         .orElse(itemFromRepresentation(loan)))
       .withAction(LogContextActionResolver.resolveAction(loan.getAction()))
-      .withDate(DateTime.now())
+      .withDate(ZonedDateTime.now())
       .withServicePointId(ofNullable(loan.getCheckInServicePointId())
         .orElse(loan.getCheckoutServicePointId()))
       .withLoanId(loan.getId())

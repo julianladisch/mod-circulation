@@ -1,11 +1,11 @@
 package org.folio.circulation.domain.anonymization.checkers;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.folio.circulation.domain.Account;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.policy.Period;
-import org.joda.time.DateTime;
 
 public class FeesAndFinesClosePeriodChecker extends TimePeriodChecker {
 
@@ -21,13 +21,13 @@ public class FeesAndFinesClosePeriodChecker extends TimePeriodChecker {
 
   }
 
-  private Optional<DateTime> findLatestAccountCloseDate(Loan loan) {
+  private Optional<ZonedDateTime> findLatestAccountCloseDate(Loan loan) {
     return loan.getAccounts()
       .stream()
       .map(Account::getClosedDate)
       .filter(Optional::isPresent)
       .map(Optional::get)
-      .max(DateTime::compareTo);
+      .max(ZonedDateTime::compareTo);
   }
 
   @Override

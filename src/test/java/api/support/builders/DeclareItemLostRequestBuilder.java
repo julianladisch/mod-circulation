@@ -1,28 +1,29 @@
 package api.support.builders;
 
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import io.vertx.core.json.JsonObject;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builder {
   private final String loanId;
-  private final DateTime dateTime;
+  private final ZonedDateTime dateTime;
   private final String comment;
   private final String servicePointId;
 
   public DeclareItemLostRequestBuilder() {
-    this(null, DateTime.now(DateTimeZone.UTC), null, null);
+    this(null, ZonedDateTime.now(ZoneOffset.UTC), null, null);
   }
 
   public String getLoanId() {
     return loanId;
   }
 
-  public DateTime getDateTime() {
+  public ZonedDateTime getDateTime() {
     return dateTime;
   }
 
@@ -30,7 +31,7 @@ public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builde
     return comment;
   }
 
-  public DeclareItemLostRequestBuilder(String loanId, DateTime dateTime,
+  public DeclareItemLostRequestBuilder(String loanId, ZonedDateTime dateTime,
     String comment, String servicePointId) {
 
     this.loanId = loanId;
@@ -43,7 +44,7 @@ public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builde
   public JsonObject create() {
     final JsonObject request = new JsonObject();
 
-    write(request, "declaredLostDateTime", this.dateTime);
+    write(request, "declaredLostDateTime", toDateTimeString(this.dateTime));
     write(request, "comment", this.comment);
     write(request, "servicePointId", this.servicePointId);
 
@@ -54,7 +55,7 @@ public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builde
     return new DeclareItemLostRequestBuilder(id.toString(), dateTime, comment, servicePointId);
   }
 
-  public DeclareItemLostRequestBuilder on(DateTime dateTime) {
+  public DeclareItemLostRequestBuilder on(ZonedDateTime dateTime) {
     return new DeclareItemLostRequestBuilder(loanId, dateTime, comment, servicePointId);
   }
 
@@ -75,6 +76,6 @@ public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builde
       .forLoanId(loanId)
       .withServicePointId(UUID.randomUUID())
       .withComment("Declaring item lost")
-      .on(DateTime.now(DateTimeZone.UTC));
+      .on(ZonedDateTime.now(ZoneOffset.UTC));
   }
 }

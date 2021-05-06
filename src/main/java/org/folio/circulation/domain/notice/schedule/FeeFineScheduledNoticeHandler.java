@@ -3,30 +3,29 @@ package org.folio.circulation.domain.notice.schedule;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.folio.circulation.domain.notice.TemplateContextUtil.createFeeFineNoticeContext;
 import static org.folio.circulation.support.AsyncCoordinationUtil.allOf;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.folio.circulation.support.results.Result.ofAsync;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.folio.circulation.domain.Account;
+import org.folio.circulation.domain.FeeFineAction;
+import org.folio.circulation.domain.Loan;
+import org.folio.circulation.domain.notice.PatronNoticeService;
 import org.folio.circulation.domain.representations.logs.NoticeLogContext;
 import org.folio.circulation.domain.representations.logs.NoticeLogContextItem;
 import org.folio.circulation.infrastructure.storage.feesandfines.AccountRepository;
-import org.folio.circulation.domain.FeeFineAction;
 import org.folio.circulation.infrastructure.storage.feesandfines.FeeFineActionRepository;
-import org.folio.circulation.domain.Loan;
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
-import org.folio.circulation.domain.notice.PatronNoticeService;
 import org.folio.circulation.infrastructure.storage.notices.PatronNoticePolicyRepository;
 import org.folio.circulation.infrastructure.storage.notices.ScheduledNoticesRepository;
 import org.folio.circulation.rules.CirculationRuleMatch;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,15 +167,17 @@ public class FeeFineScheduledNoticeHandler {
   }
 
   private static ScheduledNotice getNextRecurringNotice(ScheduledNotice notice) {
-    Period recurringPeriod = notice.getConfiguration().getRecurringPeriod().timePeriod();
-    DateTime nextRunTime = notice.getNextRunTime().plus(recurringPeriod);
-    DateTime now = getClockManager().getDateTime();
+    final ZonedDateTime systemTime = ZonedDateTime.now(ZoneOffset.UTC);
 
-    if (nextRunTime.isBefore(now)) {
-      nextRunTime = now.plus(recurringPeriod);
+    ZonedDateTime recurringNoticeNextRunTime = notice.getConfiguration()
+      .getRecurringPeriod().plusDate(notice.getNextRunTime());
+
+    if (recurringNoticeNextRunTime.isBefore(systemTime)) {
+      recurringNoticeNextRunTime = notice.getConfiguration()
+         .getRecurringPeriod().plusDate(systemTime);
     }
 
-    return notice.withNextRunTime(nextRunTime);
+    return notice.withNextRunTime(recurringNoticeNextRunTime);
   }
 
   @With

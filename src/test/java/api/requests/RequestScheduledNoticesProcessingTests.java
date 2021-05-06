@@ -4,6 +4,7 @@ import static api.support.builders.RequestBuilder.OPEN_NOT_YET_FILLED;
 import static api.support.fakes.PublishedEvents.byLogEventType;
 import static api.support.matchers.PatronNoticeMatcher.hasEmailNoticeProperties;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.waitAtMost;
@@ -16,16 +17,16 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.joda.time.DateTimeZone.UTC;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import org.folio.circulation.domain.policy.Period;
 import org.hamcrest.Matcher;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -88,7 +89,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -129,7 +130,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -156,7 +157,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint));
 
@@ -172,8 +173,8 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     //close request
     requestsClient.replace(request.getId(),
       request.getJson().put("status", "Closed - Pickup expired"));
-    scheduledNoticeProcessingClient.runRequestNoticesProcessing(
-      org.joda.time.LocalDate.now(UTC).plusDays(31).toDateTimeAtStartOfDay());
+    scheduledNoticeProcessingClient.runRequestNoticesProcessing(ZonedDateTime
+      .of(LocalDate.now().plusDays(31), LocalTime.MIN, UTC));
 
     assertThat(scheduledNoticesClient.getAll(), empty());
   }
@@ -191,7 +192,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint));
 
@@ -204,8 +205,8 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
-    scheduledNoticeProcessingClient.runRequestNoticesProcessing(
-      org.joda.time.LocalDate.now(UTC).plusDays(31).toDateTimeAtStartOfDay());
+    scheduledNoticeProcessingClient.runRequestNoticesProcessing(ZonedDateTime
+      .of(LocalDate.now().plusDays(31), LocalTime.MIN, UTC));
 
     assertThat(scheduledNoticesClient.getAll(), hasSize(1));
   }
@@ -223,7 +224,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint));
 
@@ -244,8 +245,8 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
       .until(() -> requestsClient.get(request.getId()).getJson().getString("status"),
         equalTo("Closed - Filled"));
 
-    scheduledNoticeProcessingClient.runRequestNoticesProcessing(
-      org.joda.time.LocalDate.now(UTC).plusDays(100).toDateTimeAtStartOfDay());
+    scheduledNoticeProcessingClient.runRequestNoticesProcessing(ZonedDateTime
+      .of(LocalDate.now().plusDays(100), LocalTime.MIN, UTC));
 
     assertThat(scheduledNoticesClient.getAll(), empty());
     assertThat(patronNoticesClient.getAll(), empty());
@@ -266,7 +267,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -300,7 +301,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -308,14 +309,14 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
-    DateTime nextRunTimeBeforeProcessing = DateTime.parse(scheduledNoticesClient.getAll()
+    ZonedDateTime nextRunTimeBeforeProcessing = ZonedDateTime.parse(scheduledNoticesClient.getAll()
       .get(0).getString("nextRunTime"));
 
     scheduledNoticeProcessingClient.runRequestNoticesProcessing();
 
     final var notices = patronNoticesClient.getAll();
 
-    DateTime nextRunTimeAfterProcessing = DateTime.parse(scheduledNoticesClient.getAll()
+    ZonedDateTime nextRunTimeAfterProcessing = ZonedDateTime.parse(scheduledNoticesClient.getAll()
       .get(0).getString("nextRunTime"));
 
     assertThat(notices, hasSize(1));
@@ -340,7 +341,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -354,8 +355,8 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     waitAtMost(1, SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
-    scheduledNoticeProcessingClient.runRequestNoticesProcessing(
-      org.joda.time.LocalDate.now(UTC).plusDays(28).toDateTimeAtStartOfDay());
+    scheduledNoticeProcessingClient.runRequestNoticesProcessing(ZonedDateTime
+      .of(LocalDate.now().plusDays(28), LocalTime.MIN, UTC));
 
     final var notices = patronNoticesClient.getAll();
 
@@ -382,7 +383,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
       .page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(DateTime.now())
+      .withRequestDate(ZonedDateTime.now())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withNoRequestExpiration());

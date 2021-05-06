@@ -1,25 +1,26 @@
 
 package org.folio.circulation.domain;
 
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getUUIDProperty;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import io.vertx.core.json.JsonObject;
-import org.joda.time.DateTime;
 
 public class LastCheckIn {
 
-  private final DateTime dateTime;
+  private final ZonedDateTime dateTime;
   private final UUID servicePointId;
   private final String staffMemberId;
   private ServicePoint servicePoint;
 
-  public LastCheckIn(DateTime dateTime, UUID servicePointId, String staffMemberId) {
+  public LastCheckIn(ZonedDateTime dateTime, UUID servicePointId, String staffMemberId) {
     this.dateTime = dateTime;
     this.servicePointId = servicePointId;
     this.staffMemberId = staffMemberId;
@@ -29,7 +30,7 @@ public class LastCheckIn {
     JsonObject entries = new JsonObject();
     write(entries, "servicePointId", servicePointId);
     write(entries, "staffMemberId", staffMemberId);
-    write(entries, "dateTime", dateTime);
+    write(entries, "dateTime", toDateTimeString(dateTime));
     return entries;
   }
 
@@ -41,7 +42,7 @@ public class LastCheckIn {
     return servicePointId;
   }
 
-  public DateTime getDateTime() {
+  public ZonedDateTime getDateTime() {
     return dateTime;
   }
 

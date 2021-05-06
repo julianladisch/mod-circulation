@@ -1,16 +1,17 @@
 package org.folio.circulation.domain;
 
-import api.support.builders.ProxyRelationshipBuilder;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import org.joda.time.DateTime;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.UUID;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import api.support.builders.ProxyRelationshipBuilder;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 
 @RunWith(JUnitParamsRunner.class)
 public class ProxyRelationshipTests {
@@ -43,7 +44,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .active()
-        .expires(DateTime.now().plusWeeks(3))
+        .expires(ZonedDateTime.now().plusWeeks(3))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -61,7 +62,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .active()
-        .expires(DateTime.now().minusMonths(2))
+        .expires(ZonedDateTime.now().minusMonths(2))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -98,7 +99,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .inactive()
-        .expires(DateTime.now().plusWeeks(3))
+        .expires(ZonedDateTime.now().plusWeeks(3))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -117,7 +118,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .inactive()
-        .expires(DateTime.now().minusMonths(2))
+        .expires(ZonedDateTime.now().minusMonths(2))
         .useMetaObject(useMetaObject)
         .create());
 

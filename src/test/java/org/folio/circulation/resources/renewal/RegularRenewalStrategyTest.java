@@ -3,6 +3,8 @@ package org.folio.circulation.resources.renewal;
 import static api.support.matchers.ResultMatchers.hasValidationError;
 import static api.support.matchers.ResultMatchers.hasValidationErrors;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.folio.circulation.domain.ItemStatus.AGED_TO_LOST;
@@ -12,8 +14,6 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.iterableWithSize;
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
@@ -44,7 +44,7 @@ public class RegularRenewalStrategyTest {
   public void canRenewLoan() {
     final var rollingPeriod = days(10);
     final var currentDueDate = now(UTC);
-    final var expectedDueDate = currentDueDate.plus(rollingPeriod.timePeriod());
+    final var expectedDueDate = rollingPeriod.plusDate(currentDueDate);
 
     final var loanPolicy = new LoanPolicyBuilder().rolling(rollingPeriod)
       .renewFromCurrentDueDate().asDomainObject();
@@ -54,7 +54,8 @@ public class RegularRenewalStrategyTest {
     final var renewResult = renew(loan);
 
     assertThat(renewResult.succeeded(), is(true));
-    assertThat(renewResult.value().getDueDate().getMillis(), is(expectedDueDate.getMillis()));
+    assertThat(renewResult.value().getDueDate().toInstant().toEpochMilli(), 
+      is(expectedDueDate.toInstant().toEpochMilli()));
   }
 
   @Test

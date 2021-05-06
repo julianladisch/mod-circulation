@@ -10,16 +10,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.domain.Item;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.LoanAndRelatedRecords;
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
-import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.ValidationErrorFailure;
-import org.joda.time.DateTime;
+import org.folio.circulation.support.results.Result;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +38,7 @@ public class ChangeDueDateValidatorTest {
     final LoanRepository loanRepository = mock(LoanRepository.class);
 
     when(loanRepository.getById(anyString()))
-      .thenReturn(ofAsync(() -> createLoan("", DateTime.now().minusHours(2))));
+      .thenReturn(ofAsync(() -> createLoan("", ZonedDateTime.now().minusHours(2))));
 
     changeDueDateValidator = new ChangeDueDateValidator(loanRepository);
   }
@@ -65,7 +65,7 @@ public class ChangeDueDateValidatorTest {
     "Aged to lost"
   })
   public void canChangeLoanWhenDueDateIsNotChanged(String itemStatus) {
-    val existingLoan = createLoan(itemStatus, DateTime.now());
+    val existingLoan = createLoan(itemStatus, ZonedDateTime.now());
 
     final LoanRepository loanRepository = mock(LoanRepository.class);
     when(loanRepository.getById(anyString())).thenReturn(ofAsync(() -> existingLoan));
@@ -83,7 +83,7 @@ public class ChangeDueDateValidatorTest {
   }
 
   private Result<LoanAndRelatedRecords> loanAndRelatedRecords(String itemStatus) {
-    val loan = createLoan(itemStatus, DateTime.now());
+    val loan = createLoan(itemStatus, ZonedDateTime.now());
     return succeeded(new LoanAndRelatedRecords(loan));
   }
 
@@ -91,7 +91,7 @@ public class ChangeDueDateValidatorTest {
     return succeeded(new LoanAndRelatedRecords(loan));
   }
 
-  private Loan createLoan(String itemStatus, DateTime dueDate) {
+  private Loan createLoan(String itemStatus, ZonedDateTime dueDate) {
     final JsonObject loanRepresentation = new JsonObject()
       .put("id", UUID.randomUUID().toString())
       .put("dueDate", dueDate.toString());

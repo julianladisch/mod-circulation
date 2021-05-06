@@ -1,20 +1,20 @@
 package api.requests.scenarios;
-
 import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
 import static api.support.matchers.JsonObjectMatcher.hasNoJsonPath;
 import static api.support.matchers.LoanHistoryMatcher.hasLoanHistoryRecord;
+import static java.time.ZoneOffset.UTC;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
+import java.time.ZonedDateTime;
+
 import org.folio.circulation.domain.policy.Period;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import api.support.APITests;
 import api.support.builders.LoanPolicyBuilder;
 import lombok.val;
-
 public class RecallItemsTests extends APITests {
   public RecallItemsTests() {
     super(true,true);
@@ -28,7 +28,7 @@ public class RecallItemsTests extends APITests {
       .rolling(Period.weeks(3)).notRenewable().renewFromSystemDate());
 
     val overrideRenewComment = "Override renew";
-    val newDueDate = DateTime.now(DateTimeZone.UTC).plusMonths(3).toString();
+    String newDueDate = toDateTimeString(ZonedDateTime.now(UTC).plusMonths(3));
 
     val item = itemsFixture.basedUponNod();
     val user = usersFixture.james();

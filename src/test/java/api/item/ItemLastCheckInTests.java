@@ -4,32 +4,33 @@ import static api.support.APITestContext.getOkapiHeadersFromContext;
 import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasNullParameter;
+import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.support.http.OkapiHeader.USER_ID;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.joda.time.DateTimeZone.UTC;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.support.ClockManager;
-import org.folio.circulation.support.json.JsonPropertyFetcher;
-import api.support.http.IndividualResource;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
+import org.folio.circulation.support.json.JsonPropertyFetcher;
 import org.junit.Test;
 
 import api.support.APITestContext;
 import api.support.APITests;
 import api.support.builders.CheckInByBarcodeRequestBuilder;
+import api.support.http.IndividualResource;
 import api.support.http.OkapiHeaders;
 import io.vertx.core.json.JsonObject;
 
 public class ItemLastCheckInTests extends APITests {
 
-  private static final DateTime fixedCheckInDateTime = new DateTime(2019, 4, 3, 2, 10, UTC);
+  private static final ZonedDateTime fixedCheckInDateTime = ZonedDateTime.of(2019, 4, 3, 2, 10, 0, 0, UTC);
 
   @Override
   public void beforeEach() throws InterruptedException {
+
 
     super.beforeEach();
     mockClockManagerToReturnFixedDateTime(fixedCheckInDateTime);
@@ -49,11 +50,11 @@ public class ItemLastCheckInTests extends APITests {
     UUID servicePointId = servicePointsFixture.cd1().getId();
 
     checkOutFixture.checkOutByBarcode(item, user);
-    checkInFixture.checkInByBarcode(item, DateTime.now(UTC), servicePointId);
+    checkInFixture.checkInByBarcode(item, ZonedDateTime.now(UTC), servicePointId);
     JsonObject lastCheckIn = itemsClient.get(item.getId()).getJson()
       .getJsonObject("lastCheckIn");
 
-    DateTime actualCheckinDateTime = JsonPropertyFetcher
+    ZonedDateTime actualCheckinDateTime = JsonPropertyFetcher
       .getDateTimeProperty(lastCheckIn, "dateTime");
 
     assertThat(actualCheckinDateTime, is(fixedCheckInDateTime));
@@ -103,7 +104,7 @@ public class ItemLastCheckInTests extends APITests {
     JsonObject lastCheckIn = itemsClient.get(item.getId()).getJson()
       .getJsonObject("lastCheckIn");
 
-    DateTime actualCheckinDateTime = JsonPropertyFetcher
+    ZonedDateTime actualCheckinDateTime = JsonPropertyFetcher
       .getDateTimeProperty(lastCheckIn, "dateTime");
 
     assertThat(actualCheckinDateTime, is(fixedCheckInDateTime));
@@ -123,7 +124,7 @@ public class ItemLastCheckInTests extends APITests {
     JsonObject lastCheckIn = itemsClient.get(item.getId()).getJson()
       .getJsonObject("lastCheckIn");
 
-    DateTime actualCheckinDateTime = JsonPropertyFetcher
+    ZonedDateTime actualCheckinDateTime = JsonPropertyFetcher
       .getDateTimeProperty(lastCheckIn, "dateTime");
 
     assertThat(actualCheckinDateTime, is(fixedCheckInDateTime));
@@ -136,20 +137,20 @@ public class ItemLastCheckInTests extends APITests {
 
     IndividualResource item = itemsFixture.basedUponSmallAngryPlanet();
     UUID servicePointId = servicePointsFixture.cd1().getId();
-    DateTime firstCheckInDateTime = DateTime.now(UTC);
+    ZonedDateTime firstCheckInDateTime = ZonedDateTime.now(UTC);
 
     checkInFixture.checkInByBarcode(item, firstCheckInDateTime, servicePointId);
     JsonObject lastCheckIn = itemsClient.get(item.getId()).getJson()
       .getJsonObject("lastCheckIn");
 
-    DateTime actualCheckinDateTime = JsonPropertyFetcher
+    ZonedDateTime actualCheckinDateTime = JsonPropertyFetcher
       .getDateTimeProperty(lastCheckIn, "dateTime");
 
     assertThat(actualCheckinDateTime, is(fixedCheckInDateTime));
     assertThat(lastCheckIn.getString("servicePointId"), is(servicePointId.toString()));
     assertThat(lastCheckIn.getString("staffMemberId"), is(APITestContext.getUserId()));
 
-    DateTime secondCheckInDateTime = ClockManager.getClockManager().getDateTime();
+    ZonedDateTime secondCheckInDateTime = ClockManager.getClockManager().getZonedDateTime();
     UUID servicePointId2 = servicePointsFixture.cd2().getId();
 
     final String randomUserId = UUID.randomUUID().toString();
@@ -177,14 +178,14 @@ public class ItemLastCheckInTests extends APITests {
 
     IndividualResource item = itemsFixture.basedUponSmallAngryPlanet();
     UUID servicePointId = servicePointsFixture.cd1().getId();
-    DateTime checkInDateTimeInPast = ClockManager.getClockManager().getDateTime()
+    ZonedDateTime checkInDateTimeInPast = ClockManager.getClockManager().getZonedDateTime()
       .minusHours(1);
 
     checkInFixture.checkInByBarcode(item, checkInDateTimeInPast, servicePointId);
     JsonObject lastCheckIn = itemsClient.get(item.getId()).getJson()
       .getJsonObject("lastCheckIn");
 
-    DateTime actualCheckinDateTime = JsonPropertyFetcher
+    ZonedDateTime actualCheckinDateTime = JsonPropertyFetcher
       .getDateTimeProperty(lastCheckIn, "dateTime");
 
     assertThat(actualCheckinDateTime, is(fixedCheckInDateTime));

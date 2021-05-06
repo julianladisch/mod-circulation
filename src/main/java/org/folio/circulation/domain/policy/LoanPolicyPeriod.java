@@ -1,10 +1,10 @@
 package org.folio.circulation.domain.policy;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.function.Predicate;
-
-import org.joda.time.Period;
+import java.time.temporal.ChronoUnit;
 
 //TODO: Can this be combined with Period class?
 public enum LoanPolicyPeriod {
@@ -28,20 +28,21 @@ public enum LoanPolicyPeriod {
     return period -> period.name().equalsIgnoreCase(name);
   }
 
-  public static Period calculatePeriod(LoanPolicyPeriod period, int duration) {
+  public static Duration calculateDuration(LoanPolicyPeriod period, int duration) {
+
     switch (period) {
       case MONTHS:
-        return Period.months(duration);
+        return Duration.of(duration, ChronoUnit.MONTHS);
       case WEEKS:
-        return Period.weeks(duration);
+        return Duration.of(duration, ChronoUnit.WEEKS);
       case DAYS:
-        return Period.days(duration);
+        return Duration.ofDays(duration);
       case HOURS:
-        return Period.hours(duration);
+        return Duration.ofHours(duration);
       case MINUTES:
-        return Period.minutes(duration);
+        return Duration.ofMinutes(duration);
       default:
-        return Period.millis(duration);
+        return Duration.ofMillis(duration);
     }
   }
 }

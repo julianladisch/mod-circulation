@@ -4,6 +4,7 @@ import static org.folio.circulation.domain.InstanceRequestItemsComparer.sortRequ
 import static org.folio.circulation.domain.representations.RequestProperties.ITEM_ID;
 import static org.folio.circulation.domain.representations.RequestProperties.PROXY_USER_ID;
 import static org.folio.circulation.domain.representations.RequestProperties.REQUESTER_ID;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.resources.RequestBlockValidators.regularRequestBlockValidators;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
@@ -13,6 +14,7 @@ import static org.folio.circulation.support.results.Result.of;
 import static org.folio.circulation.support.results.Result.succeeded;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -67,8 +69,6 @@ import org.folio.circulation.support.http.server.ServerErrorResponse;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.http.server.WebContext;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +137,7 @@ public class RequestByInstanceIdResource extends Resource {
       .thenApply( r -> r.next(loanItems -> combineWithUnavailableItems(loanItems, requestRelatedRecords)));
   }
 
-  private CompletableFuture<Result<Map<Item, DateTime>>> getLoanItems(
+  private CompletableFuture<Result<Map<Item, ZonedDateTime>>> getLoanItems(
     InstanceRequestRelatedRecords instanceRequestPackage, Clients clients) {
 
     final List<Item> unsortedUnavailableItems = instanceRequestPackage.getUnsortedUnavailableItems();
@@ -158,7 +158,7 @@ public class RequestByInstanceIdResource extends Resource {
 
     return CompletableFuture.allOf(loanFutures.toArray(new CompletableFuture[0]))
       .thenApply(dd -> {
-        Map<Item, DateTime> itemDueDateMap = new HashMap<>();
+        Map<Item, ZonedDateTime> itemDueDateMap = new HashMap<>();
         List<Item> itemsWithoutLoansList = new ArrayList<>();
 
         for (Map.Entry<Item, CompletableFuture<Result<Loan>>> entry : itemLoanFuturesMap.entrySet()) {
@@ -336,7 +336,7 @@ public class RequestByInstanceIdResource extends Resource {
 
           write(requestBody, ITEM_ID, item.getItemId());
           write(requestBody, "requestDate",
-            requestByInstanceIdRequest.getRequestDate().toString(ISODateTimeFormat.dateTime()));
+            toDateTimeString(requestByInstanceIdRequest.getRequestDate()));
           write(requestBody, REQUESTER_ID, requestByInstanceIdRequest.getRequesterId().toString());
           write(requestBody, "pickupServicePointId",
             requestByInstanceIdRequest.getPickupServicePointId().toString());
@@ -344,7 +344,7 @@ public class RequestByInstanceIdResource extends Resource {
           write(requestBody, "requestType", reqType.getValue());
           if (requestByInstanceIdRequest.getRequestExpirationDate() != null) {
             write(requestBody, "requestExpirationDate",
-              requestByInstanceIdRequest.getRequestExpirationDate().toString(ISODateTimeFormat.dateTime()));
+              toDateTimeString(requestByInstanceIdRequest.getRequestExpirationDate()));
           }
           write(requestBody, "patronComments", requestByInstanceIdRequest.getPatronComments());
           requests.add(requestBody);
@@ -371,7 +371,7 @@ public class RequestByInstanceIdResource extends Resource {
   }
 
   private Result<InstanceRequestRelatedRecords> combineWithUnavailableItems(
-    Map<Item, DateTime> itemDueDateMap,
+    Map<Item, ZonedDateTime> itemDueDateMap,
     InstanceRequestRelatedRecords records){
 
     return of(() -> {

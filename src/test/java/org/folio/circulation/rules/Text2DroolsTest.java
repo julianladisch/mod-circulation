@@ -600,9 +600,9 @@ public class Text2DroolsTest {
   }
 
   /**
-   * Test that Drools.loanPolicies(...) with the circulationRules work for all cases.
+   * Test that Drools.loanPolicies(ZonedDateTime...) with the circulationRules work for all cases.
    * <p>
-   * The first 3 element of a case are the parameters for Drools.loanPolicies(...),
+   * The first 3 element of a case are the parameters for Drools.loanPolicies(ZonedDateTime...),
    * the other parameters are the expected result.
    */
   private void testLoanPolicies(String circulationRules, String [][] cases) {

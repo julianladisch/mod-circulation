@@ -1,21 +1,22 @@
 package org.folio.circulation.domain.policy.library;
 
-import api.support.builders.LoanPolicyBuilder;
-import io.vertx.core.json.JsonObject;
+import static java.time.ZoneOffset.UTC;
+
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.LoanPolicy;
 import org.folio.circulation.domain.policy.Period;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
-import java.util.List;
+import api.support.builders.LoanPolicyBuilder;
+import io.vertx.core.json.JsonObject;
 
 @RunWith(Parameterized.class)
 public class DetermineClosedLibraryStrategyTest {
@@ -35,9 +36,9 @@ public class DetermineClosedLibraryStrategyTest {
       .rolling(Period.days(5)).create();
 
     LoanPolicy loanPolicy = LoanPolicy.from(representation);
-    DateTime startDate = new DateTime(2019, DateTimeConstants.JANUARY, 1, 0, 0);
-    closedLibraryStrategy =
-      ClosedLibraryStrategyUtils.determineClosedLibraryStrategy(loanPolicy, startDate, DateTimeZone.UTC);
+    ZonedDateTime startDate = ZonedDateTime.of(2019, 1, 1, 0, 0, 0, 0, UTC);
+    closedLibraryStrategy = ClosedLibraryStrategyUtils
+      .determineClosedLibraryStrategy(loanPolicy, startDate, UTC);
 
   }
 
@@ -51,7 +52,6 @@ public class DetermineClosedLibraryStrategyTest {
     data.add(new Object[]{DueDateManagement.MOVE_TO_BEGINNING_OF_NEXT_OPEN_SERVICE_POINT_HOURS, BeginningOfNextOpenHoursStrategy.class});
     return data;
   }
-
 
   @Test
   public void testDetermineClosedLibraryStrategy() {

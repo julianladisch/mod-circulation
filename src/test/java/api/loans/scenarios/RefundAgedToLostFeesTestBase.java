@@ -12,14 +12,15 @@ import static api.support.matchers.LoanAccountMatcher.hasNoLostItemFee;
 import static api.support.matchers.LoanAccountMatcher.hasNoLostItemProcessingFee;
 import static api.support.matchers.LoanAccountMatcher.hasOverdueFine;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimePropertyByPath;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,7 +50,7 @@ public abstract class RefundAgedToLostFeesTestBase extends SpringApiTest {
   }
 
   protected abstract void performActionThatRequiresRefund(AgeToLostFixture.AgeToLostResult result,
-    DateTime actionDate);
+    ZonedDateTime actionDate);
 
   @Test
   public void shouldRefundPartiallyPaidAmountAndCancelRemaining() {
@@ -138,7 +139,7 @@ public abstract class RefundAgedToLostFeesTestBase extends SpringApiTest {
     feeFineAccountFixture.transferLostItemFee(result.getLoanId());
     feeFineAccountFixture.payLostItemProcessingFee(result.getLoanId());
 
-    final DateTime feeRefundDisallowedDate = getDateTimePropertyByPath(loan.getJson(),
+    final ZonedDateTime feeRefundDisallowedDate = getDateTimePropertyByPath(loan.getJson(),
       "agedToLostDelayedBilling", "agedToLostDate")
       .plusMinutes(feeRefundPeriodMinutes + 1);
 

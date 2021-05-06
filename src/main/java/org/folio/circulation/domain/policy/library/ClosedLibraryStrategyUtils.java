@@ -4,14 +4,15 @@ import static java.util.Collections.emptyMap;
 import static org.folio.circulation.domain.policy.LoanPolicyPeriod.isShortTermLoans;
 import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
 
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.LoanPolicy;
 import org.folio.circulation.domain.policy.LoanPolicyPeriod;
 import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.http.server.ValidationError;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalTime;
 
 public final class ClosedLibraryStrategyUtils {
 
@@ -21,7 +22,7 @@ public final class ClosedLibraryStrategyUtils {
   }
 
   public static ClosedLibraryStrategy determineClosedLibraryStrategy(
-    LoanPolicy loanPolicy, DateTime startDate, DateTimeZone zone) {
+      LoanPolicy loanPolicy, ZonedDateTime startDate, ZoneOffset zone) {
     DueDateManagement dueDateManagement = loanPolicy.getDueDateManagement();
     LoanPolicyPeriod offsetInterval = loanPolicy.getOffsetPeriodInterval();
     int offsetDuration = loanPolicy.getOffsetPeriodDuration();
@@ -45,7 +46,7 @@ public final class ClosedLibraryStrategyUtils {
   }
 
   public static ClosedLibraryStrategy determineStrategyForMovingBackward(
-    LoanPolicy loanPolicy, DateTime startDate, DateTimeZone zone) {
+      LoanPolicy loanPolicy, ZonedDateTime startDate, ZoneOffset zone) {
     LoanPolicyPeriod loanPeriod = loanPolicy.getPeriodInterval();
 
     return isShortTermLoans(loanPeriod)

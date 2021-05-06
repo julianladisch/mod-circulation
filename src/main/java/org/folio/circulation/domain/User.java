@@ -8,9 +8,8 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getNestedSt
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
-
-import org.joda.time.DateTime;
 
 import io.vertx.core.json.JsonObject;
 import lombok.val;
@@ -55,11 +54,11 @@ public class User {
       return false;
     }
     else {
-      return expirationDate.isBefore(DateTime.now());
+      return expirationDate.isBefore(ZonedDateTime.now());
     }
   }
 
-  public DateTime getExpirationDate() {
+  public ZonedDateTime getExpirationDate() {
     return getDateTimeProperty(representation, "expirationDate", null);
   }
 

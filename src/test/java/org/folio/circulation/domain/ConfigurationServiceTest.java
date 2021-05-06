@@ -1,17 +1,19 @@
 package org.folio.circulation.domain;
 
+import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.junit.Assert.assertEquals;
 
+import java.time.ZoneOffset;
 import java.util.Collections;
+import java.util.List;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import api.support.builders.ConfigRecordBuilder;
 import api.support.builders.ConfigurationBuilder;
 import io.vertx.core.json.JsonObject;
-import java.util.List;
-import org.joda.time.DateTimeZone;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 public class ConfigurationServiceTest {
 
@@ -32,7 +34,7 @@ public class ConfigurationServiceTest {
     String timeZoneValue = getTimezoneValue("UTC");
     JsonObject jsonObject = getJsonObject(timeZoneValue);
 
-    assertEquals(DateTimeZone.UTC, service.findDateTimeZone(jsonObject));
+    assertEquals(UTC, service.findDateTimeZone(jsonObject));
   }
 
   @Test
@@ -41,7 +43,7 @@ public class ConfigurationServiceTest {
     String timeZoneValue = getTimezoneValue(zone);
     JsonObject jsonObject = getJsonObject(timeZoneValue);
 
-    assertEquals(DateTimeZone.forID(zone), service.findDateTimeZone(jsonObject));
+    assertEquals(ZoneOffset.of(zone), service.findDateTimeZone(jsonObject));
   }
 
   @Test
@@ -49,21 +51,21 @@ public class ConfigurationServiceTest {
     String timeZoneValue = getTimezoneValue("");
     JsonObject jsonObject = getJsonObject(timeZoneValue);
 
-    assertEquals(DateTimeZone.UTC, service.findDateTimeZone(jsonObject));
+    assertEquals(UTC, service.findDateTimeZone(jsonObject));
   }
 
   @Test
   public void testEmptyJsonValue() {
     JsonObject jsonObject = getJsonObject("");
 
-    assertEquals(DateTimeZone.UTC, service.findDateTimeZone(jsonObject));
+    assertEquals(UTC, service.findDateTimeZone(jsonObject));
   }
 
   @Test
   public void testEmptyJson() {
     JsonObject jsonObject = new JsonObject();
 
-    assertEquals(DateTimeZone.UTC, service.findDateTimeZone(jsonObject));
+    assertEquals(UTC, service.findDateTimeZone(jsonObject));
   }
 
   @Test

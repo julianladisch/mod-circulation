@@ -1,21 +1,21 @@
 package org.folio.circulation.domain.policy;
 
 import static api.support.matchers.FailureMatcher.hasValidationFailure;
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.time.ZonedDateTime;
+import java.util.Collections;
 
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.RequestQueue;
 import org.folio.circulation.resources.renewal.RegularRenewalStrategy;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import api.support.builders.LoanBuilder;
 import api.support.builders.LoanPolicyBuilder;
 import io.vertx.core.json.JsonObject;
-
-import java.util.Collections;
 
 public class InvalidLoanPolicyTests {
   @Test
@@ -29,14 +29,14 @@ public class InvalidLoanPolicyTests {
 
     LoanPolicy loanPolicy = LoanPolicy.from(representation);
 
-    DateTime loanDate = new DateTime(2018, 3, 14, 11, 14, 54, DateTimeZone.UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2018, 3, 14, 11, 14, 54, 0, UTC);
 
     Loan loan = new LoanBuilder()
       .open()
       .withLoanDate(loanDate)
       .asDomainObject();
 
-    final Result<DateTime> result = loanPolicy.calculateInitialDueDate(loan, null);
+    final Result<ZonedDateTime> result = loanPolicy.calculateInitialDueDate(loan, null);
 
     //TODO: This is fairly ugly, replace with a better message
     assertThat(result, hasValidationFailure(
@@ -55,7 +55,7 @@ public class InvalidLoanPolicyTests {
     RegularRenewalStrategy regularRenewalStrategy = new RegularRenewalStrategy();
     LoanPolicy loanPolicy = LoanPolicy.from(representation);
 
-    DateTime loanDate = new DateTime(2018, 3, 14, 11, 14, 54, DateTimeZone.UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2018, 3, 14, 11, 14, 54, 0, UTC);
 
     Loan loan = new LoanBuilder()
       .open()
@@ -63,7 +63,7 @@ public class InvalidLoanPolicyTests {
       .asDomainObject()
       .withLoanPolicy(loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, DateTime.now(), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(), new RequestQueue(Collections.emptyList()));
 
     //TODO: This is fairly ugly, replace with a better message
     assertThat(result, hasValidationFailure(

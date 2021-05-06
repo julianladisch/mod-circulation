@@ -2,15 +2,16 @@ package org.folio.circulation.domain;
 
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getNestedDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getNestedStringProperty;
 
+import java.time.ZonedDateTime;
+
 public class ProxyRelationship {
 
-  private final DateTime expirationDate;
+  private final ZonedDateTime expirationDate;
   private final boolean active;
 
   public ProxyRelationship(JsonObject representation) {
@@ -32,7 +33,7 @@ public class ProxyRelationship {
     }
   }
 
-  private DateTime getExpirationDate(JsonObject representation) {
+  private ZonedDateTime getExpirationDate(JsonObject representation) {
     final String EXPIRATION_DATE_PROPERTY_NAME = "expirationDate";
 
     if(representation.containsKey(EXPIRATION_DATE_PROPERTY_NAME) ) {
@@ -51,7 +52,7 @@ public class ProxyRelationship {
 
   public boolean isActive() {
       boolean expired = expirationDate != null
-        && expirationDate.isBefore(DateTime.now());
+        && expirationDate.isBefore(ZonedDateTime.now());
 
       return active && !expired;
   }

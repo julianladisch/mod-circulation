@@ -1,18 +1,18 @@
 package api.loans.anonymization;
 
-import static api.support.matchers.LoanMatchers.isOpen;
 import static api.support.matchers.LoanMatchers.isAnonymized;
-import static org.hamcrest.Matchers.not;
+import static api.support.matchers.LoanMatchers.isOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import api.support.http.IndividualResource;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
+import api.support.http.IndividualResource;
 import api.support.http.ItemResource;
 import io.vertx.core.json.JsonObject;
 
@@ -93,7 +93,7 @@ public class AnonymizeLoansByUserIdAPITests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, DateTime.now());
+    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now());
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -153,6 +153,5 @@ public class AnonymizeLoansByUserIdAPITests extends LoanAnonymizationTests {
 
     assertThat(json, not(isAnonymized()));
   }
-
 
 }

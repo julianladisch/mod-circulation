@@ -1,5 +1,6 @@
 package org.folio.circulation.domain;
 
+import static java.time.ZoneOffset.UTC;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.folio.circulation.resources.context.RenewalContext.create;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,24 +24,22 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
-import org.folio.circulation.infrastructure.storage.notices.ScheduledNoticesRepository;
-import org.folio.circulation.infrastructure.storage.loans.LostItemPolicyRepository;
 import org.folio.circulation.domain.policy.OverdueFinePolicy;
-import org.folio.circulation.infrastructure.storage.loans.OverdueFinePolicyRepository;
 import org.folio.circulation.domain.representations.CheckInByBarcodeRequest;
 import org.folio.circulation.domain.representations.StoredAccount;
 import org.folio.circulation.domain.representations.StoredFeeFineAction;
+import org.folio.circulation.infrastructure.storage.ServicePointRepository;
 import org.folio.circulation.infrastructure.storage.feesandfines.AccountRepository;
 import org.folio.circulation.infrastructure.storage.feesandfines.FeeFineActionRepository;
 import org.folio.circulation.infrastructure.storage.feesandfines.FeeFineOwnerRepository;
 import org.folio.circulation.infrastructure.storage.feesandfines.FeeFineRepository;
-import org.folio.circulation.infrastructure.storage.ServicePointRepository;
+import org.folio.circulation.infrastructure.storage.inventory.ItemRepository;
+import org.folio.circulation.infrastructure.storage.loans.LostItemPolicyRepository;
+import org.folio.circulation.infrastructure.storage.loans.OverdueFinePolicyRepository;
+import org.folio.circulation.infrastructure.storage.notices.ScheduledNoticesRepository;
 import org.folio.circulation.infrastructure.storage.users.UserRepository;
 import org.folio.circulation.resources.context.RenewalContext;
 import org.folio.circulation.support.ClockManager;
-import org.folio.circulation.infrastructure.storage.inventory.ItemRepository;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,8 +62,8 @@ import io.vertx.core.json.JsonObject;
 public class OverdueFineCalculatorServiceTest {
   private static final UUID LOAN_ID = UUID.randomUUID();
   private static final UUID LOAN_USER_ID = UUID.randomUUID();
-  private static final DateTime DUE_DATE = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeZone.UTC);
-  private static final DateTime RETURNED_DATE = new DateTime(2020, 3, 1, 0, 0, 0, DateTimeZone.UTC);
+  private static final ZonedDateTime DUE_DATE = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, UTC);
+  private static final ZonedDateTime RETURNED_DATE = ZonedDateTime.of(2020, 3, 1, 0, 0, 0, 0, UTC);
   private static final UUID ITEM_ID = UUID.randomUUID();
   private static final UUID ITEM_MATERIAL_TYPE_ID = UUID.randomUUID();
   private static final UUID FEE_FINE_OWNER_ID = UUID.randomUUID();
@@ -459,7 +459,7 @@ public class OverdueFineCalculatorServiceTest {
   public void shouldNotCreateFeeFineWhenLoanIsNotOverdue()
     throws ExecutionException, InterruptedException {
 
-    DateTime dueDateInFuture = DateTime.now(DateTimeZone.UTC).plusDays(1);
+    ZonedDateTime dueDateInFuture = ZonedDateTime.now(UTC).plusDays(1);
     final Loan loan = createLoan().changeDueDate(dueDateInFuture);
 
     if (renewal) {
@@ -651,7 +651,7 @@ public class OverdueFineCalculatorServiceTest {
       ),
       new FeeAmount(correctOverdueFine), new FeeAmount(correctOverdueFine), "Open", "Outstanding",
       Collections.emptyList(),
-      ClockManager.getClockManager().getDateTime()
+      ClockManager.getClockManager().getZonedDateTime()
     );
   }
 

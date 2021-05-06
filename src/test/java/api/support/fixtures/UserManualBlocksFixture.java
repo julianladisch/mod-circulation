@@ -6,9 +6,8 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty
 import java.util.UUID;
 
 import api.support.builders.UserManualBlockBuilder;
-import api.support.http.ResourceClient;
-
 import api.support.http.IndividualResource;
+import api.support.http.ResourceClient;
 
 public class UserManualBlocksFixture {
   private final RecordCreator userManualBlocksRecordCreator;
@@ -31,7 +30,7 @@ public class UserManualBlocksFixture {
   public void createManualPatronBlockForUser(UUID requesterId) {
     create(getManualBlockBuilder()
       .withRequests(true)
-      .withExpirationDate(getClockManager().getDateTime().plusYears(1))
+      .withExpirationDate(getClockManager().getZonedDateTime().plusYears(1))
       .withUserId(requesterId.toString()));
   }
 

@@ -8,6 +8,8 @@ import static org.folio.circulation.support.results.MappingFunctions.when;
 import static org.folio.circulation.support.results.Result.succeeded;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -24,8 +26,6 @@ import org.folio.circulation.infrastructure.storage.notices.ScheduledNoticesRepo
 import org.folio.circulation.infrastructure.storage.requests.RequestRepository;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,13 +142,13 @@ public class RequestScheduledNoticeHandler {
   private ScheduledNotice updateNoticeNextRunTime(
     ScheduledNotice notice, ScheduledNoticeConfig noticeConfig) {
 
-    final DateTime systemTime = DateTime.now(DateTimeZone.UTC);
+    final ZonedDateTime systemTime = ZonedDateTime.now(ZoneOffset.UTC);
 
-    DateTime recurringNoticeNextRunTime = notice.getNextRunTime()
-      .plus(noticeConfig.getRecurringPeriod().timePeriod());
+    ZonedDateTime recurringNoticeNextRunTime = noticeConfig
+      .getRecurringPeriod().plusDate(notice.getNextRunTime());
     if (recurringNoticeNextRunTime.isBefore(systemTime)) {
-      recurringNoticeNextRunTime =
-        systemTime.plus(noticeConfig.getRecurringPeriod().timePeriod());
+      recurringNoticeNextRunTime = noticeConfig.getRecurringPeriod()
+        .plusDate(systemTime);
     }
 
     return notice.withNextRunTime(recurringNoticeNextRunTime);
@@ -164,9 +164,9 @@ public class RequestScheduledNoticeHandler {
   }
 
   private boolean nextRunTimeIsAfterRequestExpiration(ScheduledNotice notice, Request request) {
-    DateTime nextRunTime = notice.getNextRunTime();
-    DateTime requestExpirationDate = request.getRequestExpirationDate();
-    DateTime holdShelfExpirationDate = request.getHoldShelfExpirationDate();
+    ZonedDateTime nextRunTime = notice.getNextRunTime();
+    ZonedDateTime requestExpirationDate = request.getRequestExpirationDate();
+    ZonedDateTime holdShelfExpirationDate = request.getHoldShelfExpirationDate();
 
     return requestExpirationDate != null && nextRunTime.isAfter(requestExpirationDate) ||
       holdShelfExpirationDate != null && nextRunTime.isAfter(holdShelfExpirationDate);

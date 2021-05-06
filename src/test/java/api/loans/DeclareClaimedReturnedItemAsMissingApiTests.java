@@ -1,23 +1,23 @@
 package api.loans;
 
+import static api.support.PubsubPublisherTestUtils.assertThatPublishedLoanLogRecordEventsAreValid;
 import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
 import static api.support.matchers.LoanMatchers.hasLoanProperty;
 import static api.support.matchers.LoanMatchers.isClosed;
 import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasParameter;
-import static api.support.PubsubPublisherTestUtils.assertThatPublishedLoanLogRecordEventsAreValid;
 import static org.folio.circulation.domain.representations.LoanProperties.ACTION;
 import static org.folio.circulation.domain.representations.LoanProperties.ACTION_COMMENT;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ public class DeclareClaimedReturnedItemAsMissingApiTests extends APITests {
   public void canDeclareItemMissingWhenClaimedReturned() {
     claimItemReturnedFixture.claimItemReturned(new ClaimItemReturnedRequestBuilder()
       .forLoan(loanId)
-      .withItemClaimedReturnedDate(DateTime.now()));
+      .withItemClaimedReturnedDate(ZonedDateTime.now()));
 
     claimItemReturnedFixture.declareClaimedReturnedItemAsMissing(
       new DeclareClaimedReturnedItemAsMissingRequestBuilder()

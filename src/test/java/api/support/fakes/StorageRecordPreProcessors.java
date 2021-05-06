@@ -3,13 +3,16 @@ package api.support.fakes;
 import static api.support.APITestContext.getTenantId;
 import static api.support.fakes.Storage.getStorage;
 import static api.support.http.InterfaceUrls.holdingsStorageUrl;
+import static java.time.ZoneOffset.UTC;
 import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 import static org.folio.circulation.domain.representations.ItemProperties.EFFECTIVE_LOCATION_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.HOLDINGS_RECORD_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.PERMANENT_LOCATION_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.TEMPORARY_LOCATION_ID;
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +22,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.folio.circulation.domain.representations.ItemProperties;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import io.vertx.core.json.JsonObject;
+
 
 public final class StorageRecordPreProcessors {
   // Holdings record property name, item property name, effective property name
@@ -31,8 +33,6 @@ public final class StorageRecordPreProcessors {
     new ImmutableTriple<>("callNumberPrefix", "itemLevelCallNumberPrefix", "prefix"),
     new ImmutableTriple<>("callNumberSuffix", "itemLevelCallNumberSuffix", "suffix")
   );
-  // RMB uses ISO-8601 compatible date time format by default.
-  private static final String RMB_DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS+0000";
 
   private StorageRecordPreProcessors() {
     throw new UnsupportedOperationException("Do not instantiate");
@@ -61,7 +61,7 @@ public final class StorageRecordPreProcessors {
         if (!Objects.equals(oldItemStatus.getString("name"),
           newItemStatus.getString("name"))) {
           write(newItemStatus, "date",
-            DateTime.now(DateTimeZone.UTC).toString(RMB_DATETIME_PATTERN)
+            toDateTimeString(ZonedDateTime.now(UTC))
           );
         }
       }

@@ -20,12 +20,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,7 +51,7 @@ public class ClaimItemReturnedAPITests extends APITests {
   @Test
   public void canClaimItemReturnedWithComment() {
     final String comment = "testing";
-    final DateTime dateTime = DateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now();
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
@@ -64,7 +64,7 @@ public class ClaimItemReturnedAPITests extends APITests {
 
   @Test
   public void canClaimItemReturnedWithoutComment() {
-    final DateTime dateTime = DateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now();
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
@@ -76,7 +76,7 @@ public class ClaimItemReturnedAPITests extends APITests {
 
   @Test
   public void cannotClaimItemReturnedWhenLoanIsClosed() {
-    final DateTime dateTime = DateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now();
 
     checkInFixture.checkInByBarcode(item);
 
@@ -117,7 +117,7 @@ public class ClaimItemReturnedAPITests extends APITests {
 
   @Test
   public void itemClaimedReturnedEventIsPublished() {
-    final DateTime dateTime = DateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now();
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
@@ -138,7 +138,7 @@ public class ClaimItemReturnedAPITests extends APITests {
     assertThatPublishedLoanLogRecordEventsAreValid(loansClient.getById(loan.getId()).getJson());
   }
 
-  private void assertLoanAndItem(Response response, String comment, DateTime dateTime) {
+  private void assertLoanAndItem(Response response, String comment, ZonedDateTime dateTime) {
     JsonObject actualLoan = loansClient.getById(UUID.fromString(loanId)).getJson();
     JsonObject actualItem = actualLoan.getJsonObject("item");
 

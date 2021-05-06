@@ -8,15 +8,16 @@ import static api.support.matchers.LoanAccountMatcher.hasLostItemFee;
 import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasParameter;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.now;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.joda.time.DateTime.now;
+
+import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import api.support.builders.CheckInByBarcodeRequestBuilder;
@@ -29,7 +30,7 @@ public class CheckInDeclaredLostItemTest extends RefundDeclaredLostFeesTestBase 
   }
 
   @Override
-  protected void performActionThatRequiresRefund(DateTime actionDate) {
+  protected void performActionThatRequiresRefund(ZonedDateTime actionDate) {
     mockClockManagerToReturnFixedDateTime(actionDate);
 
     final JsonObject loan = checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
@@ -49,7 +50,7 @@ public class CheckInDeclaredLostItemTest extends RefundDeclaredLostFeesTestBase 
     useChargeableRefundableLostItemFee(firstFee, 0.0);
 
     final IndividualResource firstLoan = declareItemLost();
-    mockClockManagerToReturnFixedDateTime(now(DateTimeZone.UTC).plusMinutes(2));
+    mockClockManagerToReturnFixedDateTime(now(UTC).plusMinutes(2));
     // Item fee won't be cancelled, because refund period is exceeded
     checkInFixture.checkInByBarcode(item);
     assertThat(itemsClient.getById(item.getId()).getJson(), isAvailable());

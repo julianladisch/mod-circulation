@@ -12,8 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
-import api.support.http.IndividualResource;
-import org.joda.time.Seconds;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -21,6 +19,7 @@ import api.support.CheckInByBarcodeResponse;
 import api.support.MultipleJsonRecords;
 import api.support.builders.RequestBuilder;
 import api.support.http.CqlQuery;
+import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 
 public class InHouseUseCheckInTest extends APITests {
@@ -143,7 +142,7 @@ public class InHouseUseCheckInTest extends APITests {
     final JsonObject lastOperation = recordedOperations.getFirst();
 
     assertThat(lastOperation.getString("occurredDateTime"),
-      withinSecondsBeforeNow(Seconds.seconds(2)));
+      withinSecondsBeforeNow(2));
     assertThat(lastOperation.getString("itemId"), is(itemId.toString()));
     assertThat(lastOperation.getString("servicePointId"), is(servicePoint.toString()));
     assertThat(lastOperation.getString("performedByUserId"), is(getUserId()));

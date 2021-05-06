@@ -17,6 +17,8 @@ import static org.folio.circulation.support.ValidationErrorFailure.failedValidat
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectProperty;
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -34,8 +36,6 @@ import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 public class RegularRenewalStrategy implements RenewalStrategy {
   private static final EnumSet<ItemStatus> ITEM_STATUSES_DISALLOWED_FOR_RENEW = EnumSet
@@ -46,7 +46,7 @@ public class RegularRenewalStrategy implements RenewalStrategy {
     Clients clients) {
 
     final ClosedLibraryStrategyService strategyService =
-      ClosedLibraryStrategyService.using(clients, DateTime.now(DateTimeZone.UTC), true);
+      ClosedLibraryStrategyService.using(clients, ZonedDateTime.now(ZoneOffset.UTC), true);
 
     return completedFuture(renew(context)
       .map(context::withLoan))
@@ -65,8 +65,8 @@ public class RegularRenewalStrategy implements RenewalStrategy {
         return failedValidation(errors);
       }
 
-      final Result<DateTime> proposedDueDateResult = calculateNewDueDate(loan, requestQueue,
-        DateTime.now(DateTimeZone.UTC));
+      final Result<ZonedDateTime> proposedDueDateResult = calculateNewDueDate(loan, requestQueue,
+        ZonedDateTime.now(ZoneOffset.UTC));
       addErrorsIfDueDateResultFailed(loan, errors, proposedDueDateResult);
 
       final BlockOverrides blockOverrides = BlockOverrides.from(getObjectProperty(
@@ -85,7 +85,7 @@ public class RegularRenewalStrategy implements RenewalStrategy {
     }
   }
 
-  public Result<Loan> renew(Loan loan, DateTime systemDate, RequestQueue requestQueue) {
+  public Result<Loan> renew(Loan loan, ZonedDateTime systemDate, RequestQueue requestQueue) {
     //TODO: Create HttpResult wrapper that traps exceptions
     try {
       final List<ValidationError> errors = validateIfRenewIsAllowed(loan, requestQueue);
@@ -95,7 +95,7 @@ public class RegularRenewalStrategy implements RenewalStrategy {
         return failedValidation(errors);
       }
 
-      final Result<DateTime> proposedDueDateResult =
+      final Result<ZonedDateTime> proposedDueDateResult =
         calculateNewDueDate(loan, requestQueue, systemDate);
 
       //TODO: Need a more elegent way of combining validation errors
@@ -112,7 +112,7 @@ public class RegularRenewalStrategy implements RenewalStrategy {
   }
 
   private void addErrorsIfDueDateResultFailed(Loan loan, List<ValidationError> errors,
-    Result<DateTime> proposedDueDateResult) {
+    Result<ZonedDateTime> proposedDueDateResult) {
 
     if (proposedDueDateResult.failed()) {
       if (proposedDueDateResult.cause() instanceof ValidationErrorFailure) {
@@ -125,7 +125,7 @@ public class RegularRenewalStrategy implements RenewalStrategy {
     }
   }
 
-  private Result<DateTime> calculateNewDueDate(Loan loan, RequestQueue requestQueue, DateTime systemDate) {
+  private Result<ZonedDateTime> calculateNewDueDate(Loan loan, RequestQueue requestQueue, ZonedDateTime systemDate) {
     final var loanPolicy = loan.getLoanPolicy();
     final var isRenewalWithHoldRequest = isHold(getFirstRequestInQueue(requestQueue));
 

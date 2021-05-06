@@ -3,26 +3,27 @@ package org.folio.circulation.resources;
 import static api.support.matchers.ResultMatchers.hasValidationError;
 import static api.support.matchers.ResultMatchers.succeeded;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
+import static java.time.ZonedDateTime.now;
+import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.resources.RenewalValidator.errorWhenEarlierOrSameDueDate;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.joda.time.DateTime.now;
-import static org.joda.time.DateTimeZone.UTC;
+
+import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.Loan;
-import org.joda.time.DateTime;
+import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 
 import io.vertx.core.json.JsonObject;
-import lombok.val;
 
 public class RenewalValidatorTest {
   @Test
   public void shouldDisallowRenewalWhenDueDateIsEarlierOrSame() {
-    val dueDate = now(UTC);
-    val proposedDueDate = dueDate.minusWeeks(2);
-    val loan = createLoan(dueDate);
+    ZonedDateTime dueDate = now(UTC);
+    ZonedDateTime proposedDueDate = dueDate.minusWeeks(2);
+    Loan loan = createLoan(dueDate);
 
-    val validationResult = errorWhenEarlierOrSameDueDate(loan, proposedDueDate);
+    Result<ZonedDateTime> validationResult = errorWhenEarlierOrSameDueDate(loan, proposedDueDate);
 
     assertThat(validationResult, hasValidationError(
       hasMessage("renewal would not change the due date")));
@@ -30,16 +31,16 @@ public class RenewalValidatorTest {
 
   @Test
   public void shouldAllowRenewalWhenDueDateAfterCurrentDueDate() {
-    val dueDate = now(UTC);
-    val proposedDueDate = dueDate.plusWeeks(1);
-    val loan = createLoan(dueDate);
+    ZonedDateTime dueDate = now(UTC);
+    ZonedDateTime proposedDueDate = dueDate.plusWeeks(1);
+    Loan loan = createLoan(dueDate);
 
-    val validationResult = errorWhenEarlierOrSameDueDate(loan, proposedDueDate);
+    Result<ZonedDateTime> validationResult = errorWhenEarlierOrSameDueDate(loan, proposedDueDate);
 
     assertThat(validationResult, succeeded());
   }
 
-  private Loan createLoan(DateTime dueDate) {
+  private Loan createLoan(ZonedDateTime dueDate) {
     return Loan.from(new JsonObject())
       .changeDueDate(dueDate);
   }

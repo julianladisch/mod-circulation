@@ -13,8 +13,9 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getBooleanP
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.core.Is.is;
 
+import java.time.ZonedDateTime;
+
 import org.hamcrest.Matcher;
-import org.joda.time.DateTime;
 
 import io.vertx.core.json.JsonObject;
 
@@ -106,7 +107,7 @@ public class EventMatchers {
       hasJsonPath("eventPayload", allOf(
         hasJsonPath("userId", is(loan.getString("userId"))),
         hasJsonPath("loanId", is(loan.getString("id"))),
-        hasJsonPath("dueDate", isEquivalentTo(DateTime.parse(loan.getString("dueDate")))),
+        hasJsonPath("dueDate", isEquivalentTo(ZonedDateTime.parse(loan.getString("dueDate")))),
         hasJsonPath("dueDateChangedByRecall",
           is(getBooleanProperty(loan, "dueDateChangedByRecall")))
       ))),

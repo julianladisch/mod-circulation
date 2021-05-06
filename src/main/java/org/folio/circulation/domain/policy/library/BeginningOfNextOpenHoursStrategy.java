@@ -4,29 +4,33 @@ import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyU
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
 
+import java.time.Duration;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import org.folio.circulation.domain.policy.LoanPolicyPeriod;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Period;
 
 public class BeginningOfNextOpenHoursStrategy extends ShortTermLoansBaseStrategy {
 
-  private final Period offsetPeriod;
+  private final Duration duration;
 
   public BeginningOfNextOpenHoursStrategy(
-    LoanPolicyPeriod offsetInterval, int offsetDuration, DateTimeZone zone) {
+    LoanPolicyPeriod offsetInterval, int offsetDuration, ZoneOffset zone) {
     super(zone);
-    offsetPeriod = LoanPolicyPeriod.calculatePeriod(offsetInterval, offsetDuration);
+    this.duration = LoanPolicyPeriod.calculateDuration(offsetInterval, offsetDuration);
   }
 
   @Override
-  protected Result<DateTime> calculateIfClosed(LibraryTimetable libraryTimetable, LibraryInterval requestedInterval) {
+  protected Result<ZonedDateTime> calculateIfClosed(LibraryTimetable libraryTimetable, LibraryInterval requestedInterval) {
     LibraryInterval nextInterval = requestedInterval.getNext();
     if (nextInterval == null) {
       return failed(failureForAbsentTimetable());
     }
-    DateTime dueDateWithOffset = nextInterval.getStartTime().plus(offsetPeriod);
+    ZonedDateTime dueDateWithOffset = ZonedDateTime.ofInstant(nextInterval
+      .getStartTime().toInstant()
+      .plusMillis(duration.toMillis()), ZoneOffset.UTC);
+
     if (nextInterval.getInterval().contains(dueDateWithOffset)) {
       return succeeded(dueDateWithOffset);
     }

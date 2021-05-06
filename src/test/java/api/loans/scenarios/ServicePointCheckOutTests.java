@@ -7,17 +7,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 
-import api.support.http.IndividualResource;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.junit.MatcherAssert;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import api.support.APITests;
 import api.support.CheckInByBarcodeResponse;
 import api.support.builders.CheckInByBarcodeRequestBuilder;
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
+import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 
 public class ServicePointCheckOutTests extends APITests {
@@ -42,7 +43,7 @@ public class ServicePointCheckOutTests extends APITests {
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), requestServicePoint.getId());
+        ZonedDateTime.now(ZoneOffset.UTC), requestServicePoint.getId());
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
         new CheckInByBarcodeRequestBuilder()

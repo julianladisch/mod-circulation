@@ -3,7 +3,8 @@ package api.loans.scenarios;
 import static api.support.matchers.ItemMatchers.isCheckedOut;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +19,7 @@ public class OverrideRenewDeclaredLostItemTest extends RefundDeclaredLostFeesTes
   }
 
   @Override
-  protected void performActionThatRequiresRefund(DateTime actionDate) {
+  protected void performActionThatRequiresRefund(ZonedDateTime actionDate) {
     mockClockManagerToReturnFixedDateTime(actionDate);
 
     overrideRenewalFixture.overrideRenewalByBarcode(loan, servicePointsFixture.cd1().getId());

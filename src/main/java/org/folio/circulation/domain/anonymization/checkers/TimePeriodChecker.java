@@ -1,9 +1,10 @@
 package org.folio.circulation.domain.anonymization.checkers;
 
+import java.time.ZonedDateTime;
+
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 
-import org.joda.time.DateTime;
 
 abstract class TimePeriodChecker implements AnonymizationChecker {
 
@@ -13,9 +14,9 @@ abstract class TimePeriodChecker implements AnonymizationChecker {
     this.period = period;
   }
 
-  boolean checkTimePeriodPassed(DateTime startDate) {
-    return startDate != null && ClockManager.getClockManager().getDateTime()
-      .isAfter(startDate.plus(period.timePeriod()));
+  boolean checkTimePeriodPassed(ZonedDateTime startDate) {
+    return startDate != null && ClockManager.getClockManager().getZonedDateTime()
+      .isAfter(period.plusDate(startDate));
   }
 
 }

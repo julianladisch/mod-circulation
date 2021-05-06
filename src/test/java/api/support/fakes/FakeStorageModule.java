@@ -2,12 +2,15 @@ package api.support.fakes;
 
 import static api.support.fakes.CqlPredicate.MATCH_ALL_RECORDS;
 import static java.lang.String.format;
+import static java.time.ZoneOffset.UTC;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.folio.circulation.support.http.server.JsonHttpResponse.created;
 import static org.folio.circulation.support.http.server.NoContentResponse.noContent;
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,14 +28,11 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.folio.circulation.infrastructure.serialization.JsonSchemaValidator;
-import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.http.server.ClientErrorResponse;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.http.server.WebContext;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.ISODateTimeFormat;
+import org.folio.circulation.support.results.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -192,11 +192,11 @@ public class FakeStorageModule extends AbstractVerticle {
     if (includeChangeMetadata) {
       final String fakeUserId = APITestContext.getUserId();
       body.put(changeMetadataPropertyName, new JsonObject()
-        .put("createdDate", new DateTime(DateTimeZone.UTC)
-          .toString(ISODateTimeFormat.dateTime()))
+        .put("createdDate", ZonedDateTime.now(UTC)
+          .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
         .put("createdByUserId", fakeUserId)
-        .put("updatedDate", new DateTime(DateTimeZone.UTC)
-          .toString(ISODateTimeFormat.dateTime()))
+        .put("updatedDate", ZonedDateTime.now(UTC)
+          .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
         .put("updatedByUserId", fakeUserId));
     }
 
@@ -253,8 +253,8 @@ public class FakeStorageModule extends AbstractVerticle {
           .getJsonObject(changeMetadataPropertyName);
 
         final JsonObject updatedChangeMetadata = existingChangeMetadata.copy()
-          .put("updatedDate", new DateTime(DateTimeZone.UTC)
-            .toString(ISODateTimeFormat.dateTime()))
+          .put("updatedDate", ZonedDateTime.now(UTC)
+            .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
           .put("updatedByUserId", fakeUserId);
 
         body.put(changeMetadataPropertyName, updatedChangeMetadata);
@@ -277,11 +277,11 @@ public class FakeStorageModule extends AbstractVerticle {
       if (includeChangeMetadata) {
         final String fakeUserId = APITestContext.getUserId();
         body.put(changeMetadataPropertyName, new JsonObject()
-          .put("createdDate", new DateTime(DateTimeZone.UTC)
-            .toString(ISODateTimeFormat.dateTime()))
+          .put("createdDate", ZonedDateTime.now(UTC)
+            .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
           .put("createdByUserId", fakeUserId)
-          .put("updatedDate", new DateTime(DateTimeZone.UTC)
-            .toString(ISODateTimeFormat.dateTime()))
+          .put("updatedDate", ZonedDateTime.now(UTC)
+            .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
           .put("updatedByUserId", fakeUserId));
       }
 

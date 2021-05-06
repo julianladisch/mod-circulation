@@ -4,6 +4,8 @@ import static org.folio.circulation.domain.notice.schedule.TriggeringEvent.AGED_
 import static org.folio.circulation.domain.notice.schedule.TriggeringEvent.DUE_DATE;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -16,8 +18,6 @@ import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.CqlSortBy;
 import org.folio.circulation.support.http.client.PageLimit;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import io.vertx.core.http.HttpClient;
 
@@ -33,7 +33,7 @@ public class LoanScheduledNoticeProcessingResource extends ScheduledNoticeProces
     ScheduledNoticesRepository scheduledNoticesRepository, PageLimit pageLimit) {
 
     return scheduledNoticesRepository.findNotices(
-      DateTime.now(DateTimeZone.UTC), true,
+      ZonedDateTime.now(ZoneOffset.UTC), true,
       List.of(DUE_DATE, AGED_TO_LOST),
       CqlSortBy.ascending("nextRunTime"), pageLimit);
   }
@@ -43,7 +43,7 @@ public class LoanScheduledNoticeProcessingResource extends ScheduledNoticeProces
     Clients clients, MultipleRecords<ScheduledNotice> noticesResult) {
 
     final LoanScheduledNoticeHandler loanNoticeHandler =
-      LoanScheduledNoticeHandler.using(clients, DateTime.now(DateTimeZone.UTC));
+      LoanScheduledNoticeHandler.using(clients, ZonedDateTime.now(ZoneOffset.UTC));
 
     return loanNoticeHandler.handleNotices(noticesResult.getRecords())
       .thenApply(mapResult(v -> noticesResult));

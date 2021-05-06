@@ -1,15 +1,13 @@
 package org.folio.circulation.domain.policy;
 
 import static org.folio.circulation.support.ClockManager.getClockManager;
+import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getIntegerProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
-import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
-import static org.joda.time.DateTimeConstants.MINUTES_PER_DAY;
-import static org.joda.time.DateTimeConstants.MINUTES_PER_HOUR;
-import static org.joda.time.DateTimeConstants.MINUTES_PER_WEEK;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,9 +17,8 @@ import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 import org.folio.circulation.support.HttpFailure;
-import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.http.server.ValidationError;
-import org.joda.time.DateTime;
+import org.folio.circulation.support.results.Result;
 
 import io.vertx.core.json.JsonObject;
 
@@ -37,7 +34,13 @@ public class Period {
   private static final String DURATION_KEY = "duration";
   private static final String INTERVAL_ID_KEY = "intervalId";
 
-  private static final int MINUTES_PER_MONTH = MINUTES_PER_DAY * 31;
+  private static final int MINUTES_PER_HOUR = 60;
+  private static final int HOURS_PER_DAY = 24;
+  private static final int DAYS_PER_WEEK = 7;
+  private static final int DAYS_PER_MONTH = 31;
+  private static final int MINUTES_PER_DAY = MINUTES_PER_HOUR * HOURS_PER_DAY;
+  private static final int MINUTES_PER_WEEK = MINUTES_PER_DAY * DAYS_PER_WEEK;
+  private static final int MINUTES_PER_MONTH = MINUTES_PER_DAY * DAYS_PER_MONTH;
   private static final Set<String> SUPPORTED_INTERVAL_IDS = Collections.unmodifiableSet(
     new HashSet<>(Arrays.asList(MONTHS, WEEKS, DAYS, HOURS, MINUTES)));
 
@@ -105,8 +108,8 @@ public class Period {
     return from(duration, intervalId);
   }
 
-  Result<DateTime> addTo(
-    DateTime from,
+  Result<ZonedDateTime> addTo(
+    ZonedDateTime from,
     Supplier<ValidationError> onUnrecognisedPeriod,
     Function<String, ValidationError> onUnrecognisedInterval,
     IntFunction<ValidationError> onUnrecognisedDuration) {
@@ -148,22 +151,6 @@ public class Period {
     return representation;
   }
 
-  public org.joda.time.Period timePeriod() {
-    switch (interval) {
-      case MONTHS:
-        return org.joda.time.Period.months(duration);
-      case WEEKS:
-        return org.joda.time.Period.weeks(duration);
-      case DAYS:
-        return org.joda.time.Period.days(duration);
-      case HOURS:
-        return org.joda.time.Period.hours(duration);
-      case MINUTES:
-      default:
-        return org.joda.time.Period.minutes(duration);
-    }
-  }
-
   public int toMinutes() {
     if (duration == null || interval == null) {
       return 0;
@@ -185,20 +172,20 @@ public class Period {
     }
   }
 
-  public boolean hasPassedSinceDateTillNow(DateTime startDate) {
-    final DateTime now = getClockManager().getDateTime();
-    final DateTime startPlusPeriod = startDate.plus(timePeriod());
+  public boolean hasPassedSinceDateTillNow(ZonedDateTime startDate) {
+    final ZonedDateTime now = getClockManager().getZonedDateTime();
+    final ZonedDateTime startPlusPeriod = plusDate(startDate);
 
     return startPlusPeriod.isBefore(now) || startPlusPeriod.isEqual(now);
   }
 
-  public boolean hasNotPassedSinceDateTillNow(DateTime startDate) {
+  public boolean hasNotPassedSinceDateTillNow(ZonedDateTime startDate) {
     return !hasPassedSinceDateTillNow(startDate);
   }
 
-  public boolean isEqualToDateTillNow(DateTime startDate) {
-    final DateTime now = getClockManager().getDateTime();
-    final DateTime startPlusPeriod = startDate.plus(timePeriod());
+  public boolean isEqualToDateTillNow(ZonedDateTime startDate) {
+    final ZonedDateTime now = getClockManager().getZonedDateTime();
+    final ZonedDateTime startPlusPeriod = plusDate(startDate);
 
     return now.isEqual(startPlusPeriod);
   }
@@ -209,6 +196,38 @@ public class Period {
 
   public static Period zeroDurationPeriod() {
     return ZERO_DURATION_PERIOD;
+  }
+
+  public ZonedDateTime plusDate(ZonedDateTime date) {
+    switch (interval) {
+      case MONTHS:
+        return date.plusMonths(duration);
+      case WEEKS:
+        return date.plusWeeks(duration);
+      case DAYS:
+        return date.plusDays(duration);
+      case HOURS:
+        return date.plusHours(duration);
+      case MINUTES:
+      default:
+        return date.plusMinutes(duration);
+    }
+  }
+
+  public ZonedDateTime minusDate(ZonedDateTime date) {
+    switch (interval) {
+      case MONTHS:
+        return date.minusMonths(duration);
+      case WEEKS:
+        return date.minusWeeks(duration);
+      case DAYS:
+        return date.minusDays(duration);
+      case HOURS:
+        return date.minusHours(duration);
+      case MINUTES:
+      default:
+        return date.minusMinutes(duration);
+    }
   }
 
   @Override

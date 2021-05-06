@@ -1,27 +1,27 @@
 package api.loans;
 
-import api.support.APITests;
-import api.support.builders.CheckOutByBarcodeRequestBuilder;
-import api.support.builders.FixedDueDateSchedulesBuilder;
-import api.support.builders.LoanPolicyBuilder;
-import org.folio.circulation.domain.policy.DueDateManagement;
-import org.folio.circulation.domain.policy.Period;
-import api.support.http.IndividualResource;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
-import org.junit.Test;
-
-import java.util.UUID;
-
 import static api.support.builders.FixedDueDateSchedule.wholeMonth;
 import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_SERVICE_POINT_CURR_DAY;
 import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_SERVICE_POINT_ID;
 import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY;
 import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
-import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyUtils.END_OF_A_DAY;
 import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
+import org.folio.circulation.domain.policy.DueDateManagement;
+import org.folio.circulation.domain.policy.Period;
+import org.junit.Test;
+
+import api.support.APITests;
+import api.support.builders.CheckOutByBarcodeRequestBuilder;
+import api.support.builders.FixedDueDateSchedulesBuilder;
+import api.support.builders.LoanPolicyBuilder;
+import api.support.http.IndividualResource;
 
 /**
  * Test cases for scenarios when due date calculated by CLDDM
@@ -36,14 +36,14 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
     IndividualResource jessica = usersFixture.jessica();
     UUID checkoutServicePointId = UUID.fromString(CASE_FRI_SAT_MON_SERVICE_POINT_ID);
 
-    DateTime loanDate =
-      new DateTime(2019, DateTimeConstants.JANUARY, 25, 10, 0, DateTimeZone.UTC);
+    ZonedDateTime loanDate =
+      ZonedDateTime.of(2019, 1, 25, 10, 0, 0, 0, ZoneOffset.UTC);
 
-    DateTime limitDueDate =
-      CASE_FRI_SAT_MON_SERVICE_POINT_CURR_DAY.toDateTimeAtStartOfDay(DateTimeZone.UTC);
+    ZonedDateTime limitDueDate =
+      CASE_FRI_SAT_MON_SERVICE_POINT_CURR_DAY.atStartOfDay(ZoneOffset.UTC);
     FixedDueDateSchedulesBuilder fixedDueDateSchedules = new FixedDueDateSchedulesBuilder()
       .withName("Fixed Due Date Schedule")
-      .addSchedule(wholeMonth(2019, DateTimeConstants.JANUARY, limitDueDate));
+      .addSchedule(wholeMonth(2019, 1, limitDueDate));
     UUID fixedDueDateSchedulesId = loanPoliciesFixture.createSchedule(
       fixedDueDateSchedules).getId();
 
@@ -62,9 +62,8 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
         .at(checkoutServicePointId)
         .on(loanDate));
 
-    DateTime expectedDate =
-      CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY
-        .toDateTime(END_OF_A_DAY, DateTimeZone.UTC);
+    ZonedDateTime expectedDate = ZonedDateTime.of(
+      CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, LocalTime.MAX, ZoneOffset.UTC);
     assertThat("due date should be " + expectedDate,
       loan.getJson().getString("dueDate"), isEquivalentTo(expectedDate));
   }
@@ -76,15 +75,15 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
     IndividualResource jessica = usersFixture.jessica();
     UUID checkoutServicePointId = UUID.fromString(CASE_FRI_SAT_MON_SERVICE_POINT_ID);
 
-    DateTime loanDate =
-      new DateTime(2019, DateTimeConstants.JANUARY, 25, 10, 0, DateTimeZone.UTC);
+    ZonedDateTime loanDate =
+      ZonedDateTime.of(2019, 1, 25, 10, 0, 0, 0, ZoneOffset.UTC);
 
-    DateTime limitDueDate =
-      CASE_FRI_SAT_MON_SERVICE_POINT_CURR_DAY.toDateTimeAtStartOfDay(DateTimeZone.UTC);
+    ZonedDateTime limitDueDate =
+      CASE_FRI_SAT_MON_SERVICE_POINT_CURR_DAY.atStartOfDay(ZoneOffset.UTC);
 
     FixedDueDateSchedulesBuilder fixedDueDateSchedules = new FixedDueDateSchedulesBuilder()
       .withName("Fixed Due Date Schedule")
-      .addSchedule(wholeMonth(2019, DateTimeConstants.JANUARY, limitDueDate));
+      .addSchedule(wholeMonth(2019, 1, limitDueDate));
     UUID fixedDueDateSchedulesId = loanPoliciesFixture.createSchedule(
       fixedDueDateSchedules).getId();
 
@@ -102,9 +101,8 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
         .at(checkoutServicePointId)
         .on(loanDate));
 
-    DateTime expectedDate =
-      CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY
-        .toDateTime(END_OF_A_DAY, DateTimeZone.UTC);
+    ZonedDateTime expectedDate = ZonedDateTime.of(
+      CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, LocalTime.MAX, ZoneOffset.UTC);
     assertThat("due date should be " + expectedDate,
       loan.getJson().getString("dueDate"), isEquivalentTo(expectedDate));
   }
@@ -117,15 +115,14 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
     IndividualResource jessica = usersFixture.jessica();
     UUID checkoutServicePointId = UUID.fromString(CASE_FRI_SAT_MON_SERVICE_POINT_ID);
 
-    DateTime loanDate =
-      new DateTime(2019, DateTimeConstants.JANUARY, 25, 10, 0, DateTimeZone.UTC);
+    ZonedDateTime loanDate =
+      ZonedDateTime.of(2019, 1, 25, 10, 0, 0, 0, ZoneOffset.UTC);
 
-    DateTime limitDueDate =
-      CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY
-        .toDateTimeAtStartOfDay(DateTimeZone.UTC);
+    ZonedDateTime limitDueDate =
+      CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY.atStartOfDay(ZoneOffset.UTC);
     FixedDueDateSchedulesBuilder fixedDueDateSchedules = new FixedDueDateSchedulesBuilder()
       .withName("Fixed Due Date Schedule")
-      .addSchedule(wholeMonth(2019, DateTimeConstants.JANUARY, limitDueDate));
+      .addSchedule(wholeMonth(2019, 1, limitDueDate));
     UUID fixedDueDateSchedulesId = loanPoliciesFixture.createSchedule(
       fixedDueDateSchedules).getId();
 
@@ -144,9 +141,8 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
         .at(checkoutServicePointId)
         .on(loanDate));
 
-    DateTime expectedDate =
-      CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY
-        .toDateTime(END_OF_A_DAY, DateTimeZone.UTC);
+    ZonedDateTime expectedDate = ZonedDateTime.of(
+      CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY, LocalTime.MAX, ZoneOffset.UTC); 
     assertThat("due date should be " + expectedDate,
       loan.getJson().getString("dueDate"), isEquivalentTo(expectedDate));
   }

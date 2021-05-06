@@ -7,22 +7,21 @@ import static org.folio.circulation.support.results.Result.succeeded;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.folio.circulation.infrastructure.storage.ConfigurationRepository;
+import org.folio.circulation.infrastructure.storage.ServicePointRepository;
 import org.folio.circulation.infrastructure.storage.requests.RequestQueueRepository;
 import org.folio.circulation.infrastructure.storage.requests.RequestRepository;
-import org.folio.circulation.infrastructure.storage.ServicePointRepository;
 import org.folio.circulation.resources.context.ReorderRequestContext;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.utils.DateTimeUtil;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +144,7 @@ public class UpdateRequestQueue {
     return completedFuture(succeeded(request));
   }
 
-  private Result<Request> populateHoldShelfExpirationDate(Request request, DateTimeZone tenantTimeZone) {
+  private Result<Request> populateHoldShelfExpirationDate(Request request, ZoneOffset tenantTimeZone) {
     ServicePoint pickupServicePoint = request.getPickupServicePoint();
     TimePeriod holdShelfExpiryPeriod = pickupServicePoint.getHoldShelfExpiryPeriod();
 
@@ -157,13 +156,8 @@ public class UpdateRequestQueue {
     ZonedDateTime holdShelfExpirationDate =
       calculateHoldShelfExpirationDate(holdShelfExpiryPeriod, tenantTimeZone);
 
-    // Need to use Joda time here since formatting/parsing using
-    // java.time has issues with the ISO-8601 format FOLIO uses,
-    // specifically: 2019-02-18T00:00:00.000+0000 cannot be parsed
-    // due to a missing ':' in the offset. Parsing is possible if
-    // the format is: 2019-02-18T00:00:00.000+00:00
-    request.changeHoldShelfExpirationDate(new DateTime(
-      holdShelfExpirationDate.toInstant().toEpochMilli(), DateTimeZone.UTC
+    request.changeHoldShelfExpirationDate(ZonedDateTime.ofInstant(
+      holdShelfExpirationDate.toInstant(), ZoneOffset.UTC
     ));
 
     return succeeded(request);
@@ -291,10 +285,10 @@ public class UpdateRequestQueue {
   }
 
   private ZonedDateTime calculateHoldShelfExpirationDate(
-    TimePeriod holdShelfExpiryPeriod, DateTimeZone tenantTimeZone) {
+    TimePeriod holdShelfExpiryPeriod, ZoneOffset tenantTimeZone) {
 
     ZonedDateTime now = Instant.now(ClockManager.getClockManager().getClock())
-      .atZone(tenantTimeZone.toTimeZone().toZoneId());
+      .atZone(tenantTimeZone);
 
     ZonedDateTime holdShelfExpirationDate = holdShelfExpiryPeriod.getInterval()
       .addTo(now, holdShelfExpiryPeriod.getDuration());

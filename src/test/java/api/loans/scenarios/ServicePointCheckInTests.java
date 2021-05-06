@@ -13,14 +13,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Seconds;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -51,10 +50,10 @@ public class ServicePointCheckInTests extends APITests {
         .forItem(nod)
         .by(jessica)
         .withPickupServicePoint(checkInServicePoint)
-        .withRequestDate(new DateTime(2019, 7, 5, 10, 0))
+        .withRequestDate(ZonedDateTime.of(2019, 7, 5, 10, 0, 0, 0, ZoneOffset.UTC))
         .withRequestExpiration(LocalDate.of(2019, 7, 11)));
 
-    final DateTime beforeCheckIn = DateTime.now(DateTimeZone.UTC);
+    final ZonedDateTime beforeCheckIn = ZonedDateTime.now(ZoneOffset.UTC);
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -115,7 +114,7 @@ public class ServicePointCheckInTests extends APITests {
     staffSlipContextMatchers.putAll(getRequestContextMatchers(requestAfterCheckIn));
     staffSlipContextMatchers.put("request.requestID", is(request.getId()));
     staffSlipContextMatchers.put("item.lastCheckedInDateTime",
-      TextDateTimeMatcher.withinSecondsAfter(Seconds.seconds(2), beforeCheckIn));
+      TextDateTimeMatcher.withinSecondsAfter(2, beforeCheckIn));
 
     JsonObject staffSlipContext = checkInResponse.getStaffSlipContext();
     assertThat(staffSlipContext, JsonObjectMatcher.allOfPaths(staffSlipContextMatchers));
@@ -141,9 +140,9 @@ public class ServicePointCheckInTests extends APITests {
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        DateTime.now(DateTimeZone.UTC), requestServicePoint.getId());
+        ZonedDateTime.now(ZoneOffset.UTC), requestServicePoint.getId());
 
-    final DateTime beforeCheckIn = DateTime.now(DateTimeZone.UTC);
+    final ZonedDateTime beforeCheckIn = ZonedDateTime.now(ZoneOffset.UTC);
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -222,7 +221,7 @@ public class ServicePointCheckInTests extends APITests {
     staffSlipContextMatchers.put("request.servicePointPickup", servicePointNameMatcher(requestServicePoint));
     staffSlipContextMatchers.put("request.requestID", is(request.getId()));
     staffSlipContextMatchers.put("item.lastCheckedInDateTime",
-      TextDateTimeMatcher.withinSecondsAfter(Seconds.seconds(2), beforeCheckIn));
+      TextDateTimeMatcher.withinSecondsAfter(2, beforeCheckIn));
 
     JsonObject staffSlipContext = checkInResponse.getStaffSlipContext();
     assertThat(staffSlipContext, JsonObjectMatcher.allOfPaths(staffSlipContextMatchers));

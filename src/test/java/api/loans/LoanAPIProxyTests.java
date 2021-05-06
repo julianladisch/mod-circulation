@@ -1,22 +1,21 @@
 package api.loans;
 
-import static api.support.http.InterfaceUrls.loansUrl;
 import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
-import static org.hamcrest.core.Is.is;
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.joda.time.DateTimeZone.UTC;
+import static org.hamcrest.core.Is.is;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import api.support.http.IndividualResource;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import api.support.APITests;
 import api.support.builders.LoanBuilder;
+import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 
 public class LoanAPIProxyTests extends APITests {
@@ -31,8 +30,8 @@ public class LoanAPIProxyTests extends APITests {
 
     proxyRelationshipsFixture.currentProxyFor(sponsor, proxy);
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     IndividualResource response = loansFixture.createLoan(new LoanBuilder()
       .withId(id)
@@ -63,8 +62,8 @@ public class LoanAPIProxyTests extends APITests {
 
     proxyRelationshipsFixture.nonExpiringProxyFor(sponsor, proxy);
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     IndividualResource response = loansFixture.createLoan(new LoanBuilder()
       .withId(id)
@@ -95,8 +94,8 @@ public class LoanAPIProxyTests extends APITests {
 
     proxyRelationshipsFixture.inactiveProxyFor(sponsor, proxy);
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     LoanBuilder loan = new LoanBuilder()
       .withId(id)
@@ -124,8 +123,8 @@ public class LoanAPIProxyTests extends APITests {
 
     proxyRelationshipsFixture.expiredProxyFor(sponsor, proxy);
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     LoanBuilder loan = new LoanBuilder()
       .withId(id)
@@ -154,8 +153,8 @@ public class LoanAPIProxyTests extends APITests {
 
     proxyRelationshipsFixture.currentProxyFor(unexpectedSponsor, proxy);
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     LoanBuilder loan = new LoanBuilder()
       .withId(id)
@@ -176,8 +175,8 @@ public class LoanAPIProxyTests extends APITests {
   public void cannotCreateProxiedLoanWhenNoRelationship() {
     UUID id = UUID.randomUUID();
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     UUID itemId = itemsFixture.basedUponSmallAngryPlanet().getId();
 
@@ -207,8 +206,8 @@ public class LoanAPIProxyTests extends APITests {
     IndividualResource sponsor = usersFixture.jessica();
     IndividualResource proxy = usersFixture.james();
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     loansFixture.createLoan(new LoanBuilder()
       .withId(id)
@@ -243,8 +242,8 @@ public class LoanAPIProxyTests extends APITests {
     IndividualResource sponsor = usersFixture.jessica();
     IndividualResource proxy = usersFixture.james();
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     loansFixture.createLoan(new LoanBuilder()
       .withId(id)
@@ -283,8 +282,8 @@ public class LoanAPIProxyTests extends APITests {
     IndividualResource otherUser = usersFixture.charlotte();
     IndividualResource proxy = usersFixture.james();
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     loansFixture.createLoan(new LoanBuilder()
       .withId(id)
@@ -322,8 +321,8 @@ public class LoanAPIProxyTests extends APITests {
     IndividualResource requestingUser = usersFixture.jessica();
     IndividualResource userAttemptingToProxy = usersFixture.james();
 
-    DateTime loanDate = new DateTime(2017, 2, 27, 10, 23, 43, UTC);
-    DateTime dueDate = new DateTime(2017, 3, 29, 10, 23, 43, UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(2017, 2, 27, 10, 23, 43, 0, UTC);
+    ZonedDateTime dueDate = ZonedDateTime.of(2017, 3, 29, 10, 23, 43, 0, UTC);
 
     loansFixture.createLoan(new LoanBuilder()
       .withId(id)

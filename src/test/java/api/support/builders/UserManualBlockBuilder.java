@@ -1,11 +1,12 @@
 package api.support.builders;
 
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import io.vertx.core.json.JsonObject;
-import org.joda.time.DateTime;
-
-import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
 public class UserManualBlockBuilder extends JsonBuilder implements Builder {
 
@@ -14,7 +15,7 @@ public class UserManualBlockBuilder extends JsonBuilder implements Builder {
   private final String desc;
   private final String staffInformation;
   private final String patronMessage;
-  private final DateTime expirationDate;
+  private final ZonedDateTime expirationDate;
   private final boolean borrowing;
   private final boolean renewals;
   private final boolean requests;
@@ -32,7 +33,7 @@ public class UserManualBlockBuilder extends JsonBuilder implements Builder {
     String desc,
     String staffInformation,
     String patronMessage,
-    DateTime expirationDate,
+    ZonedDateTime expirationDate,
     boolean borrowing,
     boolean renewals,
     boolean requests,
@@ -58,11 +59,14 @@ public class UserManualBlockBuilder extends JsonBuilder implements Builder {
     write(jsonObject, "desc",  desc);
     write(jsonObject, "staffInformation", staffInformation);
     write(jsonObject, "patronMessage", patronMessage);
-    write(jsonObject, "expirationDate", expirationDate);
     write(jsonObject, "borrowing", borrowing);
     write(jsonObject, "renewals", renewals);
     write(jsonObject, "requests", requests);
     write(jsonObject, "userId", userId);
+
+    if (this.expirationDate != null) {
+      write(jsonObject, "expirationDate", toDateTimeString(this.expirationDate));
+    }
 
     return jsonObject;
   }
@@ -137,7 +141,7 @@ public class UserManualBlockBuilder extends JsonBuilder implements Builder {
       this.userId);
   }
 
-  public UserManualBlockBuilder withExpirationDate(DateTime expirationDate) {
+  public UserManualBlockBuilder withExpirationDate(ZonedDateTime expirationDate) {
     return new UserManualBlockBuilder(
       this.id,
       this.type,

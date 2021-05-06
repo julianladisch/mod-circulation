@@ -5,6 +5,7 @@ import static org.folio.circulation.support.ValidationErrorFailure.singleValidat
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
 
+import java.time.ZonedDateTime;
 import java.util.concurrent.CompletableFuture;
 
 import org.folio.circulation.domain.Loan;
@@ -15,7 +16,6 @@ import org.folio.circulation.domain.override.OverridableBlockType;
 import org.folio.circulation.support.http.OkapiPermissions;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
 
 public class OverridingLoanValidator extends OverridingBlockValidator<LoanAndRelatedRecords> {
   private static final String DUE_DATE_NOT_SPECIFIED_MESSAGE =
@@ -78,8 +78,8 @@ public class OverridingLoanValidator extends OverridingBlockValidator<LoanAndRel
 
     ItemNotLoanableBlockOverride itemNotLoanableBlockOverride = getBlockOverrides()
       .getItemNotLoanableBlockOverride();
-    DateTime loanDate = loanAndRelatedRecords.getLoan().getLoanDate();
-    DateTime requestedDueDate = itemNotLoanableBlockOverride.getDueDate();
+    ZonedDateTime loanDate = loanAndRelatedRecords.getLoan().getLoanDate();
+    ZonedDateTime requestedDueDate = itemNotLoanableBlockOverride.getDueDate();
 
     if (itemNotLoanableBlockOverride.isRequested() && !requestedDueDate.isAfter(loanDate)) {
       return failed(singleValidationError(new ValidationError(DUE_DATE_NOT_AFTER_LOAN_DATE,

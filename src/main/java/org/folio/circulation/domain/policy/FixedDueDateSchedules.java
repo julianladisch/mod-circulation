@@ -4,7 +4,9 @@ import static org.folio.circulation.support.StreamToListMapper.toList;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.json.JsonObjectArrayPropertyFetcher.toStream;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
+import static org.folio.circulation.support.utils.DateTimeUtil.parseDateTime;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -13,7 +15,6 @@ import java.util.function.Supplier;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.utils.DateTimeUtil;
-import org.joda.time.DateTime;
 
 import io.vertx.core.json.JsonObject;
 
@@ -35,37 +36,37 @@ public class FixedDueDateSchedules {
     }
   }
 
-  public Optional<DateTime> findDueDateFor(DateTime date) {
+  public Optional<ZonedDateTime> findDueDateFor(ZonedDateTime date) {
     return findScheduleFor(date).map(this::getDueDate);
   }
 
-  private Optional<JsonObject> findScheduleFor(DateTime date) {
+  private Optional<JsonObject> findScheduleFor(ZonedDateTime date) {
     return schedules
       .stream()
       .filter(isWithin(date))
       .findFirst();
   }
 
-  private Predicate<? super JsonObject> isWithin(DateTime date) {
+  private Predicate<? super JsonObject> isWithin(ZonedDateTime date) {
     return schedule -> {
-      DateTime from = DateTime.parse(schedule.getString("from"));
-      DateTime to = DateTimeUtil.atEndOfTheDay(DateTime.parse(schedule.getString("to")));
+      ZonedDateTime from = parseDateTime(schedule.getString("from"));
+      ZonedDateTime to = DateTimeUtil.atEndOfTheDay(parseDateTime(schedule.getString("to")));
 
       return date.isAfter(from) && date.isBefore(to);
     };
   }
 
-  private DateTime getDueDate(JsonObject schedule) {
-    return DateTime.parse(schedule.getString("due"));
+  private ZonedDateTime getDueDate(JsonObject schedule) {
+    return parseDateTime(schedule.getString("due"));
   }
 
   public boolean isEmpty() {
     return schedules.isEmpty();
   }
 
-  Result<DateTime> truncateDueDate(
-    DateTime dueDate,
-    DateTime loanDate,
+  Result<ZonedDateTime> truncateDueDate(
+    ZonedDateTime dueDate,
+    ZonedDateTime loanDate,
     Supplier<ValidationError> noApplicableScheduleError) {
 
     return findDueDateFor(loanDate)
@@ -74,7 +75,7 @@ public class FixedDueDateSchedules {
       .orElseGet(() -> failedValidation(noApplicableScheduleError.get()));
   }
 
-  private DateTime earliest(DateTime rollingDueDate, DateTime limit) {
+  private ZonedDateTime earliest(ZonedDateTime rollingDueDate, ZonedDateTime limit) {
     return limit.isBefore(rollingDueDate)
       ? limit
       : rollingDueDate;

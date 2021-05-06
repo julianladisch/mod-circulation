@@ -1,26 +1,27 @@
 package api.support.builders;
 
+import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import api.support.http.IndividualResource;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-
 import io.vertx.core.json.JsonObject;
 
 public class CheckInByBarcodeRequestBuilder extends JsonBuilder implements Builder {
   private final String itemBarcode;
-  private final DateTime checkInDate;
+  private final ZonedDateTime checkInDate;
   private final String servicePointId;
   private final String claimedReturnedResolution;
 
   public CheckInByBarcodeRequestBuilder() {
-    this(null, DateTime.now(DateTimeZone.UTC), null, null);
+    this(null, ZonedDateTime.now(ZoneOffset.UTC), null, null);
   }
 
   private CheckInByBarcodeRequestBuilder(
     String itemBarcode,
-    DateTime checkInDate,
+    ZonedDateTime checkInDate,
     String servicePointId,
     String claimedReturnedResolution) {
 
@@ -35,7 +36,7 @@ public class CheckInByBarcodeRequestBuilder extends JsonBuilder implements Build
     final JsonObject request = new JsonObject();
 
     put(request, "itemBarcode", this.itemBarcode);
-    put(request, "checkInDate", this.checkInDate);
+    put(request, "checkInDate", toDateTimeString(this.checkInDate));
     put(request, "servicePointId", this.servicePointId);
     put(request, "claimedReturnedResolution", this.claimedReturnedResolution);
 
@@ -66,7 +67,7 @@ public class CheckInByBarcodeRequestBuilder extends JsonBuilder implements Build
       this.claimedReturnedResolution);
   }
 
-  public CheckInByBarcodeRequestBuilder on(DateTime checkInDate) {
+  public CheckInByBarcodeRequestBuilder on(ZonedDateTime checkInDate) {
     return new CheckInByBarcodeRequestBuilder(
       this.itemBarcode,
       checkInDate,

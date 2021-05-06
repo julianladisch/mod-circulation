@@ -1,10 +1,11 @@
 package org.folio.circulation.domain.validation;
 
-import static org.folio.circulation.support.fetching.RecordFetching.findWithCqlQuery;
-import static org.folio.circulation.support.results.Result.of;
 import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
+import static org.folio.circulation.support.fetching.RecordFetching.findWithCqlQuery;
 import static org.folio.circulation.support.http.client.CqlQuery.exactMatch;
+import static org.folio.circulation.support.results.Result.of;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -20,9 +21,8 @@ import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.FindWithCqlQuery;
 import org.folio.circulation.support.HttpFailure;
-import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.http.server.ValidationError;
-import org.joda.time.DateTime;
+import org.folio.circulation.support.results.Result;
 
 public class UserManualBlocksValidator {
   private final FindWithCqlQuery<UserManualBlock> userManualBlocksFetcher;
@@ -88,8 +88,8 @@ public class UserManualBlocksValidator {
           userManualBlock.getExpirationDate(), userManualBlock.getRequests()));
   }
 
-  private boolean isBlockedToCreateRequests(DateTime expirationDate, boolean requests) {
-    final DateTime now = ClockManager.getClockManager().getDateTime();
+  private boolean isBlockedToCreateRequests(ZonedDateTime expirationDate, boolean requests) {
+    final ZonedDateTime now = ClockManager.getClockManager().getZonedDateTime();
     return requests && expirationDate != null && expirationDate.isAfter(now);
   }
 }

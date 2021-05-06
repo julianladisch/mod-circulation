@@ -33,6 +33,7 @@ import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasParameter;
 import static api.support.matchers.ValidationErrorMatchers.hasUUIDParameter;
 import static api.support.utl.BlockOverridesUtils.getMissingPermissions;
+import static java.time.ZoneOffset.UTC;
 import static org.folio.HttpStatus.HTTP_UNPROCESSABLE_ENTITY;
 import static org.folio.circulation.domain.EventType.ITEM_CHECKED_OUT;
 import static org.folio.circulation.domain.policy.DueDateManagement.KEEP_THE_CURRENT_DUE_DATE;
@@ -47,9 +48,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
-import static org.joda.time.DateTimeZone.UTC;
 import static org.junit.Assert.assertTrue;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -58,9 +59,6 @@ import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.http.client.Response;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Seconds;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -85,10 +83,10 @@ import io.vertx.core.json.JsonObject;
 import lombok.val;
 
 public class CheckOutByBarcodeTests extends APITests {
-  private static final DateTime TEST_LOAN_DATE =
-    new DateTime(2019, 4, 10, 11, 35, 48, DateTimeZone.UTC);
-  private static final DateTime TEST_DUE_DATE =
-    new DateTime(2019, 4, 20, 11, 30, 0, DateTimeZone.UTC);
+  private static final ZonedDateTime TEST_LOAN_DATE =
+    ZonedDateTime.of(2019, 4, 10, 11, 35, 48, 0, UTC);
+  private static final ZonedDateTime TEST_DUE_DATE =
+    ZonedDateTime.of(2019, 4, 20, 11, 30, 0, 0, UTC);
   public static final String OVERRIDE_ITEM_NOT_LOANABLE_BLOCK_PERMISSION =
     "circulation.override-item-not-loanable-block";
   public static final String OVERRIDE_PATRON_BLOCK_PERMISSION =
@@ -111,7 +109,7 @@ public class CheckOutByBarcodeTests extends APITests {
 
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate = new DateTime(2018, 3, 18, 11, 43, 54, UTC);
+    final ZonedDateTime loanDate = ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, UTC);
 
     final UUID checkoutServicePointId = UUID.randomUUID();
 
@@ -250,13 +248,13 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate = DateTime.now(UTC)
-      .withMonthOfYear(3)
+    final ZonedDateTime loanDate = ZonedDateTime.now(UTC)
+      .withMonth(3)
       .withDayOfMonth(18)
-      .withHourOfDay(11)
-      .withMinuteOfHour(43)
-      .withSecondOfMinute(54)
-      .withMillisOfSecond(0);
+      .withHour(11)
+      .withMinute(43)
+      .withSecond(54)
+      .withNano(0);
 
     final IndividualResource response = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -310,7 +308,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate = new DateTime(2018, 3, 18, 11, 43, 54, UTC);
+    final ZonedDateTime loanDate = ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, UTC);
 
     final IndividualResource response = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -332,7 +330,7 @@ public class CheckOutByBarcodeTests extends APITests {
 
     assertThat("due date should be limited by schedule",
       loan.getString("dueDate"),
-      isEquivalentTo(new DateTime(2018, 3, 31, 23, 59, 59, UTC)));
+      isEquivalentTo(ZonedDateTime.of(2018, 3, 31, 23, 59, 59, 0, UTC)));
   }
 
   @Test
@@ -354,7 +352,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime requestDate = DateTime.now();
+    final ZonedDateTime requestDate = ZonedDateTime.now();
 
     final IndividualResource response = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -366,7 +364,7 @@ public class CheckOutByBarcodeTests extends APITests {
 
     assertThat("loan date should be as supplied",
       loan.getString("loanDate"),
-      withinSecondsAfter(Seconds.seconds(10), requestDate));
+      withinSecondsAfter(10, requestDate));
   }
 
   @Test
@@ -581,7 +579,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate = new DateTime(2018, 3, 18, 11, 43, 54, UTC);
+    final ZonedDateTime loanDate = ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, UTC);
 
     final Response response = checkOutFixture.attemptCheckOutByBarcode(500,
       new CheckOutByBarcodeRequestBuilder()
@@ -600,7 +598,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     IndividualResource james = usersFixture.james();
 
-    final DateTime loanDate = new DateTime(2018, 3, 18, 11, 43, 54, UTC);
+    final ZonedDateTime loanDate = ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, UTC);
 
     final Response response = checkOutFixture.attemptCheckOutByBarcode(422,
       new CheckOutByBarcodeRequestBuilder()
@@ -965,7 +963,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate = new DateTime(2018, 3, 18, 11, 43, 54, UTC);
+    final ZonedDateTime loanDate = ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, UTC);
 
     final Response response = checkOutFixture.attemptCheckOutByBarcode(500,
       new CheckOutByBarcodeRequestBuilder()
@@ -994,7 +992,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final DateTime loanDate = new DateTime(2018, 3, 18, 11, 43, 54, UTC);
+    final ZonedDateTime loanDate = ZonedDateTime.of(2018, 3, 18, 11, 43, 54, 0, UTC);
 
     checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -1309,7 +1307,7 @@ public class CheckOutByBarcodeTests extends APITests {
       new CheckOutByBarcodeRequestBuilder()
         .forItem(smallAngryPlanet)
         .to(steve)
-        .on(DateTime.now(UTC))
+        .on(ZonedDateTime.now(UTC))
         .at(UUID.randomUUID()));
 
     final JsonObject loan = response.getJson();
@@ -1354,7 +1352,7 @@ public class CheckOutByBarcodeTests extends APITests {
       new CheckOutByBarcodeRequestBuilder()
         .forItem(smallAngryPlanet)
         .to(steve)
-        .on(DateTime.now(UTC))
+        .on(ZonedDateTime.now(UTC))
         .at(UUID.randomUUID()));
 
     assertThat(response.getBody(), containsString(
@@ -1376,7 +1374,7 @@ public class CheckOutByBarcodeTests extends APITests {
       new CheckOutByBarcodeRequestBuilder()
         .forItem(smallAngryPlanet)
         .to(steve)
-        .on(DateTime.now(UTC))
+        .on(ZonedDateTime.now(UTC))
         .at(UUID.randomUUID()));
 
     usersFixture.remove(steve);
@@ -1419,7 +1417,7 @@ public class CheckOutByBarcodeTests extends APITests {
     final OkapiHeaders okapiHeaders = buildOkapiHeadersWithPermissions(
       OVERRIDE_ITEM_NOT_LOANABLE_BLOCK_PERMISSION);
 
-    DateTime invalidDueDate = TEST_LOAN_DATE.minusDays(2);
+    ZonedDateTime invalidDueDate = TEST_LOAN_DATE.minusDays(2);
 
     setNotLoanablePolicy();
     Response response = checkOutFixture.attemptCheckOutByBarcode(

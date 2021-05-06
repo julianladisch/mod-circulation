@@ -1,18 +1,20 @@
 package api.support.builders;
+import static java.time.ZoneOffset.UTC;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 public class FixedDueDateSchedule {
-  final DateTime from;
-  final DateTime to;
-  public final DateTime due;
+  final ZonedDateTime from;
+  final ZonedDateTime to;
+  public final ZonedDateTime due;
 
-  private static FixedDueDateSchedule dueAtEnd(DateTime from, DateTime to) {
+  private static FixedDueDateSchedule dueAtEnd(ZonedDateTime from, ZonedDateTime to) {
     return new FixedDueDateSchedule(from, to, to);
   }
 
-  public FixedDueDateSchedule(DateTime from, DateTime to, DateTime due) {
+  public FixedDueDateSchedule(ZonedDateTime from, ZonedDateTime to, ZonedDateTime due) {
     this.from = from;
     this.to = to;
     this.due = due;
@@ -20,49 +22,50 @@ public class FixedDueDateSchedule {
 
   public static FixedDueDateSchedule wholeYear(int year) {
     return dueAtEnd(
-      new DateTime(year, 1, 1, 0, 0, 0, DateTimeZone.UTC),
-      new DateTime(year, 12, 31, 23, 59, 59, DateTimeZone.UTC));
+      ZonedDateTime.of(year, 1, 1, 0, 0, 0, 0, UTC),
+      ZonedDateTime.of(year, 12, 31, 23, 59, 59, 0, UTC));
   }
 
   public static FixedDueDateSchedule wholeMonth(int year, int month) {
-    final DateTime firstOfMonth = new DateTime(year, month, 1, 0, 0, 0, DateTimeZone.UTC);
+    final ZonedDateTime firstOfMonth = ZonedDateTime
+      .of(year, month, 1, 0, 0, 0, 0, ZoneOffset.UTC);
 
-    final DateTime lastOfMonth = firstOfMonth
-      .withDayOfMonth(firstOfMonth.dayOfMonth().getMaximumValue())
-      .withHourOfDay(23)
-      .withMinuteOfHour(59)
-      .withSecondOfMinute(59);
+    final ZonedDateTime lastOfMonth = firstOfMonth
+      .withDayOfMonth(firstOfMonth.getMonth().maxLength())
+      .withHour(23)
+      .withMinute(59)
+      .withSecond(59);
 
     return dueAtEnd(firstOfMonth, lastOfMonth);
   }
 
-  public static FixedDueDateSchedule wholeMonth(int year, int month, DateTime dueDate) {
-    final DateTime firstOfMonth = new DateTime(year, month, 1, 0, 0, 0, DateTimeZone.UTC);
+  public static FixedDueDateSchedule wholeMonth(int year, int month, ZonedDateTime dueDate) {
+    final ZonedDateTime firstOfMonth = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, UTC);
 
-    final DateTime lastOfMonth = firstOfMonth
-      .withDayOfMonth(firstOfMonth.dayOfMonth().getMaximumValue())
-      .withHourOfDay(23)
-      .withMinuteOfHour(59)
-      .withSecondOfMinute(59);
+    final ZonedDateTime lastOfMonth = firstOfMonth
+      .withDayOfMonth(firstOfMonth.getMonth().maxLength())
+      .withHour(23)
+      .withMinute(59)
+      .withSecond(59);
 
     return new FixedDueDateSchedule(firstOfMonth, lastOfMonth, dueDate);
   }
 
   public static FixedDueDateSchedule todayOnly() {
-    return forDay(DateTime.now(DateTimeZone.UTC));
+    return forDay(ZonedDateTime.now(UTC));
   }
 
   public static FixedDueDateSchedule yesterdayOnly() {
-    return forDay(DateTime.now(DateTimeZone.UTC).minusDays(1));
+    return forDay(ZonedDateTime.now(UTC).minusDays(1));
   }
 
-  public static FixedDueDateSchedule forDay(DateTime day) {
-    final DateTime beginningOfDay = day.withTimeAtStartOfDay();
+  public static FixedDueDateSchedule forDay(ZonedDateTime day) {
+    final ZonedDateTime beginningOfDay = day.with(LocalTime.MIN);
 
-    final DateTime endOfDay = beginningOfDay
-      .withHourOfDay(23)
-      .withMinuteOfHour(59)
-      .withSecondOfMinute(59);
+    final ZonedDateTime endOfDay = beginningOfDay
+      .withHour(23)
+      .withMinute(59)
+      .withSecond(59);
 
     return new FixedDueDateSchedule(beginningOfDay, endOfDay, endOfDay);
   }

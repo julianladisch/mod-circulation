@@ -4,23 +4,26 @@ import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyU
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import org.folio.circulation.support.results.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Days;
-import org.joda.time.LocalTime;
 
 public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
 
-  private final DateTime currentTime;
+  private final ZonedDateTime currentTime;
 
-  public EndOfCurrentHoursStrategy(DateTime currentTime, DateTimeZone zone) {
+  public EndOfCurrentHoursStrategy(ZonedDateTime currentTime, ZoneOffset zone) {
     super(zone);
     this.currentTime = currentTime;
   }
 
   @Override
-  protected Result<DateTime> calculateIfClosed(LibraryTimetable libraryTimetable, LibraryInterval requestedInterval) {
+  protected Result<ZonedDateTime> calculateIfClosed(
+      LibraryTimetable libraryTimetable, LibraryInterval requestedInterval) {
     LibraryInterval currentTimeInterval = libraryTimetable.findInterval(currentTime);
     if (currentTimeInterval == null) {
       return failed(failureForAbsentTimetable());
@@ -37,7 +40,7 @@ public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
   public static final LocalTime END_OF_A_DAY = LocalTime.MIDNIGHT.minusSeconds(1);
 
   private boolean hasLibraryRolloverWorkingDay(LibraryTimetable libraryTimetable,
-                                               LibraryInterval requestedInterval) {
+    LibraryInterval requestedInterval) {
 
     if (isNotSequenceOfWorkingDays(libraryTimetable, requestedInterval)) {
       return false;
@@ -50,12 +53,18 @@ public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
       && isDateEqualToBoundaryValueOfDay(startLocalTime, LocalTime.MIDNIGHT);
   }
 
-  private boolean isNotSequenceOfWorkingDays(LibraryTimetable libraryTimetable, LibraryInterval requestedInterval) {
-    return Days.daysBetween(libraryTimetable.getHead().getEndTime(),
-      requestedInterval.getPrevious().getStartTime()) != Days.ZERO;
+  private boolean isNotSequenceOfWorkingDays(LibraryTimetable libraryTimetable,
+    LibraryInterval requestedInterval) {
+
+    LocalDate start = requestedInterval.getPrevious().getStartTime().toLocalDate();
+    LocalDate end = libraryTimetable.getHead().getEndTime().toLocalDate();
+
+    return Math.abs(Duration.between(start, end).toDays()) == 0;
   }
 
-  private boolean isDateEqualToBoundaryValueOfDay(LocalTime requestedInterval, LocalTime boundaryValueOfDay) {
+  private boolean isDateEqualToBoundaryValueOfDay(LocalTime requestedInterval,
+    LocalTime boundaryValueOfDay) {
+
     return requestedInterval.compareTo(boundaryValueOfDay) == 0;
   }
 }
