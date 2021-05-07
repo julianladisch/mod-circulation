@@ -6,6 +6,8 @@ import static org.folio.circulation.domain.notice.NoticeTiming.UPON_AT;
 import static org.folio.circulation.domain.notice.schedule.TriggeringEvent.HOLD_EXPIRATION;
 import static org.folio.circulation.support.results.MappingFunctions.when;
 import static org.folio.circulation.support.results.Result.succeeded;
+import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
 import java.lang.invoke.MethodHandles;
 import java.time.ZoneOffset;
@@ -146,7 +148,7 @@ public class RequestScheduledNoticeHandler {
 
     ZonedDateTime recurringNoticeNextRunTime = noticeConfig
       .getRecurringPeriod().plusDate(notice.getNextRunTime());
-    if (recurringNoticeNextRunTime.isBefore(systemTime)) {
+    if (isBeforeMillis(recurringNoticeNextRunTime, systemTime)) {
       recurringNoticeNextRunTime = noticeConfig.getRecurringPeriod()
         .plusDate(systemTime);
     }
@@ -168,7 +170,7 @@ public class RequestScheduledNoticeHandler {
     ZonedDateTime requestExpirationDate = request.getRequestExpirationDate();
     ZonedDateTime holdShelfExpirationDate = request.getHoldShelfExpirationDate();
 
-    return requestExpirationDate != null && nextRunTime.isAfter(requestExpirationDate) ||
-      holdShelfExpirationDate != null && nextRunTime.isAfter(holdShelfExpirationDate);
+    return requestExpirationDate != null && isAfterMillis(nextRunTime, requestExpirationDate) ||
+      holdShelfExpirationDate != null && isAfterMillis(nextRunTime, holdShelfExpirationDate);
   }
 }

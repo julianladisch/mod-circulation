@@ -15,7 +15,7 @@ import static org.folio.circulation.domain.representations.logs.LogEventPayloadF
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.PAYLOAD;
 import static org.folio.circulation.domain.representations.logs.LogEventType.LOAN;
 import static org.folio.circulation.domain.representations.logs.RequestUpdateLogEventMapper.mapToRequestLogEventJson;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.AsyncCoordinationUtil.allOf;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.results.Result.succeeded;
@@ -72,7 +72,7 @@ public class EventPublisher {
       JsonObject payloadJsonObject = new JsonObject();
       write(payloadJsonObject, USER_ID_FIELD, loan.getUserId());
       write(payloadJsonObject, LOAN_ID_FIELD, loan.getId());
-      write(payloadJsonObject, DUE_DATE_FIELD, toDateTimeString(loan.getDueDate()));
+      write(payloadJsonObject, DUE_DATE_FIELD, formatDateTime(loan.getDueDate()));
 
       JsonObject logEventPayload = mapToCheckOutLogEventJson(loanAndRelatedRecords);
       CompletableFuture.runAsync(() -> pubSubPublishingService.publishEvent(LOG_RECORD.name(), logEventPayload.encode()));
@@ -99,7 +99,7 @@ public class EventPublisher {
       JsonObject payloadJsonObject = new JsonObject();
       write(payloadJsonObject, USER_ID_FIELD, loan.getUserId());
       write(payloadJsonObject, LOAN_ID_FIELD, loan.getId());
-      write(payloadJsonObject, RETURN_DATE_FIELD, toDateTimeString(loan.getReturnDate()));
+      write(payloadJsonObject, RETURN_DATE_FIELD, formatDateTime(loan.getReturnDate()));
 
       return
         pubSubPublishingService.publishEvent(ITEM_CHECKED_IN.name(),
@@ -146,13 +146,13 @@ public class EventPublisher {
       JsonObject payloadJsonObject = new JsonObject();
       write(payloadJsonObject, USER_ID_FIELD, loan.getUserId());
       write(payloadJsonObject, LOAN_ID_FIELD, loan.getId());
-      write(payloadJsonObject, DUE_DATE_FIELD, toDateTimeString(loan.getDueDate()));
+      write(payloadJsonObject, DUE_DATE_FIELD, formatDateTime(loan.getDueDate()));
       write(payloadJsonObject, DUE_DATE_CHANGED_BY_RECALL_FIELD, loan.wasDueDateChangedByRecall());
 
       LoanLogContext loanLogContext = LoanLogContext.from(loan)
         .withAction(LogContextActionResolver.resolveAction(loan.getAction()))
         .withDescription(String.format("New due date: %s (from %s)",
-          toDateTimeString(loan.getDueDate()), toDateTimeString(loan.getOriginalDueDate())));
+          formatDateTime(loan.getDueDate()), formatDateTime(loan.getOriginalDueDate())));
       CompletableFuture.runAsync(() -> publishLogRecord(loanLogContext.asJson(), LOAN));
 
       return pubSubPublishingService.publishEvent(LOAN_DUE_DATE_CHANGED.name(),
@@ -197,7 +197,7 @@ public class EventPublisher {
 
   public CompletableFuture<Result<Loan>> publishAgedToLostEvents(Loan loan) {
     return publishLogRecord(LoanLogContext.from(loan)
-      .withDescription(String.format("Due date: %s", toDateTimeString(loan.getAgedToLostDateTime()))).asJson(), LOAN)
+      .withDescription(String.format("Due date: %s", formatDateTime(loan.getAgedToLostDateTime()))).asJson(), LOAN)
       .thenCompose(r -> r.after(v -> publishStatusChangeEvent(ITEM_AGED_TO_LOST, loan)));
 
   }
@@ -228,7 +228,7 @@ public class EventPublisher {
   public CompletableFuture<Result<Void>> publishRecallRequestedEvent(Loan loan) {
     return publishLogRecord(LoanLogContext.from(loan)
       .withAction("Recall requested")
-      .withDescription(String.format("New due date: %s (from %s)", toDateTimeString(loan.getDueDate()), toDateTimeString(loan.getOriginalDueDate()))).asJson(), LOAN);
+      .withDescription(String.format("New due date: %s (from %s)", formatDateTime(loan.getDueDate()), formatDateTime(loan.getOriginalDueDate()))).asJson(), LOAN);
   }
 
   public CompletableFuture<Result<Void>> publishLogRecord(JsonObject context, LogEventType payloadType) {

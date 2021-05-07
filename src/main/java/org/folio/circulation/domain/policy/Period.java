@@ -6,6 +6,8 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getIntegerP
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -176,7 +178,7 @@ public class Period {
     final ZonedDateTime now = getClockManager().getZonedDateTime();
     final ZonedDateTime startPlusPeriod = plusDate(startDate);
 
-    return startPlusPeriod.isBefore(now) || startPlusPeriod.isEqual(now);
+    return isBeforeMillis(startPlusPeriod, now) || isSameMillis(startPlusPeriod, now);
   }
 
   public boolean hasNotPassedSinceDateTillNow(ZonedDateTime startDate) {
@@ -185,9 +187,8 @@ public class Period {
 
   public boolean isEqualToDateTillNow(ZonedDateTime startDate) {
     final ZonedDateTime now = getClockManager().getZonedDateTime();
-    final ZonedDateTime startPlusPeriod = plusDate(startDate);
 
-    return now.isEqual(startPlusPeriod);
+    return isSameMillis(now, plusDate(startDate));
   }
 
   public boolean hasZeroDuration() {

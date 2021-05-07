@@ -1,7 +1,7 @@
 
 package org.folio.circulation.domain;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getUUIDProperty;
@@ -30,7 +30,7 @@ public class LastCheckIn {
     JsonObject entries = new JsonObject();
     write(entries, "servicePointId", servicePointId);
     write(entries, "staffMemberId", staffMemberId);
-    write(entries, "dateTime", toDateTimeString(dateTime));
+    write(entries, "dateTime", formatDateTime(dateTime));
     return entries;
   }
 

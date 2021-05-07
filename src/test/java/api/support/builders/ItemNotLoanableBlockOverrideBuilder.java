@@ -1,7 +1,7 @@
 package api.support.builders;
 
 
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZonedDateTime;
 
@@ -20,7 +20,7 @@ public class ItemNotLoanableBlockOverrideBuilder extends JsonBuilder implements 
   public JsonObject create() {
     JsonObject blockOverrides = new JsonObject();
 
-    put(blockOverrides, "dueDate", toDateTimeString(dueDate));
+    put(blockOverrides, "dueDate", formatDateTime(dueDate));
 
     return blockOverrides;
   }

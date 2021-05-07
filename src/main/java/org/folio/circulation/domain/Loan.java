@@ -37,7 +37,6 @@ import static org.folio.circulation.domain.representations.LoanProperties.STATUS
 import static org.folio.circulation.domain.representations.LoanProperties.SYSTEM_RETURN_DATE;
 import static org.folio.circulation.domain.representations.LoanProperties.UPDATED_BY_USER_ID;
 import static org.folio.circulation.domain.representations.LoanProperties.USER_ID;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getBooleanProperty;
@@ -52,6 +51,9 @@ import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.utils.CommonUtils.executeIfNotNull;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.mostRecentDate;
 
 import java.time.ZonedDateTime;
@@ -69,7 +71,6 @@ import org.folio.circulation.support.results.Result;
 
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
-
 @AllArgsConstructor(access = PRIVATE)
 public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   private final JsonObject representation;
@@ -111,7 +112,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public Loan changeDueDate(ZonedDateTime newDueDate) {
-    write(representation, DUE_DATE, toDateTimeString(newDueDate));
+    write(representation, DUE_DATE, formatDateTime(newDueDate));
 
     return this;
   }
@@ -123,11 +124,11 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   private void changeReturnDate(ZonedDateTime returnDate) {
-    write(representation, RETURN_DATE, toDateTimeString(returnDate));
+    write(representation, RETURN_DATE, formatDateTime(returnDate));
   }
 
   private void changeSystemReturnDate(ZonedDateTime systemReturnDate) {
-    write(representation, SYSTEM_RETURN_DATE, toDateTimeString(systemReturnDate));
+    write(representation, SYSTEM_RETURN_DATE, formatDateTime(systemReturnDate));
   }
 
   public void changeAction(LoanAction action) {
@@ -510,7 +511,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public boolean hasDueDateChanged() {
-    return !originalDueDate.isEqual(getDueDate());
+    return !isSameMillis(originalDueDate, getDueDate());
   }
 
   public ZonedDateTime getSystemReturnDate() {
@@ -526,7 +527,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public void changeDeclaredLostDateTime(ZonedDateTime dateTime) {
-    write(representation, DECLARED_LOST_DATE, toDateTimeString(dateTime));
+    write(representation, DECLARED_LOST_DATE, formatDateTime(dateTime));
   }
 
   public ZonedDateTime getDeclareLostDateTime() {
@@ -546,7 +547,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
     ZonedDateTime dueDate = getDueDate();
 
     return ObjectUtils.allNotNull(dueDate, systemTime)
-      && dueDate.isBefore(systemTime);
+      && isBeforeMillis(dueDate, systemTime);
   }
 
   public Loan claimItemReturned(String comment, ZonedDateTime claimedReturnedDate) {
@@ -563,7 +564,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
 
   private void changeClaimedReturnedDate(ZonedDateTime claimedReturnedDate) {
     write(representation, CLAIMED_RETURNED_DATE,
-      toDateTimeString(claimedReturnedDate));
+      formatDateTime(claimedReturnedDate));
   }
 
   public Loan closeLoan(LoanAction action) {
@@ -645,8 +646,8 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   private void setAgedToLostDate(ZonedDateTime agedToLostDate) {
-    writeByPath(representation, agedToLostDate, AGED_TO_LOST_DELAYED_BILLING,
-      AGED_TO_LOST_DATE);
+    writeByPath(representation, formatDateTime(agedToLostDate),
+      AGED_TO_LOST_DELAYED_BILLING, AGED_TO_LOST_DATE);
   }
 
   public Loan removePreviousAction() {

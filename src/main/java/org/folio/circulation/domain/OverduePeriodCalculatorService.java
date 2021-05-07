@@ -4,6 +4,8 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.flatMapResult;
+import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -117,16 +119,18 @@ public class OverduePeriodCalculatorService {
         .withZoneSameInstant(ZoneOffset.UTC)
         .toLocalDateTime();
 
-      if (dueDate.isAfter(startTime) && dueDate.isBefore(endTime)) {
+      if (isAfterMillis(dueDate, startTime) && isBeforeMillis(dueDate, endTime)) {
         startTime = dueDate;
       }
 
-      if (returnDate.isAfter(startTime) && returnDate.isBefore(endTime)) {
+      if (isAfterMillis(returnDate, startTime)
+        && isBeforeMillis(returnDate, endTime)) {
+
         endTime = returnDate;
       }
 
-      if (endTime.isAfter(startTime) && endTime.isAfter(dueDate)
-        && startTime.isBefore(returnDate)) {
+      if (isAfterMillis(endTime, startTime) && isAfterMillis(endTime, dueDate)
+        && isBeforeMillis(startTime, returnDate)) {
 
         return (int) Duration.between(startTime, endTime).toMinutes();
       }

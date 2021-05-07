@@ -2,7 +2,7 @@ package org.folio.circulation.infrastructure.storage.notices;
 
 import static java.lang.String.format;
 import static org.folio.circulation.domain.notice.schedule.TriggeringEvent.from;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getBooleanProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectProperty;
@@ -88,7 +88,7 @@ public class JsonScheduledNoticeMapper {
       .put(FEE_FINE_ACTION_ID, notice.getFeeFineActionId())
       .put(RECIPIENT_USER_ID, notice.getRecipientUserId())
       .put(TRIGGERING_EVENT, notice.getTriggeringEvent().getRepresentation())
-      .put(NEXT_RUN_TIME, toDateTimeString(notice.getNextRunTime()
+      .put(NEXT_RUN_TIME, formatDateTime(notice.getNextRunTime()
         .withZoneSameLocal(ZoneOffset.UTC)))
       .put(NOTICE_CONFIG, mapConfigToJson(notice.getConfiguration()));
   }

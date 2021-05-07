@@ -1,6 +1,6 @@
 package api.support.builders;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -132,7 +132,7 @@ public class ProxyRelationshipBuilder implements Builder {
       this.proxyUserId,
       this.requestForSponsor,
       this.createdDate,
-      toDateTimeString(expirationDate),
+      formatDateTime(expirationDate),
       this.status,
       this.accrueTo,
       this.notificationsTo,

@@ -4,7 +4,7 @@ import static api.support.matchers.FailureMatcher.hasValidationFailure;
 import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -39,7 +39,7 @@ public class FixedLoanPolicyCheckOutDueDateCalculationTests {
 
     final ZonedDateTime desiredDueDate = ZonedDateTime.of(2018, 12, 31, 23, 59, 59, 0, UTC);
 
-    assertThat(toDateTimeString(calculationResult.value()), is(toDateTimeString(desiredDueDate)));
+    assertThat(formatDateTime(calculationResult.value()), is(formatDateTime(desiredDueDate)));
   }
 
   @Test
@@ -64,7 +64,7 @@ public class FixedLoanPolicyCheckOutDueDateCalculationTests {
       UTC);
 
     assertThat(calculationResult.succeeded(), is(true));
-    assertThat(toDateTimeString(calculationResult.value()), is(toDateTimeString(expectedInitialDueDate)));
+    assertThat(formatDateTime(calculationResult.value()), is(formatDateTime(expectedInitialDueDate)));
   }
 
   @Test
@@ -88,7 +88,7 @@ public class FixedLoanPolicyCheckOutDueDateCalculationTests {
     
     final ZonedDateTime desiredDueDate = ZonedDateTime.of(2020, 11, 2, 0, 0, 0, 0, timeZone);
 
-    assertThat(toDateTimeString(calculationResult.value()), is(toDateTimeString(desiredDueDate)));
+    assertThat(formatDateTime(calculationResult.value()), is(formatDateTime(desiredDueDate)));
   }
 
   @Test
@@ -151,7 +151,7 @@ public class FixedLoanPolicyCheckOutDueDateCalculationTests {
     final Result<ZonedDateTime> calculationResult = loanPolicy
       .calculateInitialDueDate(loan, null);
 
-    assertThat(toDateTimeString(calculationResult.value()), is(toDateTimeString(expectedSchedule.due)));
+    assertThat(formatDateTime(calculationResult.value()), is(formatDateTime(expectedSchedule.due)));
   }
 
   @Test
@@ -174,7 +174,7 @@ public class FixedLoanPolicyCheckOutDueDateCalculationTests {
     final Result<ZonedDateTime> calculationResult = loanPolicy
       .calculateInitialDueDate(loan, null);
 
-    assertThat(toDateTimeString(calculationResult.value()), is(toDateTimeString(expectedSchedule.due)));
+    assertThat(formatDateTime(calculationResult.value()), is(formatDateTime(expectedSchedule.due)));
   }
 
   @Test
@@ -197,7 +197,7 @@ public class FixedLoanPolicyCheckOutDueDateCalculationTests {
     final Result<ZonedDateTime> calculationResult = loanPolicy
       .calculateInitialDueDate(loan, null);
 
-    assertThat(toDateTimeString(calculationResult.value()), is(toDateTimeString(expectedSchedule.due)));
+    assertThat(formatDateTime(calculationResult.value()), is(formatDateTime(expectedSchedule.due)));
   }
 
   @Test

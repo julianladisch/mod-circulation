@@ -4,6 +4,7 @@ import static org.folio.circulation.support.ValidationErrorFailure.singleValidat
 import static org.folio.circulation.support.fetching.RecordFetching.findWithCqlQuery;
 import static org.folio.circulation.support.http.client.CqlQuery.exactMatch;
 import static org.folio.circulation.support.results.Result.of;
+import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -90,6 +91,6 @@ public class UserManualBlocksValidator {
 
   private boolean isBlockedToCreateRequests(ZonedDateTime expirationDate, boolean requests) {
     final ZonedDateTime now = ClockManager.getClockManager().getZonedDateTime();
-    return requests && expirationDate != null && expirationDate.isAfter(now);
+    return requests && expirationDate != null && isAfterMillis(expirationDate, now);
   }
 }

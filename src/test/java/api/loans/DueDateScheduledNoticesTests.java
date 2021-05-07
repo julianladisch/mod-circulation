@@ -3,7 +3,7 @@ package api.loans;
 import static api.support.matchers.ScheduledNoticeMatchers.hasScheduledLoanNotice;
 import static java.time.ZoneOffset.UTC;
 import static java.time.ZonedDateTime.now;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -526,7 +526,7 @@ public class DueDateScheduledNoticesTests extends APITests {
     ZonedDateTime dueDate = getDateTimeProperty(loanJson, "dueDate");
 
     ZonedDateTime updatedDueDate = dueDate.plusWeeks(2);
-    JsonPropertyWriter.write(loanJson, "dueDate", toDateTimeString(updatedDueDate));
+    JsonPropertyWriter.write(loanJson, "dueDate", formatDateTime(updatedDueDate));
     loansClient.replace(loan.getId(), loanJson);
 
     Matcher<Iterable<JsonObject>> scheduledNoticesAfterRecallMatcher = hasItems(

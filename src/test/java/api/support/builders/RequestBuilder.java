@@ -7,7 +7,7 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getLocalDat
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getUUIDProperty;
 import static org.folio.circulation.support.json.JsonStringArrayPropertyFetcher.toStream;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -117,7 +117,7 @@ public class RequestBuilder extends JsonBuilder implements Builder {
 
     put(request, "id", this.id);
     put(request, "requestType", this.requestType);
-    put(request, "requestDate", toDateTimeString(this.requestDate));
+    put(request, "requestDate", formatDateTime(this.requestDate));
     put(request, "itemId", this.itemId);
     put(request, "requesterId", this.requesterId);
     put(request, "fulfilmentPreference", this.fulfilmentPreference);
@@ -130,7 +130,7 @@ public class RequestBuilder extends JsonBuilder implements Builder {
     put(request, "cancellationReasonId", cancellationReasonId);
     put(request, "cancelledByUserId", cancelledByUserId);
     put(request, "cancellationAdditionalInformation", cancellationAdditionalInformation);
-    put(request, "cancelledDate", toDateTimeString(cancelledDate));
+    put(request, "cancelledDate", formatDateTime(cancelledDate));
     put(request, "pickupServicePointId", this.pickupServicePointId);
     put(request, "patronComments", this.patronComments);
 

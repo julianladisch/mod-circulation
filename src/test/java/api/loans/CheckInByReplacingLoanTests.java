@@ -5,6 +5,7 @@ import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasUUIDParameter;
 import static java.time.ZoneOffset.UTC;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -42,8 +43,8 @@ public class CheckInByReplacingLoanTests extends APITests {
       .put("status", new JsonObject().put("name", "Closed"))
       .put("action", "checkedin")
       .put("checkinServicePointId", checkinServicePointId.toString())
-      .put("returnDate", ZonedDateTime.of(2017, 3, 5, 14, 23, 41, 0, UTC)
-        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+      .put("returnDate", formatDateTime(
+        ZonedDateTime.of(2017, 3, 5, 14, 23, 41, 0, UTC)));
 
     loansFixture.replaceLoan(loan.getId(), returnedLoan);
 

@@ -1,8 +1,9 @@
 package org.folio.circulation.domain.validation;
 
+import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
 import static org.folio.circulation.support.results.Result.ofAsync;
 import static org.folio.circulation.support.results.Result.succeeded;
-import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
+import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -10,8 +11,8 @@ import org.folio.circulation.domain.Item;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.LoanAndRelatedRecords;
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
-import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.ValidationErrorFailure;
+import org.folio.circulation.support.results.Result;
 
 public class ChangeDueDateValidator {
   private final LoanRepository loanRepository;
@@ -49,7 +50,7 @@ public class ChangeDueDateValidator {
 
   private Result<Boolean> dueDateHasChanged(Loan existingLoan, Loan changedLoan) {
     return succeeded(existingLoan != null
-        && !existingLoan.getDueDate().equals(changedLoan.getDueDate()));
+        && !isSameMillis(existingLoan.getDueDate(), changedLoan.getDueDate()));
   }
 
   private CompletableFuture<Result<Loan>> getExistingLoan(Loan loan) {

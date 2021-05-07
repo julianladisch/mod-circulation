@@ -21,7 +21,7 @@ import static org.folio.circulation.domain.representations.RequestProperties.REQ
 import static org.folio.circulation.domain.representations.RequestProperties.REQUEST_EXPIRATION_DATE;
 import static org.folio.circulation.domain.representations.RequestProperties.REQUEST_TYPE;
 import static org.folio.circulation.domain.representations.RequestProperties.STATUS;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getIntegerProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
@@ -286,7 +286,7 @@ public class Request implements ItemRelatedRecord, UserRelatedRecord {
 
   void changeHoldShelfExpirationDate(ZonedDateTime holdShelfExpirationDate) {
     write(requestRepresentation, HOLD_SHELF_EXPIRATION_DATE,
-      toDateTimeString(holdShelfExpirationDate));
+      formatDateTime(holdShelfExpirationDate));
 
   }
 

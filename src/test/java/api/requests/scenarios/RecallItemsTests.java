@@ -3,7 +3,7 @@ import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
 import static api.support.matchers.JsonObjectMatcher.hasNoJsonPath;
 import static api.support.matchers.LoanHistoryMatcher.hasLoanHistoryRecord;
 import static java.time.ZoneOffset.UTC;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
@@ -28,7 +28,7 @@ public class RecallItemsTests extends APITests {
       .rolling(Period.weeks(3)).notRenewable().renewFromSystemDate());
 
     val overrideRenewComment = "Override renew";
-    String newDueDate = toDateTimeString(ZonedDateTime.now(UTC).plusMonths(3));
+    String newDueDate = formatDateTime(ZonedDateTime.now(UTC).plusMonths(3));
 
     val item = itemsFixture.basedUponNod();
     val user = usersFixture.james();

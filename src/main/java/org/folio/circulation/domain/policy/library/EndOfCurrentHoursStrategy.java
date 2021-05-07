@@ -3,6 +3,7 @@ package org.folio.circulation.domain.policy.library;
 import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyUtils.failureForAbsentTimetable;
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
+import static org.folio.circulation.support.utils.DateTimeUtil.compareToMillis;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -65,6 +66,6 @@ public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
   private boolean isDateEqualToBoundaryValueOfDay(LocalTime requestedInterval,
     LocalTime boundaryValueOfDay) {
 
-    return requestedInterval.compareTo(boundaryValueOfDay) == 0;
+    return compareToMillis(requestedInterval, boundaryValueOfDay) == 0;
   }
 }

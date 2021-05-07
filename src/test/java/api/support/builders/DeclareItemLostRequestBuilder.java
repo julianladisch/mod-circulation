@@ -1,6 +1,6 @@
 package api.support.builders;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
 import java.time.ZoneOffset;
@@ -44,7 +44,7 @@ public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builde
   public JsonObject create() {
     final JsonObject request = new JsonObject();
 
-    write(request, "declaredLostDateTime", toDateTimeString(this.dateTime));
+    write(request, "declaredLostDateTime", formatDateTime(this.dateTime));
     write(request, "comment", this.comment);
     write(request, "servicePointId", this.servicePointId);
 

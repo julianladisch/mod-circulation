@@ -49,6 +49,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -1436,7 +1437,7 @@ public class CheckOutByBarcodeTests extends APITests {
 
     assertThat(response.getJson(), hasErrorWith(allOf(
       hasMessage("Due date should be later than loan date"),
-      hasParameter("dueDate", invalidDueDate.toString()))));
+      hasParameter("dueDate", formatDateTime(invalidDueDate)))));
   }
 
   @Test
@@ -1461,7 +1462,7 @@ public class CheckOutByBarcodeTests extends APITests {
 
     assertThat(response.getJson(), hasErrorWith(allOf(
       hasMessage("Due date should be later than loan date"),
-      hasParameter("dueDate", TEST_LOAN_DATE.toString()))));
+      hasParameter("dueDate", formatDateTime(TEST_LOAN_DATE)))));
   }
 
   @Test

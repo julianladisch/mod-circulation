@@ -4,6 +4,8 @@ import static java.util.function.Function.identity;
 import static org.folio.circulation.domain.OpeningDay.createClosedDay;
 import static org.folio.circulation.domain.OpeningDay.fromJsonByDefaultKey;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDate;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -40,7 +42,7 @@ public class CalendarRepository {
   }
 
   public CompletableFuture<Result<AdjacentOpeningDays>> lookupOpeningDays(LocalDate requestedDate, String servicePointId) {
-    String path = String.format(PATH_PARAM_WITH_QUERY, servicePointId, requestedDate);
+    String path = String.format(PATH_PARAM_WITH_QUERY, servicePointId, formatDate(requestedDate));
 
     //TODO: Validation error should have parameters
     return FetchSingleRecord.<AdjacentOpeningDays>forRecord(OPENING_PERIODS)
@@ -56,7 +58,8 @@ public class CalendarRepository {
 
     String params = String.format(
       "servicePointId=%s&startDate=%s&endDate=%s&includeClosedDays=%s&limit=%d",
-      servicePointId, startDate.toLocalDate(), endDate.toLocalDate().plusDays(1),
+      servicePointId, formatDate(startDate.toLocalDate()),
+      formatDate(endDate.toLocalDate().plusDays(1)),
       includeClosedDays, 10000);
 
     return calendarClient.getManyWithRawQueryStringParameters(params)

@@ -7,6 +7,8 @@ import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_SERVICE_POI
 import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;;
+import static org.folio.circulation.support.utils.DateTimeUtil.parseDateTime;
 
 import java.time.LocalTime;
 import java.time.ZoneOffset;
@@ -64,7 +66,7 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, LocalTime.MAX, ZoneOffset.UTC);
-    assertThat("due date should be " + expectedDate,
+    assertThat("due date should be " + formatDateTime(expectedDate),
       loan.getJson().getString("dueDate"), isEquivalentTo(expectedDate));
   }
 

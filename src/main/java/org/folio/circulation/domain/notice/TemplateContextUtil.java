@@ -1,8 +1,8 @@
 package org.folio.circulation.domain.notice;
 import static java.lang.Math.max;
 import static java.util.stream.Collectors.joining;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -78,7 +78,7 @@ public class TemplateContextUtil {
     JsonObject itemContext = staffSlipContext.getJsonObject(ITEM);
 
     if (ObjectUtils.allNotNull(item, itemContext)) {
-      write(itemContext, "lastCheckedInDateTime", toDateTimeString(ZonedDateTime.now(ZoneOffset.UTC)));
+      write(itemContext, "lastCheckedInDateTime", formatDateTime(ZonedDateTime.now(ZoneOffset.UTC)));
       if (item.getInTransitDestinationServicePoint() != null) {
         itemContext.put("fromServicePoint", context.getCheckInServicePoint().getName());
         itemContext.put("toServicePoint", item.getInTransitDestinationServicePoint().getName());
@@ -105,7 +105,7 @@ public class TemplateContextUtil {
       JsonObject itemContext = createItemContext(item);
       if (item.getLastCheckIn() != null) {
         write(itemContext, "lastCheckedInDateTime",
-          toDateTimeString(item.getLastCheckIn().getDateTime()));
+          formatDateTime(item.getLastCheckIn().getDateTime()));
       }
       staffSlipContext.put(ITEM, itemContext);
     }
@@ -205,10 +205,10 @@ public class TemplateContextUtil {
       .ifPresent(value -> requestContext.put("servicePointPickup", value));
     optionalRequest
       .map(Request::getRequestExpirationDate)
-      .ifPresent(value -> write(requestContext, "requestExpirationDate", toDateTimeString(value)));
+      .ifPresent(value -> write(requestContext, "requestExpirationDate", formatDateTime(value)));
     optionalRequest
       .map(Request::getHoldShelfExpirationDate)
-      .ifPresent(value -> write(requestContext, "holdShelfExpirationDate", toDateTimeString(value)));
+      .ifPresent(value -> write(requestContext, "holdShelfExpirationDate", formatDateTime(value)));
     optionalRequest
       .map(Request::getCancellationAdditionalInformation)
       .ifPresent(value -> requestContext.put("additionalInfo", value));
@@ -231,10 +231,10 @@ public class TemplateContextUtil {
   private static JsonObject createLoanContext(Loan loan) {
     JsonObject loanContext = new JsonObject();
 
-    write(loanContext, "initialBorrowDate", toDateTimeString(loan.getLoanDate()));
-    write(loanContext, "dueDate", toDateTimeString(loan.getDueDate()));
+    write(loanContext, "initialBorrowDate", formatDateTime(loan.getLoanDate()));
+    write(loanContext, "dueDate", formatDateTime(loan.getDueDate()));
     if (loan.getReturnDate() != null) {
-      write(loanContext, "checkedInDate", toDateTimeString(loan.getReturnDate()));
+      write(loanContext, "checkedInDate", formatDateTime(loan.getReturnDate()));
     }
 
     loanContext.put("numberOfRenewalsTaken", Integer.toString(loan.getRenewalCount()));
@@ -274,19 +274,19 @@ public class TemplateContextUtil {
     write(context, "paymentStatus", account.getPaymentStatus());
     write(context, "amount", account.getAmount().toDouble());
     write(context, "remainingAmount", account.getRemaining().toDouble());
-    write(context, "chargeDate", toDateTimeString(account.getCreationDate()));
-    write(context, "chargeDateTime", toDateTimeString(account.getCreationDate()));
+    write(context, "chargeDate", formatDateTime(account.getCreationDate()));
+    write(context, "chargeDateTime", formatDateTime(account.getCreationDate()));
 
     return context;
   }
 
   private static JsonObject createFeeActionContext(FeeFineAction feeFineAction) {
     final JsonObject context = new JsonObject();
-    String actionDateString = feeFineAction.getDateAction().toString();
+    String actionDateTime = formatDateTime(feeFineAction.getDateAction());
 
     write(context, "type", feeFineAction.getActionType());
-    write(context, "actionDate", actionDateString);
-    write(context, "actionDateTime", actionDateString);
+    write(context, "actionDate", actionDateTime);
+    write(context, "actionDateTime", actionDateTime);
     write(context, "amount", feeFineAction.getAmount().toDouble());
     write(context, "remainingAmount", feeFineAction.getBalance());
 

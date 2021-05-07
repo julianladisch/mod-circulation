@@ -1,7 +1,7 @@
 package api.support;
 
 import static org.folio.circulation.support.utils.DateTimeUtil.parseDateTime;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.LocalDate;
 
@@ -29,7 +29,7 @@ public class OpeningPeriod {
   public JsonObject toJson() {
     return new JsonObject()
       .put(OPENING_DAY_KEY, openingDay.toJson())
-      .put(DATE_KEY, toDateTimeString(date));
+      .put(DATE_KEY, formatDateTime(date));
   }
 
   public OpeningDay getOpeningDay() {

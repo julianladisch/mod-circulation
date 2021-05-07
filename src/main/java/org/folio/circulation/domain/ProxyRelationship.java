@@ -1,13 +1,15 @@
 package org.folio.circulation.domain;
 
-import io.vertx.core.json.JsonObject;
-import org.apache.commons.lang3.StringUtils;
-
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getNestedDateTimeProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getNestedStringProperty;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
 import java.time.ZonedDateTime;
+
+import org.apache.commons.lang3.StringUtils;
+
+import io.vertx.core.json.JsonObject;
 
 public class ProxyRelationship {
 
@@ -52,7 +54,7 @@ public class ProxyRelationship {
 
   public boolean isActive() {
       boolean expired = expirationDate != null
-        && expirationDate.isBefore(ZonedDateTime.now());
+        && isBeforeMillis(expirationDate, ZonedDateTime.now());
 
       return active && !expired;
   }

@@ -17,6 +17,8 @@ import static org.folio.circulation.support.results.MappingFunctions.when;
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.ofAsync;
 import static org.folio.circulation.support.results.Result.succeeded;
+import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
 import java.lang.invoke.MethodHandles;
 import java.time.ZonedDateTime;
@@ -237,7 +239,7 @@ public class LoanScheduledNoticeHandler {
     ZonedDateTime recurringNoticeNextRunTime = noticeConfig
       .getRecurringPeriod().plusDate(notice.getNextRunTime());
 
-    if (recurringNoticeNextRunTime.isBefore(systemTime)) {
+    if (isBeforeMillis(recurringNoticeNextRunTime, systemTime)) {
       recurringNoticeNextRunTime = noticeConfig
         .getRecurringPeriod().plusDate(systemTime);
     }
@@ -283,7 +285,7 @@ public class LoanScheduledNoticeHandler {
     if (loan.getItem().isClaimedReturned()) {
       logMessages.add(String.format("Item %s was claimed returned", loan.getItemId()));
     }
-    if (loan.hasDueDateChanged() && loan.getDueDate().isAfter(systemTime)) {
+    if (loan.hasDueDateChanged() && isAfterMillis(loan.getDueDate(), systemTime)) {
       logMessages.add(String.format("Due date for the loan %s was changed", loan.getId()));
     }
     if (loan.isClosed()) {
@@ -322,7 +324,7 @@ public class LoanScheduledNoticeHandler {
 
     return notice.getTriggeringEvent() == DUE_DATE
       && noticeConfig.getTiming() == BEFORE
-      && loan.getDueDate().isBefore(systemTime);
+      && isBeforeMillis(loan.getDueDate(), systemTime);
   }
 
   private boolean nextRecurringNoticeIsNotRelevant(ScheduledNotice notice, Loan loan) {
@@ -330,7 +332,7 @@ public class LoanScheduledNoticeHandler {
 
     return noticeConfig.isRecurring() &&
       noticeConfig.getTiming() == BEFORE &&
-      notice.getNextRunTime().isAfter(loan.getDueDate());
+      isAfterMillis(notice.getNextRunTime(), loan.getDueDate());
   }
 
   static <T> boolean failedToFindRequiredRecord(Result<T> result) {

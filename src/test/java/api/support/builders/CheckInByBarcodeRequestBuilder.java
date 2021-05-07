@@ -1,6 +1,6 @@
 package api.support.builders;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -36,7 +36,7 @@ public class CheckInByBarcodeRequestBuilder extends JsonBuilder implements Build
     final JsonObject request = new JsonObject();
 
     put(request, "itemBarcode", this.itemBarcode);
-    put(request, "checkInDate", toDateTimeString(this.checkInDate));
+    put(request, "checkInDate", formatDateTime(this.checkInDate));
     put(request, "servicePointId", this.servicePointId);
     put(request, "claimedReturnedResolution", this.claimedReturnedResolution);
 

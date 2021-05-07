@@ -15,6 +15,7 @@ import static org.folio.circulation.domain.representations.logs.LogEventPayloadF
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.USER_BARCODE;
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.USER_ID;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZonedDateTime;
 
@@ -96,7 +97,7 @@ public class LoanLogContext {
     write(json, HOLDINGS_RECORD_ID.value(), holdingsRecordId);
     write(json, ACTION.value(), action);
     ofNullable(actionComment).ifPresent(comment -> write(json, ACTION_COMMENT.value(), actionComment));
-    write(json, DATE.value(), date);
+    write(json, DATE.value(), formatDateTime(date));
     ofNullable(servicePointId).ifPresent(spId -> write(json, SERVICE_POINT_ID.value(), spId));
     ofNullable(updatedByUserId).ifPresent(userId -> write(json, UPDATED_BY_USER_ID.value(), userId));
     write(json, DESCRIPTION.value(), description);

@@ -2,7 +2,7 @@ package org.folio.circulation.domain.representations;
 
 import static org.folio.circulation.domain.representations.CallNumberComponentsRepresentation.createCallNumberComponents;
 import static org.folio.circulation.domain.representations.ContributorsToNamesMapper.mapContributorsToNamesOnly;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.json.JsonPropertyWriter.writeNamedObject;
 
@@ -78,7 +78,7 @@ public class ItemReportRepresentation {
 
   private void writeLastCheckIn(JsonObject itemReport, LastCheckIn lastCheckIn) {
     final JsonObject lastCheckInJson = new JsonObject();
-    write(lastCheckInJson, "dateTime", toDateTimeString(lastCheckIn.getDateTime()));
+    write(lastCheckInJson, "dateTime", formatDateTime(lastCheckIn.getDateTime()));
     final ServicePoint lastCheckInServicePoint = lastCheckIn.getServicePoint();
     if (lastCheckInServicePoint != null) {
       writeServicePoint(lastCheckInJson, lastCheckInServicePoint, "servicePoint");
@@ -106,8 +106,8 @@ public class ItemReportRepresentation {
   private void writeRequest(Request request, JsonObject itemReport) {
     final JsonObject requestJson = new JsonObject();
     write(requestJson, "requestType", request.getRequestType().value);
-    write(requestJson, "requestDate", toDateTimeString(request.getRequestDate()));
-    write(requestJson, "requestExpirationDate", toDateTimeString(request.getRequestExpirationDate()));
+    write(requestJson, "requestDate", formatDateTime(request.getRequestDate()));
+    write(requestJson, "requestExpirationDate", formatDateTime(request.getRequestExpirationDate()));
     write(requestJson, "requestPickupServicePointName",
       Optional.ofNullable(request.getPickupServicePoint())
         .map(ServicePoint::getName).orElse(null));
@@ -130,7 +130,7 @@ public class ItemReportRepresentation {
   private void writeLoan(JsonObject itemReport, Loan loan) {
     final JsonObject loanJson = new JsonObject();
     writeCheckInServicePoint(loanJson, loan.getCheckinServicePoint());
-    write(loanJson, "checkInDateTime", toDateTimeString(loan.getReturnDate()));
+    write(loanJson, "checkInDateTime", formatDateTime(loan.getReturnDate()));
     write(itemReport, "loan", loanJson);
   }
 

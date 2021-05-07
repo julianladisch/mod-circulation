@@ -9,7 +9,7 @@ import static org.folio.circulation.domain.representations.ItemProperties.EFFECT
 import static org.folio.circulation.domain.representations.ItemProperties.HOLDINGS_RECORD_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.PERMANENT_LOCATION_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.TEMPORARY_LOCATION_ID;
-import static org.folio.circulation.support.utils.DateTimeUtil.toDateTimeString;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
 import java.time.ZonedDateTime;
@@ -61,7 +61,7 @@ public final class StorageRecordPreProcessors {
         if (!Objects.equals(oldItemStatus.getString("name"),
           newItemStatus.getString("name"))) {
           write(newItemStatus, "date",
-            toDateTimeString(ZonedDateTime.now(UTC))
+            formatDateTime(ZonedDateTime.now(UTC))
           );
         }
       }

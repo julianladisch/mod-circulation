@@ -4,6 +4,8 @@ import static org.folio.circulation.support.StreamToListMapper.toList;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.json.JsonObjectArrayPropertyFetcher.toStream;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isWithinMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.parseDateTime;
 
 import java.time.ZonedDateTime;
@@ -52,7 +54,7 @@ public class FixedDueDateSchedules {
       ZonedDateTime from = parseDateTime(schedule.getString("from"));
       ZonedDateTime to = DateTimeUtil.atEndOfTheDay(parseDateTime(schedule.getString("to")));
 
-      return date.isAfter(from) && date.isBefore(to);
+      return isWithinMillis(date, from, to);
     };
   }
 
@@ -76,7 +78,7 @@ public class FixedDueDateSchedules {
   }
 
   private ZonedDateTime earliest(ZonedDateTime rollingDueDate, ZonedDateTime limit) {
-    return limit.isBefore(rollingDueDate)
+    return isBeforeMillis(limit, rollingDueDate)
       ? limit
       : rollingDueDate;
   }

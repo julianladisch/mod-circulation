@@ -1,5 +1,7 @@
 package org.folio.circulation.domain;
 
+import static org.folio.circulation.support.utils.DateTimeUtil.compareToMillis;
+
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -56,7 +58,7 @@ public class InstanceRequestItemsComparer {
     } else if (q1ItemDueDate == null) {
       return 1;
     } else {
-      return q1ItemDueDate.compareTo(q2ItemDueDate);
+      return compareToMillis(q1ItemDueDate, q2ItemDueDate);
     }
   }
 
