@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 
@@ -149,7 +150,7 @@ public class LostItemPolicyTest {
     getClockManager().setClock(fixed(Instant.ofEpochMilli(
       now.toInstant().toEpochMilli()), UTC));
 
-    final ZonedDateTime lostDateTime = period.minusDate(now());
+    final ZonedDateTime lostDateTime = period.minusDate(now(Clock.systemUTC()));
     assertTrue(lostItemPolicy.shouldRefundFees(lostDateTime));
   }
 
@@ -198,7 +199,7 @@ public class LostItemPolicyTest {
     final Period billPatronInterval = duration == null && interval == null
       ? null : Period.from(duration, interval);
 
-    final ZonedDateTime agedToLostDate = ZonedDateTime.now();
+    final ZonedDateTime agedToLostDate = ZonedDateTime.now(Clock.systemUTC());
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(
       new LostItemFeePolicyBuilder()
@@ -216,7 +217,7 @@ public class LostItemPolicyTest {
   @Test
   public void canCalculateBillingDateWhenPatronBillingIsDelayedForNotRecalledItem() {
     final Period billPatronAfterPeriod = Period.weeks(1);
-    final ZonedDateTime ageToLostDate = ZonedDateTime.now();
+    final ZonedDateTime ageToLostDate = ZonedDateTime.now(Clock.systemUTC());
     final ZonedDateTime expectedBillingDate = billPatronAfterPeriod
       .plusDate(ageToLostDate);
 
@@ -236,7 +237,7 @@ public class LostItemPolicyTest {
   @Test
   public void shouldUseRecallIntervalForBillingDateWhenItemRecalled() {
     final Period billPatronAfterPeriod = Period.weeks(2);
-    final ZonedDateTime ageToLostDate = ZonedDateTime.now();
+    final ZonedDateTime ageToLostDate = ZonedDateTime.now(Clock.systemUTC());
     final ZonedDateTime expectedBillingDate = billPatronAfterPeriod
       .plusDate(ageToLostDate);
 
@@ -257,7 +258,7 @@ public class LostItemPolicyTest {
   public void shouldNotUseRecallIntervalForNotRecalledItem() {
     final Period ageToLostBillingPeriod = Period.weeks(1);
     final Period recallBillingPeriod = Period.weeks(2);
-    final ZonedDateTime ageToLostDate = ZonedDateTime.now();
+    final ZonedDateTime ageToLostDate = ZonedDateTime.now(Clock.systemUTC());
     final ZonedDateTime expectedBillingDate = ageToLostBillingPeriod
       .plusDate(ageToLostDate);
 

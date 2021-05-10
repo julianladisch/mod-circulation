@@ -74,7 +74,8 @@ public class JsonPropertyFetcher {
     String propertyName) {
 
     if (representation != null && isNotBlank(representation.getString(propertyName))) {
-      return OffsetDateTime.parse(representation.getString(propertyName));
+      return parseDateTime(representation.getString(propertyName))
+        .toOffsetDateTime();
     } else {
       return null;
     }

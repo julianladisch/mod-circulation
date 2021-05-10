@@ -10,6 +10,7 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getNestedSt
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.results.Result.succeeded;
+import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -470,7 +471,7 @@ public class LoanPolicy extends Policy {
         }
 
         if (minimumGuaranteedDueDate == null ||
-          recallDueDate.isAfter(minimumGuaranteedDueDate)) {
+          isAfterMillis(recallDueDate, minimumGuaranteedDueDate)) {
           return recallDueDate;
         } else {
           return minimumGuaranteedDueDate;

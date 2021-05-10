@@ -1,6 +1,9 @@
 package org.folio.circulation.domain.time;
 
 import static java.time.Duration.ofMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -38,7 +41,7 @@ public class Interval {
    * Initialize to current time at UTC and a 0 duration.
    */
   public Interval() {
-    begin = ZonedDateTime.now(ZoneOffset.UTC);
+    begin = ZonedDateTime.now(Clock.systemUTC());
     this.duration = ofMillis(0L);
   }
 
@@ -50,7 +53,7 @@ public class Interval {
    */
   public Interval(ZonedDateTime begin, ZonedDateTime end) {
     this.begin = begin;
-    if (begin.isBefore(end)) {
+    if (isBeforeMillis(begin, end)) {
       this.duration = ofMillis(end.toInstant().toEpochMilli()
         - begin.toInstant().toEpochMilli());
     }
@@ -70,7 +73,7 @@ public class Interval {
   public Interval(LocalDateTime begin, LocalDateTime end) {
     final ZoneOffset zone = (ZoneOffset) Clock.systemDefaultZone().getZone();
     this.begin = ZonedDateTime.of(begin, zone);
-    if (begin.isBefore(end)) {
+    if (isBeforeMillis(begin, end)) {
       this.duration = ofMillis(end.toInstant(zone).toEpochMilli()
         - begin.toInstant(zone).toEpochMilli());
     }
@@ -116,8 +119,8 @@ public class Interval {
    * @return A boolean of if the dateTime was found within the duration.
    */
   public boolean contains(ZonedDateTime dateTime) {
-    return begin.equals(dateTime) || dateTime.isAfter(begin)
-      && dateTime.isBefore(begin.plus(duration));
+    return isSameMillis(begin, dateTime) || isAfterMillis(dateTime, begin)
+      && isBeforeMillis(dateTime, begin.plus(duration));
   }
 
   /**
@@ -158,7 +161,8 @@ public class Interval {
     final long start = begin.toInstant().toEpochMilli();
     final long end = getEnd().toInstant().toEpochMilli();
     if (interval == null) {
-      final long now = ZonedDateTime.now().toInstant().toEpochMilli(); 
+      final long now = ZonedDateTime.now(Clock.systemUTC()).toInstant()
+        .toEpochMilli(); 
       return now == start || now == end;
     }
     return interval.getEnd().toInstant().toEpochMilli() == start ||

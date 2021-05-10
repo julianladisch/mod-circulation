@@ -11,6 +11,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -460,7 +461,7 @@ public class ItemsInTransitReportTests extends APITests {
 
       checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
         .forItem(item)
-        .on(ZonedDateTime.now())
+        .on(ZonedDateTime.now(Clock.systemUTC()))
         .at(firstServicePointId));
     }
 

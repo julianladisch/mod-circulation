@@ -1,7 +1,6 @@
 package api.requests.scenarios;
 
 import static api.support.builders.ItemBuilder.AVAILABLE;
-import static java.time.ZoneOffset.UTC;
 import static api.support.builders.ItemBuilder.PAGED;
 import static api.support.builders.RequestBuilder.OPEN_AWAITING_PICKUP;
 import static api.support.fixtures.ConfigurationExample.timezoneConfigurationFor;
@@ -11,6 +10,7 @@ import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
 import static java.time.Clock.fixed;
 import static java.time.Clock.offset;
 import static java.time.Duration.ofDays;
+import static java.time.ZoneOffset.UTC;
 import static java.util.stream.Collectors.groupingBy;
 import static org.folio.circulation.domain.EventType.LOAN_DUE_DATE_CHANGED;
 import static org.folio.circulation.domain.EventType.LOG_RECORD;
@@ -863,10 +863,10 @@ public class MoveRequestTests extends APITests {
   public void canUpdateSourceAndDestinationLoanDueDateOnMoveRecallRequest() {
     // Recall placed 2 hours from now
     final Instant expectedJamesLoanDueDate = LocalDateTime
-      .now().plusHours(2).toInstant(ZoneOffset.UTC);
+      .now(Clock.systemUTC()).plusHours(2).toInstant(ZoneOffset.UTC);
     // Move placed 4 hours from now
     final Instant expectedJessicaLoanDueDate = LocalDateTime
-      .now().plusHours(4).toInstant(ZoneOffset.UTC);
+      .now(Clock.systemUTC()).plusHours(4).toInstant(ZoneOffset.UTC);
 
     val smallAngryPlanetItem = itemsFixture.basedUponSmallAngryPlanet();
     val interestingTimesItem = itemsFixture.basedUponInterestingTimes();

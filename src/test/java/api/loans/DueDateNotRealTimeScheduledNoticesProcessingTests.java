@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Clock;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -514,7 +515,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
       .withLoanNotices(Collections.singletonList(afterDueDateNoticeConfig));
     use(noticePolicy);
 
-    ZonedDateTime loanDate = ZonedDateTime.now().minusMonths(1);
+    ZonedDateTime loanDate = ZonedDateTime.now(Clock.systemUTC()).minusMonths(1);
 
     IndividualResource steve = usersFixture.steve();
     ItemResource dunkirk = itemsFixture.basedUponDunkirk();

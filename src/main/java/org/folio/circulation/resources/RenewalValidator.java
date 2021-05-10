@@ -2,6 +2,8 @@ package org.folio.circulation.resources;
 
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.results.Result.succeeded;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -48,8 +50,8 @@ public final class RenewalValidator {
   }
 
   private static boolean isSameOrBefore(Loan loan, ZonedDateTime proposedDueDate) {
-    return proposedDueDate.isEqual(loan.getDueDate())
-      || proposedDueDate.isBefore(loan.getDueDate());
+    return isSameMillis(proposedDueDate, loan.getDueDate()) ||
+      isBeforeMillis(proposedDueDate, loan.getDueDate());
   }
 
   public static ValidationError loanPolicyValidationError(LoanPolicy loanPolicy,

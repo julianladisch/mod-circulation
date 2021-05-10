@@ -73,7 +73,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
 
   @BeforeClass
   public static void setUpBeforeClass() {
-    clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
+    clock = Clock.fixed(Instant.now(Clock.systemUTC()), ZoneOffset.UTC);
   }
 
   @Before

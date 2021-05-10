@@ -4,6 +4,7 @@ import static api.support.matchers.FailureMatcher.hasValidationFailure;
 import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
@@ -63,7 +64,9 @@ public class InvalidLoanPolicyTests {
       .asDomainObject()
       .withLoanPolicy(loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(
+      loan, ZonedDateTime.now(Clock.systemUTC()),
+      new RequestQueue(Collections.emptyList()));
 
     //TODO: This is fairly ugly, replace with a better message
     assertThat(result, hasValidationFailure(

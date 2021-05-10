@@ -3,6 +3,7 @@ package org.folio.circulation.domain;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.UUID;
@@ -123,7 +124,7 @@ public class LoanCheckInServiceTest {
   private CheckInByBarcodeRequest getCheckInRequest(UUID checkInServicePoint) {
     JsonObject representation = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("barcode")
-      .on(ZonedDateTime.now())
+      .on(ZonedDateTime.now(Clock.systemUTC()))
       .at(checkInServicePoint)
       .create();
 

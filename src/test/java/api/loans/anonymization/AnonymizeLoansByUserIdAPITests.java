@@ -5,6 +5,7 @@ import static api.support.matchers.LoanMatchers.isOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -93,7 +94,7 @@ public class AnonymizeLoansByUserIdAPITests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now());
+    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now(Clock.systemUTC()));
 
     checkInFixture.checkInByBarcode(item1);
 

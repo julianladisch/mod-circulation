@@ -1,5 +1,6 @@
 package api.support.fixtures;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -33,21 +34,23 @@ public class ProxyRelationshipsFixture {
       .sponsor(sponsor.getId())
       .proxy(proxy.getId())
       .inactive()
-      .expires(ZonedDateTime.now().plusYears(1)));
+      .expires(ZonedDateTime.now(Clock.systemUTC()).plusYears(1)));
   }
 
   public void currentProxyFor(
     IndividualResource sponsor,
     IndividualResource proxy) {
 
-    proxyFor(sponsor.getId(), proxy.getId(), ZonedDateTime.now().plusYears(1));
+    proxyFor(sponsor.getId(), proxy.getId(), ZonedDateTime
+      .now(Clock.systemUTC()).plusYears(1));
   }
 
   public void expiredProxyFor(
     IndividualResource sponsor,
     IndividualResource proxy) {
 
-    proxyFor(sponsor.getId(), proxy.getId(), ZonedDateTime.now().minusYears(1));
+    proxyFor(sponsor.getId(), proxy.getId(), ZonedDateTime
+      .now(Clock.systemUTC()).minusYears(1));
   }
 
   private void proxyFor(

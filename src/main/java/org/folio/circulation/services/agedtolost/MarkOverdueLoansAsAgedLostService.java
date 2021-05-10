@@ -5,14 +5,15 @@ import static org.folio.circulation.domain.ItemStatus.CLAIMED_RETURNED;
 import static org.folio.circulation.domain.ItemStatus.DECLARED_LOST;
 import static org.folio.circulation.infrastructure.storage.inventory.ItemRepository.noLocationMaterialTypeAndLoanTypeInstance;
 import static org.folio.circulation.support.AsyncCoordinationUtil.allOf;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.folio.circulation.support.CqlSortBy.ascending;
 import static org.folio.circulation.support.http.client.CqlQuery.exactMatch;
 import static org.folio.circulation.support.http.client.CqlQuery.lessThan;
 import static org.folio.circulation.support.http.client.CqlQuery.notEqual;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.results.Result.ofAsync;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -92,7 +93,7 @@ public class MarkOverdueLoansAsAgedLostService {
 
   private Loan ageItemToLost(Loan loan) {
     final LostItemPolicy lostItemPolicy = loan.getLostItemPolicy();
-    final ZonedDateTime ageToLostDate = getClockManager().getZonedDateTime();
+    final ZonedDateTime ageToLostDate = ZonedDateTime.now(ZoneOffset.UTC);
     final boolean isRecalled = loan.wasDueDateChangedByRecall();
 
     final ZonedDateTime whenToBill = lostItemPolicy
@@ -138,7 +139,7 @@ public class MarkOverdueLoansAsAgedLostService {
 
   private Result<CqlQuery> loanFetchQuery() {
     final Result<CqlQuery> statusQuery = exactMatch("status.name", "Open");
-    final Result<CqlQuery> dueDateQuery = lessThan("dueDate", getClockManager().getZonedDateTime());
+    final Result<CqlQuery> dueDateQuery = lessThan("dueDate", formatDateTime(ZonedDateTime.now(ZoneOffset.UTC)));
     final Result<CqlQuery> claimedReturnedQuery = notEqual("itemStatus", CLAIMED_RETURNED.getValue());
     final Result<CqlQuery> agedToLostQuery = notEqual("itemStatus", AGED_TO_LOST.getValue());
     final Result<CqlQuery> declaredLostQuery = notEqual("itemStatus", DECLARED_LOST.getValue());

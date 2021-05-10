@@ -20,6 +20,7 @@ import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.utils.CollectionUtil.uniqueSetOf;
 import static org.folio.circulation.support.utils.CommonUtils.pair;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -232,7 +233,7 @@ public class ChargeLostFeesWhenAgedToLostService {
     final String lostItemHasBeenBilled = AGED_TO_LOST_DELAYED_BILLING + "."
       + LOST_ITEM_HAS_BEEN_BILLED;
 
-    final ZonedDateTime currentDate = getClockManager().getZonedDateTime();
+    final ZonedDateTime currentDate = ZonedDateTime.now(ZoneOffset.UTC);
 
     final Result<CqlQuery> billingDateQuery = lessThanOrEqualTo(billingDateProperty, currentDate);
     final Result<CqlQuery> agedToLostQuery = exactMatch(ITEM_STATUS, AGED_TO_LOST.getValue());

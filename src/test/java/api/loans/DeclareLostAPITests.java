@@ -34,6 +34,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -82,7 +83,7 @@ public class DeclareLostAPITests extends APITests {
       .checkOutByBarcode(itemsFixture.basedUponNod(), usersFixture.jessica());
 
     String comment = "testing";
-    ZonedDateTime dateTime = ZonedDateTime.now();
+    ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     final DeclareItemLostRequestBuilder builder = new DeclareItemLostRequestBuilder()
       .forLoanId(checkOut.getId()).on(dateTime)
@@ -108,7 +109,7 @@ public class DeclareLostAPITests extends APITests {
     final IndividualResource checkOut = checkOutFixture
       .checkOutByBarcode(itemsFixture.basedUponNod(), usersFixture.jessica());
 
-    ZonedDateTime dateTime = ZonedDateTime.now();
+    ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     final DeclareItemLostRequestBuilder builder = new DeclareItemLostRequestBuilder()
       .forLoanId(checkOut.getId()).on(dateTime)
@@ -161,7 +162,7 @@ public class DeclareLostAPITests extends APITests {
     final DeclareItemLostRequestBuilder builder = new DeclareItemLostRequestBuilder()
       .forLoanId(loanId)
       .withServicePointId(servicePointId)
-      .on(ZonedDateTime.now()).withNoComment();
+      .on(ZonedDateTime.now(Clock.systemUTC())).withNoComment();
 
     Response response = declareLostFixtures.attemptDeclareItemLost(builder);
 
@@ -453,7 +454,7 @@ public class DeclareLostAPITests extends APITests {
 
     final DeclareItemLostRequestBuilder builder = new DeclareItemLostRequestBuilder()
       .forLoanId(loanIndividualResource.getId())
-      .on(ZonedDateTime.now())
+      .on(ZonedDateTime.now(Clock.systemUTC()))
       .withServicePointId(servicePointId)
       .withNoComment();
     declareLostFixtures.declareItemLost(builder);
@@ -713,9 +714,9 @@ public class DeclareLostAPITests extends APITests {
 
     claimItemReturnedFixture.claimItemReturned(new ClaimItemReturnedRequestBuilder()
       .forLoan(loanId)
-      .withItemClaimedReturnedDate(ZonedDateTime.now()));
+      .withItemClaimedReturnedDate(ZonedDateTime.now(Clock.systemUTC())));
 
-    ZonedDateTime dateTime = ZonedDateTime.now();
+    ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     JsonObject updatedLoan = loansClient.get(loanId).getJson();
     assertThat(updatedLoan.getJsonObject("item"), hasStatus("Claimed returned"));
@@ -738,7 +739,7 @@ public class DeclareLostAPITests extends APITests {
     UUID loanId = checkOutFixture.checkOutByBarcode(item, usersFixture.charlotte())
       .getId();
 
-    ZonedDateTime dateTime = ZonedDateTime.now();
+    ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     final DeclareItemLostRequestBuilder builder = new DeclareItemLostRequestBuilder()
       .forLoanId(loanId).on(dateTime)

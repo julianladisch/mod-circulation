@@ -14,6 +14,7 @@ import static java.time.ZoneOffset.UTC;
 import static java.time.ZonedDateTime.now;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 
 import org.hamcrest.Matcher;
@@ -36,7 +37,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
   }
 
   protected void performActionThatRequiresRefund() {
-    performActionThatRequiresRefund(ZonedDateTime.now(UTC));
+    performActionThatRequiresRefund(ZonedDateTime.now(Clock.systemUTC()));
   }
 
   protected abstract void performActionThatRequiresRefund(ZonedDateTime actionDate);
@@ -245,7 +246,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
 
     declareItemLost();
 
-    performActionThatRequiresRefund(now().plusMonths(2));
+    performActionThatRequiresRefund(now(Clock.systemUTC()).plusMonths(2));
 
     assertThat(loan, hasLostItemProcessingFee(isClosedCancelled(processingFee)));
     assertThat(loan, hasOverdueFine());
@@ -267,7 +268,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
 
     declareItemLost();
 
-    performActionThatRequiresRefund(now().plusMonths(2));
+    performActionThatRequiresRefund(now(Clock.systemUTC()).plusMonths(2));
 
     assertThat(loan, hasLostItemProcessingFee(isClosedCancelled(processingFee)));
     assertThat(loan, hasNoOverdueFine());

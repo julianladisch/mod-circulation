@@ -187,7 +187,8 @@ public final class AgeToLostFixture {
   }
 
   private void moveTimeForward(int weeks) {
-    final ZonedDateTime newDateTime = ZonedDateTime.now().plusWeeks(weeks);
+    final ZonedDateTime newDateTime = ZonedDateTime.now(Clock.systemUTC())
+      .plusWeeks(weeks);
     final Clock fixedClocks = fixed(ofEpochMilli(newDateTime
       .toInstant().toEpochMilli()), ZoneOffset.UTC);
 

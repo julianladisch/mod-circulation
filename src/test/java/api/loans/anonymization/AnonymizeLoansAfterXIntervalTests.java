@@ -14,6 +14,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -126,7 +127,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now());
+    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -231,8 +232,8 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now());
-    createClosedAccountWithFeeFines(loanResource, now());
+    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
+    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -341,7 +342,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now());
+    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -481,7 +482,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
     UUID loanID = loanResource.getId();
 
 
-    createClosedAccountWithFeeFines(loanResource, now());
+    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
     checkInFixture.checkInByBarcode(item1);
 
     anonymizeLoansInTenant();

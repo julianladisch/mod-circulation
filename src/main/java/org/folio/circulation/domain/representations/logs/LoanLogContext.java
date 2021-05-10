@@ -17,6 +17,7 @@ import static org.folio.circulation.domain.representations.logs.LogEventPayloadF
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.Item;
@@ -53,7 +54,7 @@ public class LoanLogContext {
       .withItem(ofNullable(loan.getItem())
         .orElse(itemFromRepresentation(loan)))
       .withAction(LogContextActionResolver.resolveAction(loan.getAction()))
-      .withDate(ZonedDateTime.now())
+      .withDate(ZonedDateTime.now(Clock.systemUTC()))
       .withServicePointId(ofNullable(loan.getCheckInServicePointId())
         .orElse(loan.getCheckoutServicePointId()))
       .withLoanId(loan.getId())

@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +52,7 @@ public class ClaimItemReturnedAPITests extends APITests {
   @Test
   public void canClaimItemReturnedWithComment() {
     final String comment = "testing";
-    final ZonedDateTime dateTime = ZonedDateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
@@ -64,7 +65,7 @@ public class ClaimItemReturnedAPITests extends APITests {
 
   @Test
   public void canClaimItemReturnedWithoutComment() {
-    final ZonedDateTime dateTime = ZonedDateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
@@ -76,7 +77,7 @@ public class ClaimItemReturnedAPITests extends APITests {
 
   @Test
   public void cannotClaimItemReturnedWhenLoanIsClosed() {
-    final ZonedDateTime dateTime = ZonedDateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     checkInFixture.checkInByBarcode(item);
 
@@ -117,7 +118,7 @@ public class ClaimItemReturnedAPITests extends APITests {
 
   @Test
   public void itemClaimedReturnedEventIsPublished() {
-    final ZonedDateTime dateTime = ZonedDateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()

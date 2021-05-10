@@ -10,6 +10,7 @@ import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_SERVICE_POI
 import static api.support.fixtures.CalendarExamples.END_TIME_FIRST_PERIOD;
 import static api.support.fixtures.CalendarExamples.ROLLOVER_SCENARIO_NEXT_DAY_CLOSED_SERVICE_POINT_ID;
 import static api.support.fixtures.CalendarExamples.ROLLOVER_SCENARIO_SERVICE_POINT_ID;
+import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -231,7 +232,7 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
     ZonedDateTime thresholdDateTime = getThresholdDateTime(expectedDueDate);
 
     assertThat("due date should be " + thresholdDateTime + ", actual due date is " + actualDueDate,
-      actualDueDate.isEqual(thresholdDateTime));
+      isSameMillis(actualDueDate, thresholdDateTime));
   }
 
   /**

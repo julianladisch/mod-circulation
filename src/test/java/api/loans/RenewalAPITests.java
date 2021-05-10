@@ -45,6 +45,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -824,7 +825,7 @@ public abstract class RenewalAPITests extends APITests {
     final IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource jessica = usersFixture.jessica();
     final String comment = "testing";
-    final ZonedDateTime dateTime = ZonedDateTime.now();
+    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
 
     final JsonObject loanJson = checkOutFixture.checkOutByBarcode(smallAngryPlanet,
       usersFixture.jessica())
@@ -1161,7 +1162,7 @@ public abstract class RenewalAPITests extends APITests {
       .addSchedule(todayOnly());
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(
-      LocalDate.now(), LocalTime.MIN, UTC)
+      LocalDate.now(Clock.systemUTC()), LocalTime.MIN, UTC)
         .withHour(23)
         .withMinute(59)
         .withSecond(59);
@@ -1247,7 +1248,7 @@ public abstract class RenewalAPITests extends APITests {
       .addSchedule(todayOnly());
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(
-      LocalDate.now(), LocalTime.MIN, UTC)
+      LocalDate.now(Clock.systemUTC()), LocalTime.MIN, UTC)
         .withHour(23)
         .withMinute(59)
         .withSecond(59);

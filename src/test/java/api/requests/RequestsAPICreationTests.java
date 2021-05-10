@@ -51,6 +51,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -1643,7 +1644,7 @@ RequestsAPICreationTests extends APITests {
       .page()
       .forItem(smallAngryPlanet)
       .by(steve)
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .fulfilToHoldShelf()
       .withPickupServicePointId(servicePointsFixture.cd1().getId()));
 

@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.iterableWithSize;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -234,7 +235,7 @@ public class AgedToLostScheduledNoticesProcessingTests extends APITests {
 
     claimItemReturnedFixture.claimItemReturned(new ClaimItemReturnedRequestBuilder()
       .forLoan(agedToLostLoan.getLoanId().toString())
-      .withItemClaimedReturnedDate(now()));
+      .withItemClaimedReturnedDate(now(Clock.systemUTC())));
     final ZonedDateTime firstRunTime = TIMING_PERIOD
       .plusDate(getAgedToLostDate(agedToLostLoan));
     scheduledNoticeProcessingClient.runLoanNoticesProcessing(

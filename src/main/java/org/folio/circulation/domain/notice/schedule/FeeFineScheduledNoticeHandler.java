@@ -4,6 +4,7 @@ import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.folio.circulation.domain.notice.TemplateContextUtil.createFeeFineNoticeContext;
 import static org.folio.circulation.support.AsyncCoordinationUtil.allOf;
 import static org.folio.circulation.support.results.Result.ofAsync;
+import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
 import java.lang.invoke.MethodHandles;
 import java.time.ZoneOffset;
@@ -172,7 +173,7 @@ public class FeeFineScheduledNoticeHandler {
     ZonedDateTime recurringNoticeNextRunTime = notice.getConfiguration()
       .getRecurringPeriod().plusDate(notice.getNextRunTime());
 
-    if (recurringNoticeNextRunTime.isBefore(systemTime)) {
+    if (isBeforeMillis(recurringNoticeNextRunTime, systemTime)) {
       recurringNoticeNextRunTime = notice.getConfiguration()
          .getRecurringPeriod().plusDate(systemTime);
     }

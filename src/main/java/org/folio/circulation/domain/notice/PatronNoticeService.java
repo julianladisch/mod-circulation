@@ -5,11 +5,12 @@ import static java.util.stream.Collectors.groupingBy;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.folio.circulation.domain.representations.logs.LogEventType.NOTICE;
 import static org.folio.circulation.support.AsyncCoordinationUtil.allOf;
+import static org.folio.circulation.support.http.CommonResponseInterpreters.mapToRecordInterpreter;
 import static org.folio.circulation.support.logging.PatronNoticeLogHelper.logResponse;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
-import static org.folio.circulation.support.http.CommonResponseInterpreters.mapToRecordInterpreter;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,15 +24,15 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.tuple.Pair;
-import org.folio.circulation.domain.representations.logs.NoticeLogContext;
 import org.folio.circulation.domain.notice.schedule.ScheduledNoticeConfig;
+import org.folio.circulation.domain.representations.logs.NoticeLogContext;
 import org.folio.circulation.infrastructure.storage.notices.PatronNoticePolicyRepository;
 import org.folio.circulation.rules.AppliedRuleConditions;
 import org.folio.circulation.services.EventPublisher;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.CollectionResourceClient;
-import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.http.client.ResponseInterpreter;
+import org.folio.circulation.support.results.Result;
 
 import io.vertx.core.json.JsonObject;
 
@@ -174,7 +175,7 @@ public class PatronNoticeService {
   }
 
   private CompletableFuture<Result<Void>> publishAuditLogEvent(NoticeLogContext noticeLogContext) {
-    return eventPublisher.publishLogRecord(noticeLogContext.withDate(ZonedDateTime.now()).asJson(), NOTICE);
+    return eventPublisher.publishLogRecord(noticeLogContext.withDate(ZonedDateTime.now(Clock.systemUTC())).asJson(), NOTICE);
   }
 
   private static class NoticeEventGroupDefinition {

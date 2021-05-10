@@ -70,7 +70,7 @@ public class ScheduledNoticeProcessingClient {
   }
 
   private void runWithFrozenTime(Runnable runnable, ZonedDateTime mockSystemTime) {
-    try (MockedStatic<System> system = Mockito.mockStatic(System.class)) {
+    try (MockedStatic<Clock> system = Mockito.mockStatic(Clock.class, Mockito.CALLS_REAL_METHODS)) {
       system.when(System::currentTimeMillis).thenReturn(mockSystemTime
         .toInstant().toEpochMilli());
       runnable.run();

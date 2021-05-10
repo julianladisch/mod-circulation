@@ -5,7 +5,6 @@ import static org.folio.circulation.domain.OpeningDay.createClosedDay;
 import static org.folio.circulation.domain.OpeningDay.fromJsonByDefaultKey;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDate;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;

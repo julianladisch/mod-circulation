@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -276,7 +277,7 @@ public void verifyItemEffectiveLocationIdAtCheckOut() {
     final Response response = checkInFixture.attemptCheckInByBarcode(
       new CheckInByBarcodeRequestBuilder()
         .withItemBarcode("543593485458")
-        .on(ZonedDateTime.now())
+        .on(ZonedDateTime.now(Clock.systemUTC()))
         .at(UUID.randomUUID()));
 
     assertThat(response, hasStatus(HTTP_UNPROCESSABLE_ENTITY));
@@ -297,7 +298,7 @@ public void verifyItemEffectiveLocationIdAtCheckOut() {
     final Response response = checkInFixture.attemptCheckInByBarcode(
       new CheckInByBarcodeRequestBuilder()
         .forItem(nod)
-        .on(ZonedDateTime.now())
+        .on(ZonedDateTime.now(Clock.systemUTC()))
         .atNoServicePoint());
 
     assertThat(response, hasStatus(HTTP_UNPROCESSABLE_ENTITY));
@@ -318,7 +319,7 @@ public void verifyItemEffectiveLocationIdAtCheckOut() {
     final Response response = checkInFixture.attemptCheckInByBarcode(
       new CheckInByBarcodeRequestBuilder()
         .noItem()
-        .on(ZonedDateTime.now())
+        .on(ZonedDateTime.now(Clock.systemUTC()))
         .at(UUID.randomUUID()));
 
     assertThat(response, hasStatus(HTTP_UNPROCESSABLE_ENTITY));

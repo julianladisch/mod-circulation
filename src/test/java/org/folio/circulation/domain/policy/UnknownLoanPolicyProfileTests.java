@@ -4,6 +4,7 @@ import static api.support.matchers.FailureMatcher.hasValidationFailure;
 import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
@@ -53,7 +54,9 @@ public class UnknownLoanPolicyProfileTests {
       .asDomainObject()
       .withLoanPolicy(loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(
+      loan, ZonedDateTime.now(Clock.systemUTC()),
+      new RequestQueue(Collections.emptyList()));
 
     assertThat(result, hasValidationFailure(
       "profile \"Unknown profile\" in the loan policy is not recognised"));

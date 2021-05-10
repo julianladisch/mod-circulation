@@ -3,6 +3,7 @@ package org.folio.circulation.domain;
 import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
 import static java.time.ZoneOffset.UTC;
 import static java.time.ZonedDateTime.now;
+import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -19,7 +20,7 @@ public class LoanLostDateTest {
     final var loan = new LoanBuilder().asDomainObject()
       .declareItemLost("Lost", declaredLostDate);
 
-    assertTrue(declaredLostDate.isEqual(loan.getLostDate()));
+    assertTrue(isSameMillis(declaredLostDate, loan.getLostDate()));
   }
 
   @Test
@@ -28,7 +29,7 @@ public class LoanLostDateTest {
     final var loan = new LoanBuilder().asDomainObject()
       .ageOverdueItemToLost(agedToLostDate);
 
-    assertTrue(agedToLostDate.isEqual(loan.getLostDate()));
+    assertTrue(isSameMillis(agedToLostDate, loan.getLostDate()));
   }
 
   @Test
@@ -40,7 +41,7 @@ public class LoanLostDateTest {
       .ageOverdueItemToLost(agedToLostDate)
       .declareItemLost("Lost", declaredLostDate);
 
-    assertTrue(declaredLostDate.isEqual(loan.getLostDate()));
+    assertTrue(isSameMillis(declaredLostDate, loan.getLostDate()));
     // make sure properties are not cleared
     assertThat(loan.asJson(), allOf(
       hasJsonPath("declaredLostDate", declaredLostDate.toString()),
@@ -57,7 +58,7 @@ public class LoanLostDateTest {
       .ageOverdueItemToLost(agedToLostDate)
       .declareItemLost("Lost", declaredLostDate);
 
-    assertTrue(agedToLostDate.isEqual(loan.getLostDate()));
+    assertTrue(isSameMillis(agedToLostDate, loan.getLostDate()));
     // make sure properties are not cleared
     assertThat(loan.asJson(), allOf(
       hasJsonPath("declaredLostDate", declaredLostDate.toString()),
@@ -73,7 +74,7 @@ public class LoanLostDateTest {
       .ageOverdueItemToLost(lostDate)
       .declareItemLost("Lost", lostDate);
 
-    assertTrue(lostDate.isEqual(loan.getLostDate()));
+    assertTrue(isSameMillis(lostDate, loan.getLostDate()));
   }
 
   @Test

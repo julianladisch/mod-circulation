@@ -18,6 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -89,7 +90,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -130,7 +131,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -157,7 +158,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint));
 
@@ -174,7 +175,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     requestsClient.replace(request.getId(),
       request.getJson().put("status", "Closed - Pickup expired"));
     scheduledNoticeProcessingClient.runRequestNoticesProcessing(ZonedDateTime
-      .of(LocalDate.now().plusDays(31), LocalTime.MIN, UTC));
+      .of(LocalDate.now(Clock.systemUTC()).plusDays(31), LocalTime.MIN, UTC));
 
     assertThat(scheduledNoticesClient.getAll(), empty());
   }
@@ -192,7 +193,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint));
 
@@ -206,7 +207,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
     scheduledNoticeProcessingClient.runRequestNoticesProcessing(ZonedDateTime
-      .of(LocalDate.now().plusDays(31), LocalTime.MIN, UTC));
+      .of(LocalDate.now(Clock.systemUTC()).plusDays(31), LocalTime.MIN, UTC));
 
     assertThat(scheduledNoticesClient.getAll(), hasSize(1));
   }
@@ -224,7 +225,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint));
 
@@ -246,7 +247,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
         equalTo("Closed - Filled"));
 
     scheduledNoticeProcessingClient.runRequestNoticesProcessing(ZonedDateTime
-      .of(LocalDate.now().plusDays(100), LocalTime.MIN, UTC));
+      .of(LocalDate.now(Clock.systemUTC()).plusDays(100), LocalTime.MIN, UTC));
 
     assertThat(scheduledNoticesClient.getAll(), empty());
     assertThat(patronNoticesClient.getAll(), empty());
@@ -267,7 +268,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -301,7 +302,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -341,7 +342,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -356,7 +357,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
       .until(scheduledNoticesClient::getAll, hasSize(1));
 
     scheduledNoticeProcessingClient.runRequestNoticesProcessing(ZonedDateTime
-      .of(LocalDate.now().plusDays(28), LocalTime.MIN, UTC));
+      .of(LocalDate.now(Clock.systemUTC()).plusDays(28), LocalTime.MIN, UTC));
 
     final var notices = patronNoticesClient.getAll();
 
@@ -383,7 +384,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
       .page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withNoRequestExpiration());

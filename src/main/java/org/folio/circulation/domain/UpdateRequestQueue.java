@@ -6,7 +6,6 @@ import static org.folio.circulation.support.results.Result.ofAsync;
 import static org.folio.circulation.support.results.Result.succeeded;
 
 import java.lang.invoke.MethodHandles;
-import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -19,7 +18,6 @@ import org.folio.circulation.infrastructure.storage.requests.RequestQueueReposit
 import org.folio.circulation.infrastructure.storage.requests.RequestRepository;
 import org.folio.circulation.resources.context.ReorderRequestContext;
 import org.folio.circulation.support.Clients;
-import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.utils.DateTimeUtil;
 import org.slf4j.Logger;
@@ -287,11 +285,8 @@ public class UpdateRequestQueue {
   private ZonedDateTime calculateHoldShelfExpirationDate(
     TimePeriod holdShelfExpiryPeriod, ZoneOffset tenantTimeZone) {
 
-    ZonedDateTime now = Instant.now(ClockManager.getClockManager().getClock())
-      .atZone(tenantTimeZone);
-
     ZonedDateTime holdShelfExpirationDate = holdShelfExpiryPeriod.getInterval()
-      .addTo(now, holdShelfExpiryPeriod.getDuration());
+      .addTo(ZonedDateTime.now(ZoneOffset.UTC), holdShelfExpiryPeriod.getDuration());
 
     if (holdShelfExpiryPeriod.isLongTermPeriod()) {
       holdShelfExpirationDate = DateTimeUtil.atEndOfTheDay(holdShelfExpirationDate);

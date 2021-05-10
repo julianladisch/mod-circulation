@@ -40,6 +40,7 @@ import static org.folio.circulation.domain.policy.DueDateManagement.KEEP_THE_CUR
 import static org.folio.circulation.domain.policy.Period.months;
 import static org.folio.circulation.domain.representations.ItemProperties.CALL_NUMBER_COMPONENTS;
 import static org.folio.circulation.domain.representations.logs.LogEventType.CHECK_OUT;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -49,8 +50,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Random;
@@ -353,7 +354,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final ZonedDateTime requestDate = ZonedDateTime.now();
+    final ZonedDateTime requestDate = ZonedDateTime.now(Clock.systemUTC());
 
     final IndividualResource response = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()

@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.UUID;
@@ -63,7 +64,7 @@ public class LogCheckInServiceTest {
     JsonObject requestRepresentation = new JsonObject()
       .put("servicePointId", UUID.randomUUID().toString())
       .put("itemBarcode", "barcode")
-      .put("checkInDate", ZonedDateTime.now().toString());
+      .put("checkInDate", ZonedDateTime.now(Clock.systemUTC()).toString());
 
     JsonObject itemRepresentation = new JsonObject()
       .put("id", UUID.randomUUID().toString())

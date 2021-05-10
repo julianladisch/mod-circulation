@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.time.Clock;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -77,7 +78,7 @@ public class RequestScheduledNoticesTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -120,7 +121,7 @@ public class RequestScheduledNoticesTests extends APITests {
     requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint));
 
@@ -149,7 +150,7 @@ public class RequestScheduledNoticesTests extends APITests {
     requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withNoRequestExpiration());
@@ -180,7 +181,7 @@ public class RequestScheduledNoticesTests extends APITests {
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -225,7 +226,7 @@ public class RequestScheduledNoticesTests extends APITests {
     RequestBuilder requestBuilder = new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration);
@@ -294,7 +295,7 @@ public class RequestScheduledNoticesTests extends APITests {
     RequestBuilder requestBuilder = new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration);
@@ -346,7 +347,7 @@ public class RequestScheduledNoticesTests extends APITests {
     RequestBuilder requestBuilder = new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration);
@@ -416,7 +417,7 @@ public class RequestScheduledNoticesTests extends APITests {
     RequestBuilder requestBuilder = new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now())
+      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration);

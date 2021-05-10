@@ -12,13 +12,14 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static org.folio.circulation.domain.ItemStatus.CHECKED_OUT;
 import static org.folio.circulation.domain.policy.Period.weeks;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.Item;
@@ -42,7 +43,7 @@ public class OverrideRenewalStrategyTest {
 
   @Test
   public void shouldUseOverrideDateWhenLoanIsNotLoanable() {
-    final ZonedDateTime overrideDate = now().plusMonths(1);
+    final ZonedDateTime overrideDate = now(Clock.systemUTC()).plusMonths(1);
     final JsonObject loanPolicyJson = new LoanPolicyBuilder()
       .withLoanable(false)
       .create();
@@ -55,7 +56,7 @@ public class OverrideRenewalStrategyTest {
 
   @Test
   public void shouldUseOverrideDateWhenLoanIsNotRenewable() {
-    final ZonedDateTime overrideDate = now().plusMonths(1);
+    final ZonedDateTime overrideDate = now(Clock.systemUTC()).plusMonths(1);
     final JsonObject loanPolicyJson = new LoanPolicyBuilder()
       .notRenewable()
       .create();
@@ -90,7 +91,7 @@ public class OverrideRenewalStrategyTest {
 
   @Test
   public void shouldUseOverrideDateWhenUnableToCalculateCalculatedDueDate() {
-    final ZonedDateTime overrideDate = now().plusMonths(1);
+    final ZonedDateTime overrideDate = now(Clock.systemUTC()).plusMonths(1);
     final JsonObject loanPolicyJson = rollingPolicy().create();
 
     // Use undefined strategy to break due date calculation

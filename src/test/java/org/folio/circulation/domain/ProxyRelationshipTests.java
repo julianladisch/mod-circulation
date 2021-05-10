@@ -3,6 +3,7 @@ package org.folio.circulation.domain;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .active()
-        .expires(ZonedDateTime.now().plusWeeks(3))
+        .expires(ZonedDateTime.now(Clock.systemUTC()).plusWeeks(3))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -62,7 +63,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .active()
-        .expires(ZonedDateTime.now().minusMonths(2))
+        .expires(ZonedDateTime.now(Clock.systemUTC()).minusMonths(2))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -99,7 +100,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .inactive()
-        .expires(ZonedDateTime.now().plusWeeks(3))
+        .expires(ZonedDateTime.now(Clock.systemUTC()).plusWeeks(3))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -118,7 +119,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .inactive()
-        .expires(ZonedDateTime.now().minusMonths(2))
+        .expires(ZonedDateTime.now(Clock.systemUTC()).minusMonths(2))
         .useMetaObject(useMetaObject)
         .create());
 

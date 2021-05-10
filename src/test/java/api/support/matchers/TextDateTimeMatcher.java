@@ -34,13 +34,13 @@ public class TextDateTimeMatcher {
       @Override
       protected boolean matchesSafely(String textRepresentation) {
         //response representation might vary from request representation
-        final ZonedDateTime zoned = parseDateTime(textRepresentation);
+        final ZonedDateTime parsed = parseDateTime(textRepresentation);
 
-        if (zoned == null) {
+        if (parsed == null) {
           return expected == null;
         }
 
-        return expected.isEqual(zoned.toOffsetDateTime());
+        return isSameMillis(expected.toZonedDateTime(), parsed);
       }
     };
   }

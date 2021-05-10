@@ -20,6 +20,7 @@ import static api.support.fixtures.CalendarExamples.getLastFakeOpeningDayByServI
 import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static java.time.ZoneOffset.UTC;
+import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -438,7 +439,7 @@ public class CheckOutCalculateOffsetTimeTests extends APITests {
     ZonedDateTime thresholdDateTime = getThresholdDateTime(expectedDueDate);
 
     assertThat("due date should be " + thresholdDateTime + ", actual due date is "
-      + actualDueDate, actualDueDate.isEqual(thresholdDateTime));
+      + actualDueDate, isSameMillis(actualDueDate, thresholdDateTime));
   }
 
   /**

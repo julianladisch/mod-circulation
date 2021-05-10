@@ -3,6 +3,7 @@ package org.folio.circulation.domain;
 import static org.folio.circulation.domain.InstanceRequestItemsComparer.sortRequestQueues;
 import static org.junit.Assert.assertEquals;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -94,8 +95,8 @@ public class InstanceRequestItemsComparerTests {
     itemQueueSizeMap.put(item2, 2);
 
     Map<Item, ZonedDateTime> itemDueDateMap = new LinkedHashMap<>();
-    ZonedDateTime item1DueDate = ZonedDateTime.now();
-    ZonedDateTime item2DueDate = ZonedDateTime.now().plusDays(3);
+    ZonedDateTime item1DueDate = ZonedDateTime.now(Clock.systemUTC());
+    ZonedDateTime item2DueDate = ZonedDateTime.now(Clock.systemUTC()).plusDays(3);
     itemDueDateMap.put(item1, item1DueDate);
     itemDueDateMap.put(item2, item2DueDate);
 
@@ -115,8 +116,8 @@ public class InstanceRequestItemsComparerTests {
     itemQueueSizeMap.put(item2, 2);
 
     Map<Item, ZonedDateTime> itemDueDateMap = new LinkedHashMap<>();
-    ZonedDateTime item1DueDate = ZonedDateTime.now();
-    ZonedDateTime item2DueDate = ZonedDateTime.now().minusDays(3);
+    ZonedDateTime item1DueDate = ZonedDateTime.now(Clock.systemUTC());
+    ZonedDateTime item2DueDate = ZonedDateTime.now(Clock.systemUTC()).minusDays(3);
     itemDueDateMap.put(item1, item1DueDate);
     itemDueDateMap.put(item2, item2DueDate);
 
@@ -136,7 +137,7 @@ public class InstanceRequestItemsComparerTests {
     itemQueueSizeMap.put(item2, 2);
 
     Map<Item, ZonedDateTime> itemDueDateMap = new LinkedHashMap<>();
-    itemDueDateMap.put(item1, ZonedDateTime.now());
+    itemDueDateMap.put(item1, ZonedDateTime.now(Clock.systemUTC()));
     itemDueDateMap.put(item2, null);
 
     Map<Item, Integer> itemIntegerMap = sortRequestQueues(itemQueueSizeMap, itemDueDateMap, null);
@@ -146,7 +147,7 @@ public class InstanceRequestItemsComparerTests {
 
     itemDueDateMap.clear();
     itemDueDateMap.put(item1, null);
-    itemDueDateMap.put(item2, ZonedDateTime.now());
+    itemDueDateMap.put(item2, ZonedDateTime.now(Clock.systemUTC()));
 
     itemIntegerMap = sortRequestQueues(itemQueueSizeMap, itemDueDateMap, null);
 
@@ -186,7 +187,7 @@ public class InstanceRequestItemsComparerTests {
     itemQueueSizeMap.put(item2, 2);
 
     Map<Item, ZonedDateTime> itemDueDateMap = new LinkedHashMap<>();
-    ZonedDateTime commonDueDate = ZonedDateTime.now();
+    ZonedDateTime commonDueDate = ZonedDateTime.now(Clock.systemUTC());
     itemDueDateMap.put(item2, commonDueDate);  //specifically add item2 first and expect that item2 will be first item in the result map.
     itemDueDateMap.put(item1, commonDueDate);
 
@@ -209,7 +210,7 @@ public class InstanceRequestItemsComparerTests {
     itemQueueSizeMap.put(item2, 2);
 
     Map<Item, ZonedDateTime> itemDueDateMap = new LinkedHashMap<>();
-    ZonedDateTime commonDueDate = ZonedDateTime.now();
+    ZonedDateTime commonDueDate = ZonedDateTime.now(Clock.systemUTC());
     itemDueDateMap.put(item2, commonDueDate);  //specifically add item2 first and expect that item2 will be first item in the result map.
     itemDueDateMap.put(item1, commonDueDate);
 
@@ -230,7 +231,7 @@ public class InstanceRequestItemsComparerTests {
     itemQueueSizeMap.put(item2, 2);
 
     Map<Item, ZonedDateTime> itemDueDateMap = new LinkedHashMap<>();
-    ZonedDateTime commonDueDate = ZonedDateTime.now();
+    ZonedDateTime commonDueDate = ZonedDateTime.now(Clock.systemUTC());
     itemDueDateMap.put(item2, commonDueDate);  //specifically add item2 first and expect that item2 will be first item in the result map.
     itemDueDateMap.put(item1, commonDueDate);
 

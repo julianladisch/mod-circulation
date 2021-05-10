@@ -12,6 +12,7 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
+import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -103,7 +104,9 @@ public class OverrideRenewalStrategy implements RenewalStrategy {
 
   private Result<Loan> processRenewal(Result<ZonedDateTime> calculatedDueDate, Loan loan, String comment) {
     return calculatedDueDate
-      .next(dueDate -> errorWhenEarlierOrSameDueDate(loan, dueDate))
+      .next(dueDate -> {
+        return errorWhenEarlierOrSameDueDate(loan, dueDate);
+      })
       .map(dueDate -> overrideRenewLoan(dueDate, loan, comment));
   }
 
@@ -136,8 +139,8 @@ public class OverrideRenewalStrategy implements RenewalStrategy {
   }
 
   private boolean newDueDateAfterCurrentDueDate(Loan loan, Result<ZonedDateTime> proposedDueDateResult) {
-    return proposedDueDateResult.map(proposedDueDate -> proposedDueDate.isAfter(loan.getDueDate()))
-      .orElse(false);
+    return proposedDueDateResult.map(proposedDueDate ->
+      isAfterMillis(proposedDueDate, loan.getDueDate())).orElse(false);
   }
 
   private boolean unableToCalculateProposedDueDate(Loan loan, ZonedDateTime systemDate) {

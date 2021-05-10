@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class DeclareClaimedReturnedItemAsMissingApiTests extends APITests {
   public void canDeclareItemMissingWhenClaimedReturned() {
     claimItemReturnedFixture.claimItemReturned(new ClaimItemReturnedRequestBuilder()
       .forLoan(loanId)
-      .withItemClaimedReturnedDate(ZonedDateTime.now()));
+      .withItemClaimedReturnedDate(ZonedDateTime.now(Clock.systemUTC())));
 
     claimItemReturnedFixture.declareClaimedReturnedItemAsMissing(
       new DeclareClaimedReturnedItemAsMissingRequestBuilder()

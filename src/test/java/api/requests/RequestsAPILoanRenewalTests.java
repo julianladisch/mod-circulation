@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -598,7 +599,7 @@ public class RequestsAPILoanRenewalTests extends APITests {
   }
 
   private void loanPolicyWithFixedProfileAndRenewingIsForbiddenWhenHoldIsPending() {
-    LocalDate now = LocalDate.now();
+    LocalDate now = LocalDate.now(Clock.systemUTC());
     FixedDueDateSchedulesBuilder fixedDueDateSchedules = new FixedDueDateSchedulesBuilder()
       .withName("1 month - Fixed Due Date Schedule")
       .addSchedule(wholeMonth(now.getYear(), now.getMonthValue()));

@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ public class ChangeDueDateValidatorTest {
     final LoanRepository loanRepository = mock(LoanRepository.class);
 
     when(loanRepository.getById(anyString()))
-      .thenReturn(ofAsync(() -> createLoan("", ZonedDateTime.now().minusHours(2))));
+      .thenReturn(ofAsync(() -> createLoan("", ZonedDateTime.now(Clock.systemUTC()).minusHours(2))));
 
     changeDueDateValidator = new ChangeDueDateValidator(loanRepository);
   }
@@ -65,7 +66,7 @@ public class ChangeDueDateValidatorTest {
     "Aged to lost"
   })
   public void canChangeLoanWhenDueDateIsNotChanged(String itemStatus) {
-    val existingLoan = createLoan(itemStatus, ZonedDateTime.now());
+    val existingLoan = createLoan(itemStatus, ZonedDateTime.now(Clock.systemUTC()));
 
     final LoanRepository loanRepository = mock(LoanRepository.class);
     when(loanRepository.getById(anyString())).thenReturn(ofAsync(() -> existingLoan));
@@ -83,7 +84,7 @@ public class ChangeDueDateValidatorTest {
   }
 
   private Result<LoanAndRelatedRecords> loanAndRelatedRecords(String itemStatus) {
-    val loan = createLoan(itemStatus, ZonedDateTime.now());
+    val loan = createLoan(itemStatus, ZonedDateTime.now(Clock.systemUTC()));
     return succeeded(new LoanAndRelatedRecords(loan));
   }
 

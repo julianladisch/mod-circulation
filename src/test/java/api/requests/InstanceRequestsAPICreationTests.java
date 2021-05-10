@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -332,8 +333,8 @@ public class InstanceRequestsAPICreationTests extends APITests {
       itemsFixture.basedUponDunkirkWithCustomHoldingAndLocation(holdings.getId(),
         locationsResource.getId());
 
-    loansFixture.createLoan(item1, usersFixture.charlotte(), now().plusDays(2));
-    loansFixture.createLoan(item2, usersFixture.charlotte(), now());
+    loansFixture.createLoan(item1, usersFixture.charlotte(), now(Clock.systemUTC()).plusDays(2));
+    loansFixture.createLoan(item2, usersFixture.charlotte(), now(Clock.systemUTC()));
 
     //Set up request queues. Item1 has requests (1 queued request), Item2 is requests (1 queued), either should be satisfied.
     placeHoldRequest(item1, pickupServicePointId, usersFixture.jessica(),
@@ -498,8 +499,8 @@ public class InstanceRequestsAPICreationTests extends APITests {
       itemsFixture.basedUponDunkirkWithCustomHoldingAndLocation(holdings.getId(),
         locationsResource.getId());
 
-    loansFixture.createLoan(item1, usersFixture.james(),  now());
-    loansFixture.createLoan(item2, usersFixture.rebecca(), now().plusDays(5));
+    loansFixture.createLoan(item1, usersFixture.james(),  now(Clock.systemUTC()));
+    loansFixture.createLoan(item2, usersFixture.rebecca(), now(Clock.systemUTC()).plusDays(5));
 
     IndividualResource instanceRequester = usersFixture.charlotte();
 
@@ -555,9 +556,9 @@ public class InstanceRequestsAPICreationTests extends APITests {
       itemsFixture.basedUponDunkirkWithCustomHoldingAndLocation(holdings.getId(),
         locationsResource.getId());
 
-    loansFixture.createLoan(item1, usersFixture.james(),  now().plusDays(5));
-    loansFixture.createLoan(item2, usersFixture.rebecca(), now().plusDays(3));
-    loansFixture.createLoan(item3, usersFixture.steve(), now().plusDays(10));
+    loansFixture.createLoan(item1, usersFixture.james(),  now(Clock.systemUTC()).plusDays(5));
+    loansFixture.createLoan(item2, usersFixture.rebecca(), now(Clock.systemUTC()).plusDays(3));
+    loansFixture.createLoan(item3, usersFixture.steve(), now(Clock.systemUTC()).plusDays(10));
 
     IndividualResource instanceRequester = usersFixture.charlotte();
 
@@ -612,8 +613,8 @@ public class InstanceRequestsAPICreationTests extends APITests {
       itemsFixture.basedUponDunkirkWithCustomHoldingAndLocation(holdings.getId(),
         locationsResource.getId());
 
-    loansFixture.createLoan(item1, usersFixture.james(),  now().plusDays(21));
-    loansFixture.createLoan(item2, usersFixture.rebecca(), now().plusDays(5));
+    loansFixture.createLoan(item1, usersFixture.james(),  now(Clock.systemUTC()).plusDays(21));
+    loansFixture.createLoan(item2, usersFixture.rebecca(), now(Clock.systemUTC()).plusDays(5));
 
     //Set up request queues. Item1 has requests (1 queued request), Item2 is requests (1 queued), either should be satisfied
     //but only item2 should a request be placed on because its due date is nearest.
@@ -684,7 +685,7 @@ public class InstanceRequestsAPICreationTests extends APITests {
         cd4Location.getId());
 
     //All of these items are checked out, have the same queue length, and due dates
-    ZonedDateTime sameCheckoutDate = now();
+    ZonedDateTime sameCheckoutDate = now(Clock.systemUTC());
     loansFixture.createLoan(item1, usersFixture.steve(), sameCheckoutDate );
     loansFixture.createLoan(item2, usersFixture.jessica(), sameCheckoutDate );
     loansFixture.createLoan(item3, usersFixture.james(), sameCheckoutDate );
@@ -728,7 +729,7 @@ public class InstanceRequestsAPICreationTests extends APITests {
 
     //For simplicity and by default, these items' request queue lengths are 0.
     //One item is "Checked out", the other item is  "In process"
-    loansFixture.createLoan(item2, usersFixture.steve(), now());
+    loansFixture.createLoan(item2, usersFixture.steve(), now(Clock.systemUTC()));
 
     JsonObject requestBody = createInstanceRequestObject(
       instanceMultipleCopies.getId(),

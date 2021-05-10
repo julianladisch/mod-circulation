@@ -5,6 +5,7 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
+import java.time.Clock;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -74,7 +75,7 @@ public class AnonymizeLoansNeverTests extends LoanAnonymizationTests {
         .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now().minusMinutes(1));
+    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now(Clock.systemUTC()).minusMinutes(1));
     checkInFixture.checkInByBarcode(item1);
 
     anonymizeLoansInTenant();
@@ -140,7 +141,7 @@ public class AnonymizeLoansNeverTests extends LoanAnonymizationTests {
         .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now().minusMinutes(1));
+    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now(Clock.systemUTC()).minusMinutes(1));
     checkInFixture.checkInByBarcode(item1);
 
     anonymizeLoansInTenant();
@@ -206,7 +207,7 @@ public class AnonymizeLoansNeverTests extends LoanAnonymizationTests {
         .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now().minusMinutes(1));
+    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now(Clock.systemUTC()).minusMinutes(1));
     checkInFixture.checkInByBarcode(item1);
 
     anonymizeLoansInTenant();
@@ -275,7 +276,7 @@ public class AnonymizeLoansNeverTests extends LoanAnonymizationTests {
         .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now().minusMinutes(1));
+    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now(Clock.systemUTC()).minusMinutes(1));
     checkInFixture.checkInByBarcode(item1);
 
     mockClockManagerToReturnFixedDateTime(
