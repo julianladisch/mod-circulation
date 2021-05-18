@@ -15,9 +15,9 @@ public enum OverridableBlockType {
   ITEM_NOT_LOANABLE_BLOCK("itemNotLoanableBlock",
     OkapiPermissions.of("circulation.override-item-not-loanable-block")),
   RENEWAL_BLOCK("renewalBlock",
-    OkapiPermissions.of("circulation.override-renewal-block")),
+    OkapiPermissions.of("circulation.override-patron-block")),
   RENEWAL_DUE_DATE_REQUIRED_BLOCK("renewalDueDateRequiredBlock",
-    OkapiPermissions.of("circulation.override-renewal-block"));
+    OkapiPermissions.of("circulation.override-patron-block"));
 
   private final String name;
   private final OkapiPermissions requiredOverridePermissions;

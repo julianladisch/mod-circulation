@@ -194,7 +194,7 @@
           ],
           "permissionsDesired": [
             "circulation.override-patron-block",
-            "circulation.override-renewal-block"
+            "circulation.override-renewal-by-barcode.post"
           ]
         },
         {
