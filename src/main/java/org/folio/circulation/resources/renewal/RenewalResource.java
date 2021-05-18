@@ -448,7 +448,7 @@ public abstract class RenewalResource extends Resource {
           RENEWAL_DUE_DATE_REQUIRED_IS_BLOCKED, context)))
       .next(ctx -> renew(ctx, renewDate))
         .mapFailure(failure -> errorHandler.handleValidationError(failure,
-          RENEWAL_VALIDATION_ERROR, context));
+          RENEWAL_DUE_DATE_REQUIRED_IS_BLOCKED, context));
   }
 
   private Result<RenewalContext> validateIfRenewIsAllowed(RenewalContext context,
