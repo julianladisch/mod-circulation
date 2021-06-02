@@ -9,7 +9,7 @@ stages:
       - publishImageConfig:
           dockerfilePath: ./Dockerfile
           buildContext: .
-          tag: docker.dev.folio.org/mod-circulation:circ-886-new-rancher
+          tag: docker.dev.folio.org/mod-circulation:master-with-CIRC-886
           pushRemote: true
           registry: docker.dev.folio.org
   - name: Deploy
@@ -19,7 +19,7 @@ stages:
           version: 0.1.32
           answers:
             image.repository: docker.dev.folio.org/mod-circulation
-            image.tag: circ-886-new-rancher
+            image.tag: master-with-CIRC-886
           targetNamespace: vega
           name: mod-circulation
 timeout: 60
