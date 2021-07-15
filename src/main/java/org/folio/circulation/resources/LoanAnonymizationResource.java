@@ -2,7 +2,12 @@ package org.folio.circulation.resources;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
-import org.folio.circulation.domain.anonymization.LoanAnonymization;
+import java.lang.invoke.MethodHandles;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.folio.circulation.domain.anonymization.DefaultLoanAnonymizationService;
+import org.folio.circulation.domain.anonymization.service.AnonymizationCheckersService;
 import org.folio.circulation.domain.anonymization.service.LoansForBorrowerFinder;
 import org.folio.circulation.domain.representations.anonymization.AnonymizeLoansRepresentation;
 import org.folio.circulation.infrastructure.storage.feesandfines.AccountRepository;
@@ -19,6 +24,8 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
 public class LoanAnonymizationResource extends Resource {
+  private final Logger log = LogManager.getLogger(MethodHandles.lookup().lookupClass());
+
   public LoanAnonymizationResource(HttpClient client) {
     super(client);
   }
@@ -38,14 +45,19 @@ public class LoanAnonymizationResource extends Resource {
     final var loanRepository = new LoanRepository(clients);
     final var accountRepository = new AccountRepository(clients);
 
-    final var loanAnonymization = new LoanAnonymization(
-      new AnonymizeStorageLoansRepository(clients),
-      new EventPublisher(clients.pubSubPublishingService()));
+    final var anonymizeStorageLoansRepository = new AnonymizeStorageLoansRepository(clients);
+    final var eventPublisher = new EventPublisher(clients.pubSubPublishingService());
 
     final var loansFinder = new LoansForBorrowerFinder(borrowerId,
       loanRepository, accountRepository);
 
-    completedFuture(loanAnonymization.byUserId(loansFinder).anonymizeLoans()
+    log.info("Initializing loan anonymization for borrower");
+
+    final var loanAnonymizer = new DefaultLoanAnonymizationService(
+      new AnonymizationCheckersService(),
+      loansFinder, anonymizeStorageLoansRepository, eventPublisher);
+
+    completedFuture(loanAnonymizer.anonymizeLoans()
       .thenApply(AnonymizeLoansRepresentation::from)
       .thenApply(r -> r.map(JsonHttpResponse::ok))
       .thenAccept(context::writeResultToHttpResponse));

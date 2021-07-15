@@ -19,7 +19,7 @@ public class DefaultLoanAnonymizationService implements LoanAnonymizationService
   private final LoanAnonymizationFinderService loansFinder;
   private final EventPublisher eventPublisher;
 
-  DefaultLoanAnonymizationService(AnonymizationCheckersService anonymizationCheckersService,
+  public DefaultLoanAnonymizationService(AnonymizationCheckersService anonymizationCheckersService,
     LoanAnonymizationFinderService loansFinderService,
     AnonymizeStorageLoansRepository anonymizeStorageLoansRepository, EventPublisher eventPublisher) {
 
