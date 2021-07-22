@@ -64,6 +64,7 @@ import org.folio.circulation.support.utils.CollectionUtil;
 import io.vertx.core.json.JsonObject;
 
 public class LoanRepository {
+  public static final String USER_ID = "userId";
   private static final String RECORDS_PROPERTY_NAME = "loans";
 
   private final CollectionResourceClient loansStorageClient;
@@ -72,7 +73,6 @@ public class LoanRepository {
   private static final Logger log = LogManager.getLogger(MethodHandles.lookup().lookupClass());
   private static final String ITEM_STATUS = "itemStatus";
   private static final String ITEM_ID = "itemId";
-  private static final String USER_ID = "userId";
 
   public LoanRepository(Clients clients) {
     loansStorageClient = clients.loansStorage();

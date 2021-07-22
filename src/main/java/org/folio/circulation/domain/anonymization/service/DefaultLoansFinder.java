@@ -11,7 +11,7 @@ import org.folio.circulation.infrastructure.storage.feesandfines.AccountReposito
 import org.folio.circulation.support.results.Result;
 
 abstract class DefaultLoansFinder {
-  private final AccountRepository accountRepository;
+  protected final AccountRepository accountRepository;
 
   DefaultLoansFinder(AccountRepository accountRepository) {
     this.accountRepository = accountRepository;
