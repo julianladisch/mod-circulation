@@ -4,11 +4,11 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.folio.circulation.support.http.client.Offset.zeroOffset;
 import static org.folio.circulation.support.http.client.PageLimit.limit;
 import static org.folio.circulation.support.results.Result.failed;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.folio.circulation.domain.MultipleRecords;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.http.client.CqlQuery;
@@ -41,7 +41,9 @@ public final class PageableFetcher<T> {
   private CompletableFuture<Result<Void>> processPagesRecursively(CqlQuery query,
     PageProcessor<T> pageProcessor, Offset currentOffset, int recordsFetchedOnPreviousIteration) {
 
-    return repository.getMany(query, pageSize, currentOffset)
+    PageFetcher<T> fetcher = repository::getMany;
+
+    return fetcher.fetch(query, pageSize, currentOffset)
       .thenCompose(r -> r.after(records -> pageProcessor.processPage(records)
           .thenCompose(processResult -> processResult.after(unused -> {
             final int recordsFetchedSoFar = recordsFetchedOnPreviousIteration + records.size();
@@ -79,5 +81,10 @@ public final class PageableFetcher<T> {
     }
 
     return latestPage.size() < pageSize.getLimit();
+  }
+
+  @FunctionalInterface
+  private interface PageFetcher<T> {
+    CompletableFuture<Result<MultipleRecords<T>>> fetch(CqlQuery query, PageLimit limit, Offset offset);
   }
 }
