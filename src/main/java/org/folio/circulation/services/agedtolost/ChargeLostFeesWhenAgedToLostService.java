@@ -82,7 +82,7 @@ public class ChargeLostFeesWhenAgedToLostService {
     this.userRepository = new UserRepository(clients);
     this.storeLoanAndItem = new StoreLoanAndItem(loanRepository, itemRepository);
     this.eventPublisher = new EventPublisher(clients.pubSubPublishingService());
-    this.loanPageableFetcher = new PageableFetcher<>(loanRepository);
+    this.loanPageableFetcher = new PageableFetcher<>(loanRepository::getMany);
     this.feeFineScheduledNoticeService = FeeFineScheduledNoticeService.using(clients);
   }
 

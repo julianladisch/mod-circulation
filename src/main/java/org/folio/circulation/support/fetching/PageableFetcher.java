@@ -26,12 +26,17 @@ public final class PageableFetcher<T> {
   private static final int DEFAULT_MAX_ALLOWED_RECORDS_LIMIT = 1_000_000;
   private static final PageLimit DEFAULT_PAGE_SIZE_LIMIT = limit(500);
 
-  private final GetManyRecordsRepository<T> repository;
+  private final PageFetcher<T> pageFetcher;
   private final PageLimit pageSize;
   private final int maxAllowedRecordsToFetchLimit;
 
-  public PageableFetcher(GetManyRecordsRepository<T> repository) {
-    this(repository, DEFAULT_PAGE_SIZE_LIMIT, DEFAULT_MAX_ALLOWED_RECORDS_LIMIT);
+  public static <T> PageableFetcher<T> forRepository(PageFetcher<T> pageFetcher) {
+    return new PageableFetcher<>(pageFetcher, DEFAULT_PAGE_SIZE_LIMIT,
+      DEFAULT_MAX_ALLOWED_RECORDS_LIMIT);
+  }
+
+  public PageableFetcher(PageFetcher<T> pageFetcher) {
+    this(pageFetcher, DEFAULT_PAGE_SIZE_LIMIT, DEFAULT_MAX_ALLOWED_RECORDS_LIMIT);
   }
 
   public CompletableFuture<Result<Void>> processPages(CqlQuery query, PageProcessor<T> pageProcessor) {
@@ -41,9 +46,7 @@ public final class PageableFetcher<T> {
   private CompletableFuture<Result<Void>> processPagesRecursively(CqlQuery query,
     PageProcessor<T> pageProcessor, Offset currentOffset, int recordsFetchedOnPreviousIteration) {
 
-    PageFetcher<T> fetcher = repository::getMany;
-
-    return fetcher.fetch(query, pageSize, currentOffset)
+    return pageFetcher.fetch(query, pageSize, currentOffset)
       .thenCompose(r -> r.after(records -> pageProcessor.processPage(records)
           .thenCompose(processResult -> processResult.after(unused -> {
             final int recordsFetchedSoFar = recordsFetchedOnPreviousIteration + records.size();
@@ -84,7 +87,7 @@ public final class PageableFetcher<T> {
   }
 
   @FunctionalInterface
-  private interface PageFetcher<T> {
+  public interface PageFetcher<T> {
     CompletableFuture<Result<MultipleRecords<T>>> fetch(CqlQuery query, PageLimit limit, Offset offset);
   }
 }

@@ -11,12 +11,12 @@ import static org.folio.circulation.support.http.client.CqlQuery.exactMatch;
 import static org.folio.circulation.support.http.client.CqlQuery.lessThan;
 import static org.folio.circulation.support.http.client.CqlQuery.notEqual;
 import static org.folio.circulation.support.results.Result.ofAsync;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.folio.circulation.StoreLoanAndItem;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.MultipleRecords;
@@ -49,7 +49,8 @@ public class MarkOverdueLoansAsAgedLostService {
     this.itemRepository = noLocationMaterialTypeAndLoanTypeInstance(clients);
     this.storeLoanAndItem = new StoreLoanAndItem(clients);
     this.eventPublisher = new EventPublisher(clients.pubSubPublishingService());
-    this.loanPageableFetcher = new PageableFetcher<>(new LoanRepository(clients));
+    final LoanRepository repository = new LoanRepository(clients);
+    this.loanPageableFetcher = new PageableFetcher<>(repository::getMany);
     this.loanScheduledNoticeService = LoanScheduledNoticeService.using(clients);
     this.userRepository = new UserRepository(clients);
   }
