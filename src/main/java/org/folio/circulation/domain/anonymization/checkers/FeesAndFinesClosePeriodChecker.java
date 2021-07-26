@@ -5,19 +5,25 @@ import java.util.Optional;
 import org.folio.circulation.domain.Account;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.joda.time.DateTime;
 
-public class FeesAndFinesClosePeriodChecker extends TimePeriodChecker {
+public class FeesAndFinesClosePeriodChecker implements AnonymizationChecker {
+  private final Period period;
 
   public FeesAndFinesClosePeriodChecker(Period period) {
-    super(period);
+    this.period = period;
   }
 
   @Override
   public boolean canBeAnonymized(Loan loan) {
-    return loan.allFeesAndFinesClosed()
-        && findLatestAccountCloseDate(loan).map(this::checkTimePeriodPassed)
-          .orElse(false);
+    if (!loan.allFeesAndFinesClosed()) {
+      return false;
+    }
+
+    return findLatestAccountCloseDate(loan)
+      .map(this::latestAccountClosedEarlierThanPeriod)
+      .orElse(false);
 
   }
 
@@ -33,5 +39,10 @@ public class FeesAndFinesClosePeriodChecker extends TimePeriodChecker {
   @Override
   public String getReason() {
     return "intervalAfterFeesAndFinesCloseNotPassed";
+  }
+
+  boolean latestAccountClosedEarlierThanPeriod(DateTime lastAccountClosed) {
+    return lastAccountClosed != null && ClockManager.getClockManager().getDateTime()
+      .isAfter(lastAccountClosed.plus(period.timePeriod()));
   }
 }
