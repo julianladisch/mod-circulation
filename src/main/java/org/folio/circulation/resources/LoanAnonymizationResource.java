@@ -1,5 +1,7 @@
 package org.folio.circulation.resources;
 
+import static org.folio.circulation.Clock.systemClock;
+
 import java.lang.invoke.MethodHandles;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,7 +15,6 @@ import org.folio.circulation.infrastructure.storage.loans.AnonymizeStorageLoansR
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
 import org.folio.circulation.services.EventPublisher;
 import org.folio.circulation.support.Clients;
-import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.RouteRegistration;
 import org.folio.circulation.support.http.server.JsonHttpResponse;
 import org.folio.circulation.support.http.server.WebContext;
@@ -51,7 +52,7 @@ public class LoanAnonymizationResource extends Resource {
     final var eventPublisher = new EventPublisher(clients.pubSubPublishingService());
 
     final var loanAnonymizationService = new DefaultLoanAnonymizationService(
-      AnonymizationCheckersService.manual(() -> ClockManager.getClockManager().getDateTime()),
+      AnonymizationCheckersService.manual(systemClock()),
       anonymizeStorageLoansRepository, eventPublisher);
 
     log.info("Initializing loan anonymization for borrower: {}", borrowerId);
@@ -61,4 +62,5 @@ public class LoanAnonymizationResource extends Resource {
       .thenApply(r -> r.map(JsonHttpResponse::ok))
       .thenAccept(context::writeResultToHttpResponse);
   }
+
 }

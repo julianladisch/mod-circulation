@@ -1,5 +1,6 @@
 package org.folio.circulation.domain.anonymization;
 
+import static org.folio.circulation.Clock.systemClock;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
 import static org.hamcrest.CoreMatchers.is;
@@ -78,7 +79,7 @@ class AnonymizeLoansTests {
       return AnonymizationCheckersService.scheduled(
         new LoanAnonymizationConfiguration(ClosingType.IMMEDIATELY, ClosingType.NEVER,
           false, null, null),
-        () -> ClockManager.getClockManager().getDateTime());
+        systemClock());
     }
   }
 
@@ -116,7 +117,7 @@ class AnonymizeLoansTests {
       // loans with fees closing type is definitely used
       return AnonymizationCheckersService.scheduled(
         new LoanAnonymizationConfiguration(ClosingType.NEVER, ClosingType.IMMEDIATELY,
-          true, null, null), () -> ClockManager.getClockManager().getDateTime());
+          true, null, null), systemClock());
     }
   }
 
@@ -177,7 +178,7 @@ class AnonymizeLoansTests {
       return AnonymizationCheckersService.scheduled(
         new LoanAnonymizationConfiguration(ClosingType.NEVER, ClosingType.NEVER,
           true, null, null),
-        () -> ClockManager.getClockManager().getDateTime());
+        systemClock());
     }
   }
 

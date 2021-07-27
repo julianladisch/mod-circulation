@@ -2,6 +2,7 @@ package org.folio.circulation.domain.anonymization;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.folio.circulation.Clock.systemClock;
 import static org.folio.circulation.domain.anonymization.config.ClosingType.IMMEDIATELY;
 import static org.folio.circulation.domain.anonymization.config.ClosingType.NEVER;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
@@ -27,7 +28,6 @@ import org.folio.circulation.domain.anonymization.service.AnonymizationCheckersS
 import org.folio.circulation.domain.anonymization.service.LoansForTenantFinder;
 import org.folio.circulation.infrastructure.storage.loans.AnonymizeStorageLoansRepository;
 import org.folio.circulation.services.EventPublisher;
-import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -137,7 +137,7 @@ public class LoanAnonymizationServiceTests {
 
   private LoanAnonymizationService createService(LoanAnonymizationConfiguration config) {
     final var anonymizationCheckersService = AnonymizationCheckersService.scheduled(
-      config, () -> ClockManager.getClockManager().getDateTime());
+      config, systemClock());
 
     return new DefaultLoanAnonymizationService(anonymizationCheckersService,
       anonymizeStorageLoansRepository, eventPublisher);

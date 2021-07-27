@@ -1,5 +1,6 @@
 package org.folio.circulation.resources;
 
+import static org.folio.circulation.Clock.systemClock;
 import static org.folio.circulation.support.results.AsynchronousResultBindings.safelyInitialise;
 
 import java.lang.invoke.MethodHandles;
@@ -16,7 +17,6 @@ import org.folio.circulation.infrastructure.storage.loans.AnonymizeStorageLoansR
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
 import org.folio.circulation.services.EventPublisher;
 import org.folio.circulation.support.Clients;
-import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.RouteRegistration;
 import org.folio.circulation.support.http.server.JsonHttpResponse;
 import org.folio.circulation.support.http.server.WebContext;
@@ -61,8 +61,7 @@ public class ScheduledAnonymizationProcessingResource extends Resource {
 
     safelyInitialise(configurationRepository::loanHistoryConfiguration)
       .thenApply(r -> r.map(config -> new DefaultLoanAnonymizationService(
-          AnonymizationCheckersService.scheduled(config,
-            () -> ClockManager.getClockManager().getDateTime()),
+          AnonymizationCheckersService.scheduled(config, systemClock()),
           anonymizeStorageLoansRepository, eventPublisher)))
       .thenCompose(r -> r.after(service -> service.anonymizeLoans(loansFinder::findLoansToAnonymize)))
       .thenApply(AnonymizeLoansRepresentation::from)
