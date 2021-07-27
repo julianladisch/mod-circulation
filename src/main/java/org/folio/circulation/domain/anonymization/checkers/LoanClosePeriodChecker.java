@@ -1,5 +1,8 @@
 package org.folio.circulation.domain.anonymization.checkers;
 
+import static org.folio.circulation.domain.anonymization.checkers.AnonymizationChecker.CanBeAnonymizedDecision.CAN_BE_ANONYMIZED;
+import static org.folio.circulation.domain.anonymization.checkers.AnonymizationChecker.CanBeAnonymizedDecision.LOAN_CLOSED_TOO_RECENTLY;
+
 import org.folio.circulation.Clock;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.policy.Period;
@@ -20,11 +23,18 @@ public class LoanClosePeriodChecker implements AnonymizationChecker {
   }
 
   @Override
+  public CanBeAnonymizedDecision canBeAnonymizedEnum(Loan loan) {
+    return canBeAnonymized(loan)
+      ? CAN_BE_ANONYMIZED
+      : LOAN_CLOSED_TOO_RECENTLY;
+  }
+
+  @Override
   public String getReason() {
     return "loanClosedPeriodNotPassed";
   }
 
-  boolean itemReturnedEarlierThanPeriod(DateTime returnDate) {
+  private boolean itemReturnedEarlierThanPeriod(DateTime returnDate) {
     if (returnDate == null) {
       return false;
     }

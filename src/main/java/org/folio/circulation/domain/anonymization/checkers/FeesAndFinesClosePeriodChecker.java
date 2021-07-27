@@ -1,5 +1,8 @@
 package org.folio.circulation.domain.anonymization.checkers;
 
+import static org.folio.circulation.domain.anonymization.checkers.AnonymizationChecker.CanBeAnonymizedDecision.CAN_BE_ANONYMIZED;
+import static org.folio.circulation.domain.anonymization.checkers.AnonymizationChecker.CanBeAnonymizedDecision.FEES_FINES_CLOSED_TOO_RECENTLY;
+
 import java.util.Optional;
 
 import org.folio.circulation.Clock;
@@ -26,6 +29,13 @@ public class FeesAndFinesClosePeriodChecker implements AnonymizationChecker {
     return findLatestAccountCloseDate(loan)
       .map(this::latestAccountClosedEarlierThanPeriod)
       .orElse(false);
+  }
+
+  @Override
+  public CanBeAnonymizedDecision canBeAnonymizedEnum(Loan loan) {
+    return canBeAnonymized(loan)
+      ? CAN_BE_ANONYMIZED
+      : FEES_FINES_CLOSED_TOO_RECENTLY;
   }
 
   @Override
