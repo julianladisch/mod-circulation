@@ -73,7 +73,7 @@ public class AnonymizationCheckersService {
   private AnonymizationChecker checkerForLoan(Loan loan) {
     if (config == null) {
       return manualChecker;
-    } else if (loan.hasAssociatedFeesAndFines() && config.treatLoansWithFeesAndFinesDifferently()) {
+    } else if (loan.hasAssociatedFeesAndFines()) {
       return loansWithFeesChecker;
     } else {
       return loansWithoutFeesChecker;
@@ -105,6 +105,10 @@ public class AnonymizationCheckersService {
 
     if (config == null) {
       return null;
+    }
+
+    if (!config.treatLoansWithFeesAndFinesDifferently()) {
+      return getClosedLoansCheckersFromLoanHistory(config, clock);
     }
 
     switch (config.getFeesAndFinesClosingType()) {
