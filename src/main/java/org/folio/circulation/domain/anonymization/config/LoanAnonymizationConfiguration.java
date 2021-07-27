@@ -31,6 +31,10 @@ public class LoanAnonymizationConfiguration {
             getNestedStringProperty(jsonObject, FEEFINE, "intervalId")));
   }
 
+  public boolean neverAnonymizeAnyLoans() {
+    return getLoanClosingType() == ClosingType.NEVER && !treatLoansWithFeesAndFinesDifferently();
+  }
+
   public ClosingType getLoanClosingType() {
     return loanClosingType;
   }

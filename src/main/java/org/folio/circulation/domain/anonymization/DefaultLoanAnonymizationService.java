@@ -34,7 +34,7 @@ public class DefaultLoanAnonymizationService implements LoanAnonymizationService
   public CompletableFuture<Result<LoanAnonymizationRecords>> anonymizeLoans(
     Supplier<CompletableFuture<Result<Collection<Loan>>>> loansToCheck) {
 
-    if (anonymizationCheckersService.neverAnonymizeLoans()) {
+    if (anonymizationCheckersService.neverAnonymizeAnyLoans()) {
       return completedFuture(Result.of(LoanAnonymizationRecords::new));
     }
 

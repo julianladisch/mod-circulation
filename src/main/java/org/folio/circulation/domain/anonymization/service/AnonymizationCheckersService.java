@@ -18,7 +18,6 @@ import org.folio.circulation.domain.anonymization.checkers.LoanClosePeriodChecke
 import org.folio.circulation.domain.anonymization.checkers.NeverAnonymizeLoansChecker;
 import org.folio.circulation.domain.anonymization.checkers.NeverAnonymizeLoansWithFeeFinesChecker;
 import org.folio.circulation.domain.anonymization.checkers.NoAssociatedFeesAndFinesChecker;
-import org.folio.circulation.domain.anonymization.config.ClosingType;
 import org.folio.circulation.domain.anonymization.config.LoanAnonymizationConfiguration;
 
 import lombok.AccessLevel;
@@ -26,29 +25,27 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor(access=AccessLevel.PRIVATE)
 public class AnonymizationCheckersService {
-  private final LoanAnonymizationConfiguration config;
+  private final boolean neverAnonymizeAnyLoans;
   private final AnonymizationChecker loansWithoutFeesChecker;
   private final AnonymizationChecker loansWithFeesChecker;
 
   public static AnonymizationCheckersService manual() {
-    return new AnonymizationCheckersService(null,
+    return new AnonymizationCheckersService(false,
       new NoAssociatedFeesAndFinesChecker(), new NoAssociatedFeesAndFinesChecker());
   }
 
   public static AnonymizationCheckersService scheduled(LoanAnonymizationConfiguration config, Clock clock) {
-    return new AnonymizationCheckersService(config,
+    if (config == null) {
+      throw new IllegalArgumentException("Loan anonymization configuration cannot be null");
+    }
+
+    return new AnonymizationCheckersService(config.neverAnonymizeAnyLoans(),
       getClosedLoansCheckersFromLoanHistory(config, clock),
       getFeesAndFinesCheckersFromLoanHistory(config, clock));
   }
 
-  public boolean neverAnonymizeLoans() {
-    // Without config, this cannot be determined
-    if (config == null) {
-      return false;
-    }
-
-    return config.getLoanClosingType() == ClosingType.NEVER &&
-      !config.treatLoansWithFeesAndFinesDifferently();
+  public boolean neverAnonymizeAnyLoans() {
+    return neverAnonymizeAnyLoans;
   }
 
   public Map<String, Set<String>> segregateLoans(Collection<Loan> loans) {
@@ -80,10 +77,6 @@ public class AnonymizationCheckersService {
   private static AnonymizationChecker getClosedLoansCheckersFromLoanHistory(
     LoanAnonymizationConfiguration config, Clock clock) {
 
-    if (config == null) {
-      return null;
-    }
-
     switch (config.getLoanClosingType()) {
       case IMMEDIATELY:
         return new AnonymizeLoansImmediatelyChecker();
@@ -99,10 +92,6 @@ public class AnonymizationCheckersService {
 
   private static AnonymizationChecker getFeesAndFinesCheckersFromLoanHistory(
     LoanAnonymizationConfiguration config, Clock clock) {
-
-    if (config == null) {
-      return null;
-    }
 
     if (!config.treatLoansWithFeesAndFinesDifferently()) {
       return getClosedLoansCheckersFromLoanHistory(config, clock);
