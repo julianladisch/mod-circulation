@@ -20,7 +20,6 @@ import org.folio.circulation.domain.anonymization.checkers.NeverAnonymizeLoansWi
 import org.folio.circulation.domain.anonymization.checkers.NoAssociatedFeesAndFinesChecker;
 import org.folio.circulation.domain.anonymization.config.ClosingType;
 import org.folio.circulation.domain.anonymization.config.LoanAnonymizationConfiguration;
-import org.folio.circulation.support.ClockManager;
 
 public class AnonymizationCheckersService {
   private final LoanAnonymizationConfiguration config;
@@ -39,10 +38,6 @@ public class AnonymizationCheckersService {
       closedLoansCheckersFromLoanHistory = getClosedLoansCheckersFromLoanHistory();
     }
     manualAnonymizationChecker = getManualAnonymizationChecker();
-  }
-
-  public AnonymizationCheckersService() {
-    this(null, () -> ClockManager.getClockManager().getDateTime());
   }
 
   public boolean neverAnonymizeLoans() {

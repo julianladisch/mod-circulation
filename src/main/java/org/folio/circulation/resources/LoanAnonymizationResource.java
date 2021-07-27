@@ -13,6 +13,7 @@ import org.folio.circulation.infrastructure.storage.loans.AnonymizeStorageLoansR
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
 import org.folio.circulation.services.EventPublisher;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.RouteRegistration;
 import org.folio.circulation.support.http.server.JsonHttpResponse;
 import org.folio.circulation.support.http.server.WebContext;
@@ -50,7 +51,7 @@ public class LoanAnonymizationResource extends Resource {
     final var eventPublisher = new EventPublisher(clients.pubSubPublishingService());
 
     final var loanAnonymizationService = new DefaultLoanAnonymizationService(
-      new AnonymizationCheckersService(), anonymizeStorageLoansRepository, eventPublisher);
+      new AnonymizationCheckersService(null, () -> ClockManager.getClockManager().getDateTime()), anonymizeStorageLoansRepository, eventPublisher);
 
     log.info("Initializing loan anonymization for borrower: {}", borrowerId);
 
