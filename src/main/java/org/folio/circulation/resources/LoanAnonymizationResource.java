@@ -1,7 +1,5 @@
 package org.folio.circulation.resources;
 
-import static org.folio.circulation.Clock.systemClock;
-
 import java.lang.invoke.MethodHandles;
 
 import org.apache.logging.log4j.LogManager;
@@ -52,7 +50,7 @@ public class LoanAnonymizationResource extends Resource {
     final var eventPublisher = new EventPublisher(clients.pubSubPublishingService());
 
     final var loanAnonymizationService = new DefaultLoanAnonymizationService(
-      AnonymizationCheckersService.manual(systemClock()),
+      AnonymizationCheckersService.manual(),
       anonymizeStorageLoansRepository, eventPublisher);
 
     log.info("Initializing loan anonymization for borrower: {}", borrowerId);

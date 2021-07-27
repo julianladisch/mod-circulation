@@ -15,7 +15,6 @@ import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.anonymization.config.ClosingType;
 import org.folio.circulation.domain.anonymization.config.LoanAnonymizationConfiguration;
 import org.folio.circulation.domain.anonymization.service.AnonymizationCheckersService;
-import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.domain.policy.Period;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -235,7 +234,7 @@ class AnonymizeLoansTests {
 
     private AnonymizationCheckersService checker() {
       // Manual anonymization is triggered by providing no config
-      return AnonymizationCheckersService.manual(() -> ClockManager.getClockManager().getDateTime());
+      return AnonymizationCheckersService.manual();
     }
   }
 

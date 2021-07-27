@@ -21,32 +21,25 @@ import org.folio.circulation.domain.anonymization.checkers.NoAssociatedFeesAndFi
 import org.folio.circulation.domain.anonymization.config.ClosingType;
 import org.folio.circulation.domain.anonymization.config.LoanAnonymizationConfiguration;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor(access=AccessLevel.PRIVATE)
 public class AnonymizationCheckersService {
   private final LoanAnonymizationConfiguration config;
   private final AnonymizationChecker manualChecker;
-  private AnonymizationChecker feesAndFinesCheckersFromLoanHistory;
-  private AnonymizationChecker closedLoansCheckersFromLoanHistory;
+  private final AnonymizationChecker loansWithoutFeesChecker;
+  private final AnonymizationChecker loansWithFeesChecker;
 
-  public static AnonymizationCheckersService manual(Clock clock) {
-    return new AnonymizationCheckersService(null, clock,
-      getManualAnonymizationChecker());
+  public static AnonymizationCheckersService manual() {
+    return new AnonymizationCheckersService(null,
+      new NoAssociatedFeesAndFinesChecker(), null, null);
   }
 
   public static AnonymizationCheckersService scheduled(LoanAnonymizationConfiguration config, Clock clock) {
-    return new AnonymizationCheckersService(config, clock, null);
-  }
-
-  private AnonymizationCheckersService(LoanAnonymizationConfiguration config,
-    Clock clock, AnonymizationChecker manualChecker) {
-    this.config = config;
-    this.manualChecker = manualChecker;
-
-    if ( config != null) {
-      feesAndFinesCheckersFromLoanHistory = getFeesAndFinesCheckersFromLoanHistory(
-        config, clock);
-      closedLoansCheckersFromLoanHistory = getClosedLoansCheckersFromLoanHistory(
-        config, clock);
-    }
+    return new AnonymizationCheckersService(config, null,
+      getClosedLoansCheckersFromLoanHistory(config, clock),
+      getFeesAndFinesCheckersFromLoanHistory(config, clock));
   }
 
   public boolean neverAnonymizeLoans() {
@@ -71,9 +64,9 @@ public class AnonymizationCheckersService {
       if (config == null) {
         checker = manualChecker;
       } else if (loan.hasAssociatedFeesAndFines() && config.treatLoansWithFeesAndFinesDifferently()) {
-        checker = feesAndFinesCheckersFromLoanHistory;
+        checker = loansWithFeesChecker;
       } else {
-        checker = closedLoansCheckersFromLoanHistory;
+        checker = loansWithoutFeesChecker;
       }
 
       if (!checker.canBeAnonymized(loan)) {
@@ -82,10 +75,6 @@ public class AnonymizationCheckersService {
         return CAN_BE_ANONYMIZED_KEY;
       }
     };
-  }
-
-  private static AnonymizationChecker getManualAnonymizationChecker() {
-    return new NoAssociatedFeesAndFinesChecker();
   }
 
   private static AnonymizationChecker getClosedLoansCheckersFromLoanHistory(
