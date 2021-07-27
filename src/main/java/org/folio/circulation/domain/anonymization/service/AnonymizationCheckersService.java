@@ -23,8 +23,6 @@ import org.folio.circulation.domain.anonymization.config.LoanAnonymizationConfig
 
 public class AnonymizationCheckersService {
   private final LoanAnonymizationConfiguration config;
-  private final Clock clock;
-
   private final AnonymizationChecker manualChecker;
   private AnonymizationChecker feesAndFinesCheckersFromLoanHistory;
   private AnonymizationChecker closedLoansCheckersFromLoanHistory;
@@ -41,12 +39,13 @@ public class AnonymizationCheckersService {
   private AnonymizationCheckersService(LoanAnonymizationConfiguration config,
     Clock clock, AnonymizationChecker manualChecker) {
     this.config = config;
-    this.clock = clock;
     this.manualChecker = manualChecker;
 
     if ( config != null) {
-      feesAndFinesCheckersFromLoanHistory = getFeesAndFinesCheckersFromLoanHistory();
-      closedLoansCheckersFromLoanHistory = getClosedLoansCheckersFromLoanHistory();
+      feesAndFinesCheckersFromLoanHistory = getFeesAndFinesCheckersFromLoanHistory(
+        config, clock);
+      closedLoansCheckersFromLoanHistory = getClosedLoansCheckersFromLoanHistory(
+        config, clock);
     }
   }
 
@@ -89,40 +88,43 @@ public class AnonymizationCheckersService {
     return new NoAssociatedFeesAndFinesChecker();
   }
 
-  private AnonymizationChecker getClosedLoansCheckersFromLoanHistory() {
-    AnonymizationChecker checker = null;
+  private static AnonymizationChecker getClosedLoansCheckersFromLoanHistory(
+    LoanAnonymizationConfiguration config, Clock clock) {
+
+    if (config == null) {
+      return null;
+    }
 
     switch (config.getLoanClosingType()) {
       case IMMEDIATELY:
-        checker = new AnonymizeLoansImmediatelyChecker();
-        break;
+        return new AnonymizeLoansImmediatelyChecker();
       case INTERVAL:
-        checker = new LoanClosePeriodChecker(config.getLoanClosePeriod(), clock);
-        break;
+        return new LoanClosePeriodChecker(config.getLoanClosePeriod(), clock);
       case UNKNOWN:
       case NEVER:
-        checker = new NeverAnonymizeLoansChecker();
+        return new NeverAnonymizeLoansChecker();
+      default:
+        return null;
     }
-
-    return checker;
   }
 
-  private AnonymizationChecker getFeesAndFinesCheckersFromLoanHistory() {
-    AnonymizationChecker checker = null;
+  private static AnonymizationChecker getFeesAndFinesCheckersFromLoanHistory(
+    LoanAnonymizationConfiguration config, Clock clock) {
+
+    if (config == null) {
+      return null;
+    }
 
     switch (config.getFeesAndFinesClosingType()) {
       case IMMEDIATELY:
-        checker = new AnonymizeLoansWithFeeFinesImmediatelyChecker();
-        break;
+        return new AnonymizeLoansWithFeeFinesImmediatelyChecker();
       case INTERVAL:
-        checker = new FeesAndFinesClosePeriodChecker(
-          config.getFeeFineClosePeriod(), clock);
-        break;
+        return new FeesAndFinesClosePeriodChecker(config.getFeeFineClosePeriod(), clock);
       case UNKNOWN:
       case NEVER:
-        checker = new NeverAnonymizeLoansWithFeeFinesChecker();
+        return new NeverAnonymizeLoansWithFeeFinesChecker();
+      default:
+        return null;
     }
-
-    return checker;
   }
 }
