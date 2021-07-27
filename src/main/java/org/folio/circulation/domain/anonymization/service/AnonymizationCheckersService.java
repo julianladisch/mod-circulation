@@ -60,14 +60,7 @@ public class AnonymizationCheckersService {
 
   private Function<Loan, String> applyCheckersForLoanAndLoanHistoryConfig() {
     return loan -> {
-      AnonymizationChecker checker;
-      if (config == null) {
-        checker = manualChecker;
-      } else if (loan.hasAssociatedFeesAndFines() && config.treatLoansWithFeesAndFinesDifferently()) {
-        checker = loansWithFeesChecker;
-      } else {
-        checker = loansWithoutFeesChecker;
-      }
+      final var checker = checkerForLoan(loan);
 
       if (!checker.canBeAnonymized(loan)) {
         return checker.getReason();
@@ -75,6 +68,16 @@ public class AnonymizationCheckersService {
         return CAN_BE_ANONYMIZED_KEY;
       }
     };
+  }
+
+  private AnonymizationChecker checkerForLoan(Loan loan) {
+    if (config == null) {
+      return manualChecker;
+    } else if (loan.hasAssociatedFeesAndFines() && config.treatLoansWithFeesAndFinesDifferently()) {
+      return loansWithFeesChecker;
+    } else {
+      return loansWithoutFeesChecker;
+    }
   }
 
   private static AnonymizationChecker getClosedLoansCheckersFromLoanHistory(
