@@ -24,11 +24,11 @@ public class LoanClosePeriodChecker implements AnonymizationChecker {
     return "loanClosedPeriodNotPassed";
   }
 
-  boolean itemReturnedEarlierThanPeriod(DateTime startDate) {
-    if (startDate == null) {
+  boolean itemReturnedEarlierThanPeriod(DateTime returnDate) {
+    if (returnDate == null) {
       return false;
     }
 
-    return clock.now().isAfter(startDate.plus(period.timePeriod()));
+    return clock.now().isAfter(returnDate.plus(period.timePeriod()));
   }
 }
