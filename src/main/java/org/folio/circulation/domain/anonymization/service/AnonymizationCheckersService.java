@@ -27,17 +27,16 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access=AccessLevel.PRIVATE)
 public class AnonymizationCheckersService {
   private final LoanAnonymizationConfiguration config;
-  private final AnonymizationChecker manualChecker;
   private final AnonymizationChecker loansWithoutFeesChecker;
   private final AnonymizationChecker loansWithFeesChecker;
 
   public static AnonymizationCheckersService manual() {
     return new AnonymizationCheckersService(null,
-      new NoAssociatedFeesAndFinesChecker(), null, null);
+      new NoAssociatedFeesAndFinesChecker(), new NoAssociatedFeesAndFinesChecker());
   }
 
   public static AnonymizationCheckersService scheduled(LoanAnonymizationConfiguration config, Clock clock) {
-    return new AnonymizationCheckersService(config, null,
+    return new AnonymizationCheckersService(config,
       getClosedLoansCheckersFromLoanHistory(config, clock),
       getFeesAndFinesCheckersFromLoanHistory(config, clock));
   }
@@ -71,9 +70,7 @@ public class AnonymizationCheckersService {
   }
 
   private AnonymizationChecker checkerForLoan(Loan loan) {
-    if (config == null) {
-      return manualChecker;
-    } else if (loan.hasAssociatedFeesAndFines()) {
+    if (loan.hasAssociatedFeesAndFines()) {
       return loansWithFeesChecker;
     } else {
       return loansWithoutFeesChecker;
