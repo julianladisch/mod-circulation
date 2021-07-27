@@ -25,27 +25,29 @@ public class AnonymizationCheckersService {
   private final LoanAnonymizationConfiguration config;
   private final Clock clock;
 
-  private final AnonymizationChecker manualAnonymizationChecker;
+  private final AnonymizationChecker manualChecker;
   private AnonymizationChecker feesAndFinesCheckersFromLoanHistory;
   private AnonymizationChecker closedLoansCheckersFromLoanHistory;
 
   public static AnonymizationCheckersService manual(Clock clock) {
-    return new AnonymizationCheckersService(null, clock);
+    return new AnonymizationCheckersService(null, clock,
+      getManualAnonymizationChecker());
   }
 
   public static AnonymizationCheckersService scheduled(LoanAnonymizationConfiguration config, Clock clock) {
-    return new AnonymizationCheckersService(config, clock);
+    return new AnonymizationCheckersService(config, clock, null);
   }
 
-  private AnonymizationCheckersService(LoanAnonymizationConfiguration config, Clock clock) {
+  private AnonymizationCheckersService(LoanAnonymizationConfiguration config,
+    Clock clock, AnonymizationChecker manualChecker) {
     this.config = config;
     this.clock = clock;
+    this.manualChecker = manualChecker;
 
     if ( config != null) {
       feesAndFinesCheckersFromLoanHistory = getFeesAndFinesCheckersFromLoanHistory();
       closedLoansCheckersFromLoanHistory = getClosedLoansCheckersFromLoanHistory();
     }
-    manualAnonymizationChecker = getManualAnonymizationChecker();
   }
 
   public boolean neverAnonymizeLoans() {
@@ -68,7 +70,7 @@ public class AnonymizationCheckersService {
     return loan -> {
       AnonymizationChecker checker;
       if (config == null) {
-        checker = manualAnonymizationChecker;
+        checker = manualChecker;
       } else if (loan.hasAssociatedFeesAndFines() && config.treatLoansWithFeesAndFinesDifferently()) {
         checker = feesAndFinesCheckersFromLoanHistory;
       } else {
@@ -83,7 +85,7 @@ public class AnonymizationCheckersService {
     };
   }
 
-  private AnonymizationChecker getManualAnonymizationChecker() {
+  private static AnonymizationChecker getManualAnonymizationChecker() {
     return new NoAssociatedFeesAndFinesChecker();
   }
 
