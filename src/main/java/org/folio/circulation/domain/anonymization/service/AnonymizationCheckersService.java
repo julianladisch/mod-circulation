@@ -29,7 +29,15 @@ public class AnonymizationCheckersService {
   private AnonymizationChecker feesAndFinesCheckersFromLoanHistory;
   private AnonymizationChecker closedLoansCheckersFromLoanHistory;
 
-  public AnonymizationCheckersService(LoanAnonymizationConfiguration config, Clock clock) {
+  public static AnonymizationCheckersService manual(Clock clock) {
+    return new AnonymizationCheckersService(null, clock);
+  }
+
+  public static AnonymizationCheckersService scheduled(LoanAnonymizationConfiguration config, Clock clock) {
+    return new AnonymizationCheckersService(config, clock);
+  }
+
+  private AnonymizationCheckersService(LoanAnonymizationConfiguration config, Clock clock) {
     this.config = config;
     this.clock = clock;
 

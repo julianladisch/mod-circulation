@@ -75,7 +75,7 @@ class AnonymizeLoansTests {
     private AnonymizationCheckersService checker() {
       // Fee fines closing type is deliberately different to make sure that it is ignored when
       // loans with fees should not be treated differently
-      return new AnonymizationCheckersService(
+      return AnonymizationCheckersService.scheduled(
         new LoanAnonymizationConfiguration(ClosingType.IMMEDIATELY, ClosingType.NEVER,
           false, null, null),
         () -> ClockManager.getClockManager().getDateTime());
@@ -114,7 +114,7 @@ class AnonymizeLoansTests {
     private AnonymizationCheckersService checker() {
       // General closing type is deliberately different to make sure that the
       // loans with fees closing type is definitely used
-      return new AnonymizationCheckersService(
+      return AnonymizationCheckersService.scheduled(
         new LoanAnonymizationConfiguration(ClosingType.NEVER, ClosingType.IMMEDIATELY,
           true, null, null), () -> ClockManager.getClockManager().getDateTime());
     }
@@ -174,9 +174,10 @@ class AnonymizeLoansTests {
     private AnonymizationCheckersService checker() {
       // Fee fines closing type is deliberately different to make sure that it is ignored when
       // loans with fees should not be treated differently
-      return new AnonymizationCheckersService(
+      return AnonymizationCheckersService.scheduled(
         new LoanAnonymizationConfiguration(ClosingType.NEVER, ClosingType.NEVER,
-          true, null, null), () -> ClockManager.getClockManager().getDateTime());
+          true, null, null),
+        () -> ClockManager.getClockManager().getDateTime());
     }
   }
 
@@ -233,8 +234,7 @@ class AnonymizeLoansTests {
 
     private AnonymizationCheckersService checker() {
       // Manual anonymization is triggered by providing no config
-      return new AnonymizationCheckersService(null,
-        () -> ClockManager.getClockManager().getDateTime());
+      return AnonymizationCheckersService.manual(() -> ClockManager.getClockManager().getDateTime());
     }
   }
 
@@ -329,7 +329,7 @@ class AnonymizeLoansTests {
     private AnonymizationCheckersService checker() {
       // Fee fines closing type is deliberately different to make sure that it is ignored when
       // loans with fees should not be treated differently
-      return new AnonymizationCheckersService(
+      return AnonymizationCheckersService.scheduled(
         new LoanAnonymizationConfiguration(ClosingType.INTERVAL, ClosingType.INTERVAL,
           true, Period.weeks(1),  Period.weeks(1)),
         () -> new DateTime(2021, 5, 15, 8, 15, 43, DateTimeZone.UTC));

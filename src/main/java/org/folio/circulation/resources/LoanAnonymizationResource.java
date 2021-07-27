@@ -51,7 +51,8 @@ public class LoanAnonymizationResource extends Resource {
     final var eventPublisher = new EventPublisher(clients.pubSubPublishingService());
 
     final var loanAnonymizationService = new DefaultLoanAnonymizationService(
-      new AnonymizationCheckersService(null, () -> ClockManager.getClockManager().getDateTime()), anonymizeStorageLoansRepository, eventPublisher);
+      AnonymizationCheckersService.manual(() -> ClockManager.getClockManager().getDateTime()),
+      anonymizeStorageLoansRepository, eventPublisher);
 
     log.info("Initializing loan anonymization for borrower: {}", borrowerId);
 

@@ -136,8 +136,8 @@ public class LoanAnonymizationServiceTests {
   }
 
   private LoanAnonymizationService createService(LoanAnonymizationConfiguration config) {
-    final var anonymizationCheckersService = new AnonymizationCheckersService(config,
-            () -> ClockManager.getClockManager().getDateTime());
+    final var anonymizationCheckersService = AnonymizationCheckersService.scheduled(
+      config, () -> ClockManager.getClockManager().getDateTime());
 
     return new DefaultLoanAnonymizationService(anonymizationCheckersService,
       anonymizeStorageLoansRepository, eventPublisher);
