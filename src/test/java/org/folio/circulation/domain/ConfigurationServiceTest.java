@@ -4,6 +4,8 @@ import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.junit.Assert.assertEquals;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +45,8 @@ public class ConfigurationServiceTest {
     String timeZoneValue = getTimezoneValue(zone);
     JsonObject jsonObject = getJsonObject(timeZoneValue);
 
-    assertEquals(ZoneOffset.of(zone), service.findDateTimeZone(jsonObject));
+    assertEquals(ZoneOffset.of(ZoneId.of(zone).getRules().getOffset(Instant.now()).getId()),
+      service.findDateTimeZone(jsonObject));
   }
 
   @Test

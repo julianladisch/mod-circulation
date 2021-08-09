@@ -883,29 +883,22 @@ public class MoveRequestTests extends APITests {
 
     // Have to mock system clocks to demonstrate a delay between the requests
     // So the dueDates will be recalculated
-    try (MockedStatic<System> system = Mockito.mockStatic(System.class)) {
-      system.when(System::currentTimeMillis).thenReturn(expectedJamesLoanDueDate
-        .toEpochMilli());
+    Clock.fixed(expectedJamesLoanDueDate, ZoneOffset.UTC);
 
-      // Create recall request for 'smallAngryPlanet' item to Steve
-      recallRequestBySteve = requestsFixture.place(new RequestBuilder()
-        .recall()
-        .fulfilToHoldShelf()
-        .withItemId(smallAngryPlanetItem.getId())
-        .withRequesterId(steveUser.getId())
-        .withPickupServicePointId(servicePointsFixture.cd1().getId()));
-    }
+    // Create recall request for 'smallAngryPlanet' item to Steve
+    recallRequestBySteve = requestsFixture.place(new RequestBuilder()
+      .recall()
+      .fulfilToHoldShelf()
+      .withItemId(smallAngryPlanetItem.getId())
+      .withRequesterId(steveUser.getId())
+      .withPickupServicePointId(servicePointsFixture.cd1().getId()));
+    // }
 
-    // Have to mock system clocks to demonstrate a delay between the requests
-    // So the dueDates will be recalculated
-    try (MockedStatic<System> system = Mockito.mockStatic(System.class)) {
-      system.when(System::currentTimeMillis).thenReturn(expectedJessicaLoanDueDate
-        .toEpochMilli());
+    Clock.fixed(expectedJessicaLoanDueDate, ZoneOffset.UTC);
 
       // Then move the 'smallAngryPlanet' recall request to the 'interestingTimes' item
-      requestsFixture.move(new MoveRequestBuilder(recallRequestBySteve.getId(),
-        interestingTimesItem.getId(), RequestType.RECALL.getValue()));
-    }
+    requestsFixture.move(new MoveRequestBuilder(recallRequestBySteve.getId(),
+      interestingTimesItem.getId(), RequestType.RECALL.getValue()));
 
     // EXPECT:
     // Loans for 1st and 2nd item has expected dueDate.
@@ -923,6 +916,8 @@ public class MoveRequestTests extends APITests {
 
     assertThat(smallAngryPlanetLoan.getString("dueDate"), isEquivalentTo(expectedJamesLoanDueDate));
     assertThat(interestingTimesLoan.getString("dueDate"), isEquivalentTo(expectedJessicaLoanDueDate));
+
+    Clock.systemDefaultZone();
   }
 
   @Test

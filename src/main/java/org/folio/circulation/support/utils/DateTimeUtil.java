@@ -9,6 +9,7 @@ import static java.time.temporal.ChronoField.NANO_OF_SECOND;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -503,11 +504,11 @@ public class DateTimeUtil {
   }
 
   public static ZoneOffset toZoneOffset(ZoneId zoneId) {
-    return ZoneOffset.of(zoneId.getId());
+    return ZoneOffset.of(zoneId.getRules().getOffset(Instant.now()).getId());
   }
 
   public static ZoneOffset toZoneOffset(String timezone) {
-    return ZoneOffset.of(ZoneId.of(timezone).getId());
+    return ZoneOffset.of(ZoneId.of(timezone).getRules().getOffset(Instant.now()).getId());
   }
 
   public static ZonedDateTime toStartOfDayDateTime(LocalDate localDate) {

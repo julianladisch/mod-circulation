@@ -1066,17 +1066,16 @@ public abstract class RenewalAPITests extends APITests {
 
     JsonObject renewedLoan = null;
 
-    try (MockedStatic<System> system = Mockito.mockStatic(System.class)) {
-      system.when(System::currentTimeMillis).thenReturn(loanDate.plusHours(1)
-        .toInstant().toEpochMilli());
+    Clock.fixed(loanDate.toInstant(), loanDate.getZone());
 
-      renewedLoan = renew(smallAngryPlanet, jessica).getJson();
-    }
+    renewedLoan = renew(smallAngryPlanet, jessica).getJson();
 
     ZonedDateTime expectedDate = ZonedDateTime.of(WEDNESDAY_DATE,
       END_TIME_SECOND_PERIOD, UTC);
     assertThat("due date should be " + expectedDate,
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
+
+    Clock.systemDefaultZone();
   }
 
   @Test

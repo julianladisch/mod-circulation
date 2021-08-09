@@ -60,7 +60,7 @@ public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
     LocalDate start = requestedInterval.getPrevious().getStartTime().toLocalDate();
     LocalDate end = libraryTimetable.getHead().getEndTime().toLocalDate();
 
-    return Math.abs(Duration.between(start, end).toDays()) == 0;
+    return Math.abs(Duration.between(start.atStartOfDay(), end.atStartOfDay()).toDays()) == 0;
   }
 
   private boolean isDateEqualToBoundaryValueOfDay(LocalTime requestedInterval,

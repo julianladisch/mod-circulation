@@ -14,7 +14,10 @@ import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -25,8 +28,6 @@ import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.http.client.Response;
 import org.junit.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import api.support.APITests;
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
@@ -65,15 +66,19 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       .getResponse();
     assertThat(response.getBody(), containsString(expectedTimeZone));
 
+    ZoneId zone = ZoneId.of(expectedTimeZone).getRules().getOffset(Instant.now());
+
     ZonedDateTime loanDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE, TEST_TIME_MORNING,
-      ZoneOffset.of(expectedTimeZone));
+      ZoneOffset.of(zone.getId()));
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE.plusDays(1),
-      LocalTime.MIDNIGHT, ZoneOffset.of(expectedTimeZone));
+      LocalTime.MIDNIGHT, ZoneOffset.of(zone.getId()));
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_DAY_ALL_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
+
+    Clock.systemDefaultZone();
   }
 
   @Test
@@ -91,6 +96,8 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE.plusDays(1), LocalTime.MIDNIGHT, ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_DAY_ALL_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
+
+    Clock.systemDefaultZone();
   }
 
   @Test
@@ -109,6 +116,8 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, ROLLOVER_SCENARIO_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
+
+    Clock.systemDefaultZone();
   }
 
   @Test
@@ -127,6 +136,8 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       LocalTime.MIDNIGHT.minusMinutes(1), ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, ROLLOVER_SCENARIO_NEXT_DAY_CLOSED_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
+
+    Clock.systemDefaultZone();
   }
 
   /**
@@ -147,6 +158,8 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_DAY_ALL_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
+
+    Clock.systemDefaultZone();
   }
 
   /**
@@ -165,6 +178,8 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_SERVICE_POINT_ID, INTERVAL_HOURS, 25);
+
+    Clock.systemDefaultZone();
   }
 
   /**
@@ -183,6 +198,8 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_CURRENT_IS_OPEN, INTERVAL_MINUTES, 90);
+
+    Clock.systemDefaultZone();
   }
 
   /**
@@ -210,23 +227,22 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
 
     IndividualResource response = null;
 
-    try (MockedStatic<System> system = Mockito.mockStatic(System.class)) {
-      system.when(System::currentTimeMillis).thenReturn(loanDate
-        .toInstant().toEpochMilli());
+    ZoneId zone = loanDate.getZone().getRules().getOffset(Instant.now());
 
-      response = checkOutFixture.checkOutByBarcode(
-        new CheckOutByBarcodeRequestBuilder()
-          .forItem(smallAngryPlanet)
-          .to(steve)
-          .on(loanDate)
-          .at(checkoutServicePointId));
-    }
+    Clock.fixed(loanDate.toInstant(), zone);
+
+    response = checkOutFixture.checkOutByBarcode(
+      new CheckOutByBarcodeRequestBuilder()
+        .forItem(smallAngryPlanet)
+        .to(steve)
+        .on(loanDate)
+        .at(checkoutServicePointId));
 
     final JsonObject loan = response.getJson();
 
     loanHasLoanPolicyProperties(loan, loanPolicy);
-    loanHasOverdueFinePolicyProperties(loan,  overdueFinePolicy);
-    loanHasLostItemPolicyProperties(loan,  lostItemFeePolicy);
+    loanHasOverdueFinePolicyProperties(loan, overdueFinePolicy);
+    loanHasLostItemPolicyProperties(loan, lostItemFeePolicy);
 
     ZonedDateTime actualDueDate = getThresholdDateTime(ZonedDateTime.parse(loan.getString("dueDate")));
     ZonedDateTime thresholdDateTime = getThresholdDateTime(expectedDueDate);
