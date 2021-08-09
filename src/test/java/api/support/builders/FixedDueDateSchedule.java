@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+import static java.time.Year.isLeap;
+
 public class FixedDueDateSchedule {
   final ZonedDateTime from;
   final ZonedDateTime to;
@@ -31,7 +33,7 @@ public class FixedDueDateSchedule {
       .of(year, month, 1, 0, 0, 0, 0, ZoneOffset.UTC);
 
     final ZonedDateTime lastOfMonth = firstOfMonth
-      .withDayOfMonth(firstOfMonth.getMonth().maxLength())
+      .withDayOfMonth(calcualteLastDayOfMonth(firstOfMonth))
       .withHour(23)
       .withMinute(59)
       .withSecond(59);
@@ -68,5 +70,18 @@ public class FixedDueDateSchedule {
       .withSecond(59);
 
     return new FixedDueDateSchedule(beginningOfDay, endOfDay, endOfDay);
+  }
+
+  private static int calcualteLastDayOfMonth(ZonedDateTime firstOfMonth) {
+    boolean isLeap = isLeap(firstOfMonth.getYear());
+    int lastDay;
+
+    if (firstOfMonth.getMonthValue() == 2 && !isLeap) {
+      lastDay = firstOfMonth.getMonth().maxLength() - 1;
+    } else {
+      lastDay = firstOfMonth.getMonth().maxLength();
+    }
+
+    return lastDay;
   }
 }
