@@ -37,7 +37,6 @@ import static org.folio.circulation.domain.RequestType.RECALL;
 import static org.folio.circulation.domain.representations.ItemProperties.CALL_NUMBER_COMPONENTS;
 import static org.folio.circulation.domain.representations.logs.LogEventType.NOTICE;
 import static org.folio.circulation.domain.representations.logs.LogEventType.REQUEST_CREATED_THROUGH_OVERRIDE;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -51,7 +50,6 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -72,6 +70,7 @@ import org.folio.circulation.domain.override.BlockOverrides;
 import org.folio.circulation.domain.override.PatronBlockOverride;
 import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -126,7 +125,7 @@ RequestsAPICreationTests extends APITests {
   @Override
   public void afterEach() {
     super.afterEach();
-    mockClockManagerToReturnDefaultDateTime();
+    clockToDefaultDateTime();
   }
 
   @Test
@@ -1508,7 +1507,7 @@ RequestsAPICreationTests extends APITests {
     IndividualResource loan = checkOutFixture.checkOutByBarcode(item, loanOwner, loanDate);
 
     ZonedDateTime requestDate = loanDate.plusDays(1);
-    mockClockManagerToReturnFixedDateTime(requestDate);
+    clockToFixedDateTime(requestDate);
 
     IndividualResource request = requestsFixture.place(new RequestBuilder()
       .withId(id)
@@ -1583,7 +1582,7 @@ RequestsAPICreationTests extends APITests {
     checkOutFixture.checkOutByBarcode(item, loanOwner, loanDate);
 
     ZonedDateTime requestDate = loanDate.plusDays(1);
-    mockClockManagerToReturnFixedDateTime(requestDate);
+    clockToFixedDateTime(requestDate);
 
     requestsFixture.place(new RequestBuilder()
       .withId(id)
@@ -1644,7 +1643,7 @@ RequestsAPICreationTests extends APITests {
       .page()
       .forItem(smallAngryPlanet)
       .by(steve)
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(ClockManager.getZonedDateTime())
       .fulfilToHoldShelf()
       .withPickupServicePointId(servicePointsFixture.cd1().getId()));
 
@@ -1657,7 +1656,7 @@ RequestsAPICreationTests extends APITests {
     final IndividualResource requester = usersFixture.rebecca();
     final UUID pickupServicePointId = servicePointsFixture.cd1().getId();
     final ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
-    final ZonedDateTime now = getClockManager().getZonedDateTime();
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     final ZonedDateTime expirationDate = now.plusDays(4);
     final UserManualBlockBuilder userManualBlockBuilder = getManualBlockBuilder()
         .withRequests(true)
@@ -1683,7 +1682,7 @@ RequestsAPICreationTests extends APITests {
     final IndividualResource requester = usersFixture.rebecca();
     final UUID pickupServicePointId = servicePointsFixture.cd1().getId();
     final ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
-    final ZonedDateTime now = getClockManager().getZonedDateTime();
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     final ZonedDateTime expirationDate = now.plusDays(4);
     final UserManualBlockBuilder userManualBlockBuilder = getManualBlockBuilder()
       .withExpirationDate(expirationDate)
@@ -1705,7 +1704,7 @@ RequestsAPICreationTests extends APITests {
     final IndividualResource requester = usersFixture.rebecca();
     final UUID pickupServicePointId = servicePointsFixture.cd1().getId();
     final ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
-    final ZonedDateTime now = getClockManager().getZonedDateTime();
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     final ZonedDateTime expirationDate = now.minusDays(1);
     final UserManualBlockBuilder userManualBlockBuilder = getManualBlockBuilder()
       .withRequests(true)
@@ -1727,7 +1726,7 @@ RequestsAPICreationTests extends APITests {
     final IndividualResource requester = usersFixture.rebecca();
     final UUID pickupServicePointId = servicePointsFixture.cd1().getId();
     final ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
-    final ZonedDateTime now = getClockManager().getZonedDateTime();
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     final ZonedDateTime expirationDate = now.plusDays(7);
     final UserManualBlockBuilder borrowingUserManualBlockBuilder = getManualBlockBuilder()
       .withBorrowing(true)
@@ -1755,7 +1754,7 @@ RequestsAPICreationTests extends APITests {
     final IndividualResource requester = usersFixture.rebecca();
     final UUID pickupServicePointId = servicePointsFixture.cd1().getId();
     final ZonedDateTime requestDate = ZonedDateTime.of(2017, 7, 22, 10, 22, 54, 0, UTC);
-    final ZonedDateTime now = getClockManager().getZonedDateTime();
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     final ZonedDateTime expirationDate = now.plusDays(4);
     final UserManualBlockBuilder requestUserManualBlockBuilder1 = getManualBlockBuilder()
         .withRequests(true)
@@ -1882,7 +1881,7 @@ RequestsAPICreationTests extends APITests {
     checkOutFixture.checkOutByBarcode(itemToMoveFrom, loanOwner, loanDate);
 
     ZonedDateTime requestDate = loanDate.plusDays(1);
-    mockClockManagerToReturnFixedDateTime(requestDate);
+    clockToFixedDateTime(requestDate);
 
     IndividualResource recallRequest = requestsFixture.place(new RequestBuilder()
       .withId(UUID.randomUUID())
@@ -2199,7 +2198,7 @@ RequestsAPICreationTests extends APITests {
       .withPickupServicePointId(requestPickupServicePoint.getId())
       .by(usersFixture.james()));
 
-    checkInFixture.checkInByBarcode(smallAngryPlanet, ZonedDateTime.now(UTC), requestPickupServicePoint.getId());
+    checkInFixture.checkInByBarcode(smallAngryPlanet, ClockManager.getZonedDateTime(), requestPickupServicePoint.getId());
 
     Response pagedRequestRecord = itemsClient.getById(smallAngryPlanet.getId());
     assertThat(pagedRequestRecord.getJson().getJsonObject("status").getString("name"), is(ItemStatus.AWAITING_PICKUP.getValue()));
@@ -2226,7 +2225,7 @@ RequestsAPICreationTests extends APITests {
     assertThat(firstRequest.getJson().getString("status"), is(RequestStatus.OPEN_NOT_YET_FILLED.getValue()));
 
     //check it it at the "wrong" or unintended pickup location
-    checkInFixture.checkInByBarcode(smallAngryPlanet, ZonedDateTime.now(UTC), pickupServicePoint.getId());
+    checkInFixture.checkInByBarcode(smallAngryPlanet, ClockManager.getZonedDateTime(), pickupServicePoint.getId());
 
     MultipleRecords<JsonObject> requests = requestsFixture.getQueueFor(smallAngryPlanet);
     JsonObject pagedRequestRecord = requests.getRecords().iterator().next();

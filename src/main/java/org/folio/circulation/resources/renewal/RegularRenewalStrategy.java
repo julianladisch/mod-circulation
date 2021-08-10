@@ -33,6 +33,7 @@ import org.folio.circulation.domain.policy.LoanPolicy;
 import org.folio.circulation.domain.policy.library.ClosedLibraryStrategyService;
 import org.folio.circulation.resources.context.RenewalContext;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.results.Result;
@@ -66,7 +67,7 @@ public class RegularRenewalStrategy implements RenewalStrategy {
       }
 
       final Result<ZonedDateTime> proposedDueDateResult = calculateNewDueDate(loan, requestQueue,
-        ZonedDateTime.now(ZoneOffset.UTC));
+        ClockManager.getZonedDateTime());
       addErrorsIfDueDateResultFailed(loan, errors, proposedDueDateResult);
 
       final BlockOverrides blockOverrides = BlockOverrides.from(getObjectProperty(

@@ -26,7 +26,6 @@ public class AnonymizationCheckersService {
   private AnonymizationChecker feesAndFinesCheckersFromLoanHistory;
   private AnonymizationChecker closedLoansCheckersFromLoanHistory;
 
-
   public AnonymizationCheckersService(LoanAnonymizationConfiguration config) {
     this.config = config;
     if ( config != null) {

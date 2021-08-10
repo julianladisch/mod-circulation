@@ -3,10 +3,9 @@ package api.support.fixtures;
 import static api.support.APITestContext.getOkapiHeadersFromContext;
 import static api.support.http.InterfaceUrls.declareLoanItemLostURL;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 
 import api.support.RestAssuredClient;
@@ -40,7 +39,7 @@ public class DeclareLostFixtures {
 
     final DeclareItemLostRequestBuilder builder = new DeclareItemLostRequestBuilder()
       .forLoanId(loanId)
-      .on(ZonedDateTime.now(ZoneOffset.UTC))
+      .on(ClockManager.getZonedDateTime())
       //creating "real" servicepoint data here would require a lot of setup code to
       //initialize a ResourceClient, the intialize a service point creator, and
       //so on.  As this is a convenience function that's only used when the loan

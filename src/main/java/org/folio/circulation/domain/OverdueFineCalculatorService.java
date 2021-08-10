@@ -5,7 +5,6 @@ import static lombok.AccessLevel.PRIVATE;
 import static org.apache.commons.lang3.BooleanUtils.isFalse;
 import static org.folio.circulation.domain.OverdueFineCalculatorService.Scenario.CHECKIN;
 import static org.folio.circulation.domain.OverdueFineCalculatorService.Scenario.RENEWAL;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
@@ -36,6 +35,7 @@ import org.folio.circulation.infrastructure.storage.notices.ScheduledNoticesRepo
 import org.folio.circulation.infrastructure.storage.users.UserRepository;
 import org.folio.circulation.resources.context.RenewalContext;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.results.ResultBinding;
 
@@ -149,7 +149,7 @@ public class OverdueFineCalculatorService {
   private CompletableFuture<Result<Integer>> getOverdueMinutes(Loan loan) {
     ZonedDateTime systemTime = loan.getReturnDate();
     if (systemTime == null) {
-      systemTime = getClockManager().getZonedDateTime();
+      systemTime = ClockManager.getZonedDateTime();
     }
     return overduePeriodCalculatorService.getMinutes(loan, systemTime);
   }

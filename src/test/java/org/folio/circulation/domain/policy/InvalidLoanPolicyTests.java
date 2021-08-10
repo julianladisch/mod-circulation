@@ -4,13 +4,13 @@ import static api.support.matchers.FailureMatcher.hasValidationFailure;
 import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.RequestQueue;
 import org.folio.circulation.resources.renewal.RegularRenewalStrategy;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 
@@ -65,7 +65,7 @@ public class InvalidLoanPolicyTests {
       .withLoanPolicy(loanPolicy);
 
     final Result<Loan> result = regularRenewalStrategy.renew(
-      loan, ZonedDateTime.now(Clock.systemUTC()),
+      loan, ClockManager.getZonedDateTime(),
       new RequestQueue(Collections.emptyList()));
 
     //TODO: This is fairly ugly, replace with a better message

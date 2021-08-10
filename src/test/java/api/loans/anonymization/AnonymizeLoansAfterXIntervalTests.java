@@ -4,8 +4,6 @@ import static api.support.PubsubPublisherTestUtils.assertThatPublishedAnonymizeL
 import static api.support.fakes.PublishedEvents.byLogEventTypeAndAction;
 import static api.support.matchers.LoanMatchers.isAnonymized;
 import static api.support.matchers.LoanMatchers.isOpen;
-import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.now;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.folio.circulation.domain.representations.logs.LogEventType.LOAN;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,11 +12,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.domain.representations.anonymization.LoanAnonymizationAPIResponse;
+import org.folio.circulation.support.ClockManager;
 import org.junit.Test;
 
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
@@ -57,7 +55,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
     UUID loanID = loanResource.getId();
 
     createClosedAccountWithFeeFines(loanResource,
-      now(UTC).minusMinutes(1));
+      ClockManager.getZonedDateTime().minusMinutes(1));
 
     anonymizeLoansInTenant();
 
@@ -90,12 +88,12 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
     UUID loanID = loanResource.getId();
 
     createClosedAccountWithFeeFines(loanResource,
-      now(UTC).minusMinutes(1));
+      ClockManager.getZonedDateTime().minusMinutes(1));
 
     assertThat(loanResource.getJson(), isOpen());
 
-    mockClockManagerToReturnFixedDateTime(
-      now(UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
+    clockToFixedDateTime(
+      ClockManager.getZonedDateTime().plus(ONE_MINUTE_AND_ONE, MILLIS));
 
     anonymizeLoansInTenant();
 
@@ -127,7 +125,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -163,7 +161,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now(UTC));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -197,10 +195,10 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now(UTC));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
-    mockClockManagerToReturnFixedDateTime(
-      now(UTC).plus(20 * ONE_MINUTE_AND_ONE, MILLIS));
+    clockToFixedDateTime(
+      ClockManager.getZonedDateTime().plus(20 * ONE_MINUTE_AND_ONE, MILLIS));
     anonymizeLoansInTenant();
 
     assertThat(loansStorageClient.getById(loanID)
@@ -232,13 +230,13 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
-    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
-    mockClockManagerToReturnFixedDateTime(
-      now(UTC).plus(20 * ONE_MINUTE_AND_ONE, MILLIS));
+    clockToFixedDateTime(
+      ClockManager.getZonedDateTime().plus(20 * ONE_MINUTE_AND_ONE, MILLIS));
 
     anonymizeLoansInTenant();
 
@@ -272,7 +270,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now(UTC));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -306,11 +304,11 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now(UTC));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
-    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
+    clockToFixedDateTime(ClockManager.getZonedDateTime().plus(ONE_MINUTE_AND_ONE, MILLIS));
 
     anonymizeLoansInTenant();
 
@@ -342,7 +340,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -371,7 +369,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
 
     checkInFixture.checkInByBarcode(item1);
 
-    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
+    clockToFixedDateTime(ClockManager.getZonedDateTime().plus(ONE_MINUTE_AND_ONE, MILLIS));
     anonymizeLoansInTenant();
 
     assertThat(loansStorageClient.getById(loanID)
@@ -482,7 +480,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
     UUID loanID = loanResource.getId();
 
 
-    createClosedAccountWithFeeFines(loanResource, now(Clock.systemUTC()));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
     checkInFixture.checkInByBarcode(item1);
 
     anonymizeLoansInTenant();
@@ -506,7 +504,7 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
 
     createOpenAccountWithFeeFines(loanResource);
 
-    mockClockManagerToReturnFixedDateTime(now(UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
+    clockToFixedDateTime(ClockManager.getZonedDateTime().plus(ONE_MINUTE_AND_ONE, MILLIS));
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -523,9 +521,9 @@ public class AnonymizeLoansAfterXIntervalTests extends LoanAnonymizationTests {
 
   private void setNextAnonymizationDateTime(long anonymizationInterval) {
     lastAnonymizationDateTime = lastAnonymizationDateTime == null
-      ? now(UTC).plus(anonymizationInterval, MILLIS)
+      ? ClockManager.getZonedDateTime().plus(anonymizationInterval, MILLIS)
       : lastAnonymizationDateTime.plus(anonymizationInterval, MILLIS);
 
-    mockClockManagerToReturnFixedDateTime(lastAnonymizationDateTime);
+    clockToFixedDateTime(lastAnonymizationDateTime);
   }
 }

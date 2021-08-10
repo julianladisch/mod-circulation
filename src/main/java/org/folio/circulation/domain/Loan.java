@@ -37,7 +37,6 @@ import static org.folio.circulation.domain.representations.LoanProperties.STATUS
 import static org.folio.circulation.domain.representations.LoanProperties.SYSTEM_RETURN_DATE;
 import static org.folio.circulation.domain.representations.LoanProperties.UPDATED_BY_USER_ID;
 import static org.folio.circulation.domain.representations.LoanProperties.USER_ID;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getBooleanProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
@@ -67,10 +66,12 @@ import org.folio.circulation.domain.policy.LoanPolicy;
 import org.folio.circulation.domain.policy.OverdueFinePolicy;
 import org.folio.circulation.domain.policy.lostitem.LostItemPolicy;
 import org.folio.circulation.domain.representations.LoanProperties;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
+
 @AllArgsConstructor(access = PRIVATE)
 public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   private final JsonObject representation;
@@ -540,7 +541,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public boolean isOverdue() {
-    return isOverdue(getClockManager().getZonedDateTime());
+    return isOverdue(ClockManager.getZonedDateTime());
   }
 
   public boolean isOverdue(ZonedDateTime systemTime) {

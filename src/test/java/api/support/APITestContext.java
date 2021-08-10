@@ -5,7 +5,6 @@ import static org.folio.rest.tools.utils.NetworkUtils.nextFreePort;
 import java.lang.invoke.MethodHandles;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -15,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.folio.circulation.Launcher;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.VertxAssistant;
 import org.folio.circulation.support.http.client.OkapiHttpClient;
 import org.folio.circulation.support.http.client.VertxWebClientOkapiHttpClient;
@@ -34,7 +34,7 @@ public class APITestContext {
   private static String USER_ID = "79ff2a8b-d9c3-5b39-ad4a-0a84025ab085";
 
   private static final String TOKEN = "eyJhbGciOiJIUzUxMiJ9eyJzdWIiOiJhZG1pbiIsInVzZXJfaWQiOiI3OWZmMmE4Yi1kOWMzLTViMzktYWQ0YS0wYTg0MDI1YWIwODUiLCJ0ZW5hbnQiOiJ0ZXN0X3RlbmFudCJ9BShwfHcNClt5ZXJ8ImQTMQtAM1sQEnhsfWNmXGsYVDpuaDN3RVQ9";
-  public static final ZonedDateTime END_OF_CURRENT_YEAR_DUE_DATE = ZonedDateTime.now(ZoneOffset.UTC)
+  public static final ZonedDateTime END_OF_CURRENT_YEAR_DUE_DATE = ClockManager.getZonedDateTime()
     .withMonth(12)
     .withDayOfMonth(31)
     .withHour(23)

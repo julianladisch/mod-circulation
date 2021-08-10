@@ -20,12 +20,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,39 +52,39 @@ public class ClaimItemReturnedAPITests extends APITests {
   @Test
   public void canClaimItemReturnedWithComment() {
     final String comment = "testing";
-    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
         .forLoan(loanId)
-        .withItemClaimedReturnedDate(dateTime)
+        .withItemClaimedReturnedDate(now)
         .withComment(comment));
 
-    assertLoanAndItem(response, comment, dateTime);
+    assertLoanAndItem(response, comment, now);
   }
 
   @Test
   public void canClaimItemReturnedWithoutComment() {
-    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
         .forLoan(loanId)
-        .withItemClaimedReturnedDate(dateTime));
+        .withItemClaimedReturnedDate(now));
 
-    assertLoanAndItem(response, null, dateTime);
+    assertLoanAndItem(response, null, now);
   }
 
   @Test
   public void cannotClaimItemReturnedWhenLoanIsClosed() {
-    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
 
     checkInFixture.checkInByBarcode(item);
 
     final Response response = claimItemReturnedFixture
       .attemptClaimItemReturned(new ClaimItemReturnedRequestBuilder()
         .forLoan(loanId)
-        .withItemClaimedReturnedDate(dateTime));
+        .withItemClaimedReturnedDate(now));
 
     assertThat(response.getStatusCode(), is(422));
     assertThat(response.getJson(), hasErrorWith(allOf(
@@ -118,14 +118,14 @@ public class ClaimItemReturnedAPITests extends APITests {
 
   @Test
   public void itemClaimedReturnedEventIsPublished() {
-    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
 
     final Response response = claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
         .forLoan(loanId)
-        .withItemClaimedReturnedDate(dateTime));
+        .withItemClaimedReturnedDate(now));
 
-    assertLoanAndItem(response, null, dateTime);
+    assertLoanAndItem(response, null, now);
 
     // Five events are expected: one for check-out one for log event, one for the claim
     // and one for log records

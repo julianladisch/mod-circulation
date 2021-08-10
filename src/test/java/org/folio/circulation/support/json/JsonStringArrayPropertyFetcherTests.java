@@ -12,35 +12,34 @@ import org.junit.Test;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import lombok.val;
 
 public class JsonStringArrayPropertyFetcherTests {
   @Test
   public void StreamShouldContainSameContentsAsArray() {
-    val json = objectWithJsonArrayOf("Foo", "Bar", "Lorem", "Ipsum");
+    JsonObject json = objectWithJsonArrayOf("Foo", "Bar", "Lorem", "Ipsum");
 
     assertThat(toList(toStream(json, "array")), contains("Foo", "Bar", "Lorem", "Ipsum"));
   }
 
   @Test
   public void shouldMapEmptyArrayToEmptyStream() {
-    val json = objectWithJsonArrayOf();
+    JsonObject json = objectWithJsonArrayOf();
 
     assertThat(toList(toStream(json, "array")), is(empty()));
   }
 
   @Test
   public void shouldSkipNonStringElements() {
-    val array = new JsonArray(toList(of("Foo", "Bar", new JsonObject(), "Lorem", "Ipsum")));
+    JsonArray array = new JsonArray(toList(of("Foo", "Bar", new JsonObject(), "Lorem", "Ipsum")));
 
-    val json = new JsonObject().put("array", array);
+    JsonObject json = new JsonObject().put("array", array);
 
     assertThat(toList(toStream(json, "array")),
       contains("Foo", "Bar", "Lorem", "Ipsum"));
   }
 
   private JsonObject objectWithJsonArrayOf(String... strings) {
-    val array = jsonArrayOf(strings);
+    JsonArray array = jsonArrayOf(strings);
 
     return new JsonObject().put("array", array);
   }

@@ -26,6 +26,7 @@ import org.folio.circulation.domain.ItemStatus;
 import org.folio.circulation.domain.Location;
 import org.folio.circulation.domain.RequestStatus;
 import org.folio.circulation.domain.User;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.json.JsonObjectArrayPropertyFetcher;
 import org.junit.Test;
@@ -140,7 +141,7 @@ public class PickSlipsTests extends APITests {
         .withMaterialType(materialTypeResource.getId())
         .withPermanentLoanType(loanTypeResource.getId()));
 
-    ZonedDateTime now = ZonedDateTime.now(UTC);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     checkOutFixture.checkOutByBarcode(itemResource, requesterResource);
     checkInFixture.checkInByBarcode(itemResource, now, servicePointId);
     JsonObject lastCheckIn = itemsClient.get(itemResource.getId())

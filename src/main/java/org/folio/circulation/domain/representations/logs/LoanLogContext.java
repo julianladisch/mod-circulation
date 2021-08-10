@@ -17,12 +17,12 @@ import static org.folio.circulation.domain.representations.logs.LogEventPayloadF
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.Item;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.User;
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
@@ -54,7 +54,7 @@ public class LoanLogContext {
       .withItem(ofNullable(loan.getItem())
         .orElse(itemFromRepresentation(loan)))
       .withAction(LogContextActionResolver.resolveAction(loan.getAction()))
-      .withDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withDate(ClockManager.getZonedDateTime())
       .withServicePointId(ofNullable(loan.getCheckInServicePointId())
         .orElse(loan.getCheckoutServicePointId()))
       .withLoanId(loan.getId())

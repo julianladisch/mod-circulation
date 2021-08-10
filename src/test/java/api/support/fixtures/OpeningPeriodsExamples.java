@@ -5,7 +5,6 @@ import static api.support.fixtures.OpeningHourExamples.morning;
 import static java.time.ZoneOffset.UTC;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 
 import org.folio.circulation.domain.OpeningDay;

@@ -1,8 +1,9 @@
 package api.support.fixtures;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.UUID;
+
+import org.folio.circulation.support.ClockManager;
 
 import api.support.builders.ProxyRelationshipBuilder;
 import api.support.http.IndividualResource;
@@ -34,23 +35,23 @@ public class ProxyRelationshipsFixture {
       .sponsor(sponsor.getId())
       .proxy(proxy.getId())
       .inactive()
-      .expires(ZonedDateTime.now(Clock.systemUTC()).plusYears(1)));
+      .expires(ClockManager.getZonedDateTime().plusYears(1)));
   }
 
   public void currentProxyFor(
     IndividualResource sponsor,
     IndividualResource proxy) {
 
-    proxyFor(sponsor.getId(), proxy.getId(), ZonedDateTime
-      .now(Clock.systemUTC()).plusYears(1));
+    proxyFor(sponsor.getId(), proxy.getId(),
+      ClockManager.getZonedDateTime().plusYears(1));
   }
 
   public void expiredProxyFor(
     IndividualResource sponsor,
     IndividualResource proxy) {
 
-    proxyFor(sponsor.getId(), proxy.getId(), ZonedDateTime
-      .now(Clock.systemUTC()).minusYears(1));
+    proxyFor(sponsor.getId(), proxy.getId(),
+      ClockManager.getZonedDateTime().minusYears(1));
   }
 
   private void proxyFor(

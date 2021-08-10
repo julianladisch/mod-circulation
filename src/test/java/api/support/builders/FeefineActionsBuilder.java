@@ -1,7 +1,7 @@
 package api.support.builders;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -13,7 +13,7 @@ import io.vertx.core.json.JsonObject;
 public class FeefineActionsBuilder extends JsonBuilder implements Builder {
 
   private String id;
-  private ZonedDateTime dateAction = ClockManager.getClockManager().getZonedDateTime();
+  private ZonedDateTime dateAction = ClockManager.getZonedDateTime();
   private Double balance;
   private Double actionAmount;
   private String paymentMethod;

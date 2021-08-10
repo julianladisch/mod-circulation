@@ -4,8 +4,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.folio.circulation.support.results.Result.of;
 import static org.folio.circulation.support.results.Result.succeeded;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.concurrent.CompletableFuture;
 
 import org.folio.circulation.domain.notice.schedule.LoanScheduledNoticeService;
@@ -14,6 +12,7 @@ import org.folio.circulation.domain.policy.library.ClosedLibraryStrategyService;
 import org.folio.circulation.infrastructure.storage.loans.LoanPolicyRepository;
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 
 public class UpdateLoan {
@@ -25,8 +24,9 @@ public class UpdateLoan {
   public UpdateLoan(Clients clients,
       LoanRepository loanRepository,
       LoanPolicyRepository loanPolicyRepository) {
+
     closedLibraryStrategyService = ClosedLibraryStrategyService.using(clients,
-        ZonedDateTime.now(ZoneOffset.UTC), false);
+      ClockManager.getZonedDateTime(), false);
     this.loanPolicyRepository = loanPolicyRepository;
     this.loanRepository = loanRepository;
     this.scheduledNoticeService = LoanScheduledNoticeService.using(clients);

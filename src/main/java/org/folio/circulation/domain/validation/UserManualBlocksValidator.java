@@ -90,7 +90,7 @@ public class UserManualBlocksValidator {
   }
 
   private boolean isBlockedToCreateRequests(ZonedDateTime expirationDate, boolean requests) {
-    final ZonedDateTime now = ClockManager.getClockManager().getZonedDateTime();
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     return requests && expirationDate != null && isAfterMillis(expirationDate, now);
   }
 }

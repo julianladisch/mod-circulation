@@ -19,7 +19,7 @@ public class OverrideRenewAgedToLostItemTest extends RefundAgedToLostFeesTestBas
   protected void performActionThatRequiresRefund(AgeToLostFixture.AgeToLostResult result,
      ZonedDateTime actionDate) {
 
-    mockClockManagerToReturnFixedDateTime(actionDate);
+    clockToFixedDateTime(actionDate);
 
     overrideRenewalFixture.overrideRenewalByBarcode(result.getLoan(),
       servicePointsFixture.cd1().getId());

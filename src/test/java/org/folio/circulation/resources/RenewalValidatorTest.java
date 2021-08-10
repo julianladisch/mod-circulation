@@ -3,14 +3,13 @@ package org.folio.circulation.resources;
 import static api.support.matchers.ResultMatchers.hasValidationError;
 import static api.support.matchers.ResultMatchers.succeeded;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
-import static java.time.ZonedDateTime.now;
-import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.resources.RenewalValidator.errorWhenEarlierOrSameDueDate;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.Loan;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 
@@ -19,7 +18,7 @@ import io.vertx.core.json.JsonObject;
 public class RenewalValidatorTest {
   @Test
   public void shouldDisallowRenewalWhenDueDateIsEarlierOrSame() {
-    ZonedDateTime dueDate = now(UTC);
+    ZonedDateTime dueDate = ClockManager.getZonedDateTime();
     ZonedDateTime proposedDueDate = dueDate.minusWeeks(2);
     Loan loan = createLoan(dueDate);
 
@@ -31,7 +30,7 @@ public class RenewalValidatorTest {
 
   @Test
   public void shouldAllowRenewalWhenDueDateAfterCurrentDueDate() {
-    ZonedDateTime dueDate = now(UTC);
+    ZonedDateTime dueDate = ClockManager.getZonedDateTime();
     ZonedDateTime proposedDueDate = dueDate.plusWeeks(1);
     Loan loan = createLoan(dueDate);
 

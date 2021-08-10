@@ -40,7 +40,7 @@ abstract class LoanAnonymizationTests extends APITests {
   public void afterEach() {
     super.afterEach();
 
-    mockClockManagerToReturnDefaultDateTime();
+    clockToDefaultDateTime();
     FakePubSub.clearPublishedEvents();
   }
 

@@ -6,6 +6,7 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 
 import api.support.builders.FixedDueDateSchedule;
 import api.support.builders.FixedDueDateSchedulesBuilder;
@@ -39,7 +40,7 @@ public class LoanPoliciesFixture {
   }
 
   public IndividualResource createExampleFixedDueDateSchedule() {
-    final int currentYear = ZonedDateTime.now(UTC).getYear();
+    final int currentYear = ClockManager.getZonedDateTime().getYear();
 
     FixedDueDateSchedulesBuilder fixedDueDateSchedule =
       new FixedDueDateSchedulesBuilder()

@@ -2,9 +2,10 @@ package api.support.builders;
 
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
+
+import org.folio.circulation.support.ClockManager;
 
 import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
@@ -16,7 +17,7 @@ public class CheckInByBarcodeRequestBuilder extends JsonBuilder implements Build
   private final String claimedReturnedResolution;
 
   public CheckInByBarcodeRequestBuilder() {
-    this(null, ZonedDateTime.now(ZoneOffset.UTC), null, null);
+    this(null, ClockManager.getZonedDateTime(), null, null);
   }
 
   private CheckInByBarcodeRequestBuilder(

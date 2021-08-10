@@ -8,14 +8,19 @@ import static api.support.matchers.LoanMatchers.isOpen;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getUUIDProperty;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import api.support.http.IndividualResource;
+import java.util.UUID;
+
+import org.folio.circulation.support.ClockManager;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import api.support.APITests;
 import api.support.builders.ItemBuilder;
+import api.support.builders.LostItemFeePolicyBuilder;
+import api.support.fixtures.AgeToLostFixture.AgeToLostResult;
+import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
-import lombok.val;
 
 public class CloseAgedToLostLoanWhenLostItemFeesAreClosedApiTests extends APITests {
   private IndividualResource loan;
@@ -27,14 +32,21 @@ public class CloseAgedToLostLoanWhenLostItemFeesAreClosedApiTests extends APITes
     feeFineTypeFixture.lostItemFee();
     feeFineTypeFixture.lostItemProcessingFee();
 
-    val result = ageToLostFixture.createLoanAgeToLostAndChargeFees(
-      lostItemFeePoliciesFixture.ageToLostAfterOneMinutePolicy()
-        .withName("Age to lost policy")
-        .withSetCost(10.0)
-        .chargeProcessingFeeWhenAgedToLost(15.00));
+    LostItemFeePolicyBuilder policyBuilder = lostItemFeePoliciesFixture
+      .ageToLostAfterOneMinutePolicy()
+      .withName("Age to lost policy")
+      .withSetCost(10.0)
+      .chargeProcessingFeeWhenAgedToLost(15.00);
+
+    AgeToLostResult result = ageToLostFixture.createLoanAgeToLostAndChargeFees(policyBuilder);
 
     item = result.getItem();
     loan = result.getLoan();
+  }
+
+  @After
+  public void after() {
+    ClockManager.setDefaultClock();
   }
 
   @Test
@@ -115,8 +127,8 @@ public class CloseAgedToLostLoanWhenLostItemFeesAreClosedApiTests extends APITes
   }
 
   private void updateLostPolicyToUseActualCost() {
-    val lostItemPolicyId = getUUIDProperty(loan.getJson(), "lostItemPolicyId");
-    val lostItemPolicy = lostItemFeePolicyClient.getById(lostItemPolicyId).getJson();
+    UUID lostItemPolicyId = getUUIDProperty(loan.getJson(), "lostItemPolicyId");
+    JsonObject lostItemPolicy = lostItemFeePolicyClient.getById(lostItemPolicyId).getJson();
 
     lostItemPolicy.put("chargeAmountItem", new JsonObject()
       .put("amount", 10.00)

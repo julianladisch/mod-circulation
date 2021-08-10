@@ -13,7 +13,6 @@ import static api.support.matchers.LoanMatchers.isClosed;
 import static api.support.matchers.PatronNoticeMatcher.hasEmailNoticeProperties;
 import static api.support.matchers.ScheduledNoticeMatchers.hasScheduledFeeFineNotice;
 import static api.support.matchers.ScheduledNoticeMatchers.hasScheduledLoanNotice;
-import static java.time.ZonedDateTime.now;
 import static java.util.stream.Collectors.toList;
 import static org.folio.circulation.domain.notice.NoticeTiming.AFTER;
 import static org.folio.circulation.domain.notice.NoticeTiming.UPON_AT;
@@ -27,7 +26,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.iterableWithSize;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +38,7 @@ import java.util.stream.Stream;
 import org.awaitility.Awaitility;
 import org.folio.circulation.domain.Account;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -235,7 +234,7 @@ public class AgedToLostScheduledNoticesProcessingTests extends APITests {
 
     claimItemReturnedFixture.claimItemReturned(new ClaimItemReturnedRequestBuilder()
       .forLoan(agedToLostLoan.getLoanId().toString())
-      .withItemClaimedReturnedDate(now(Clock.systemUTC())));
+      .withItemClaimedReturnedDate(ClockManager.getZonedDateTime()));
     final ZonedDateTime firstRunTime = TIMING_PERIOD
       .plusDate(getAgedToLostDate(agedToLostLoan));
     scheduledNoticeProcessingClient.runLoanNoticesProcessing(

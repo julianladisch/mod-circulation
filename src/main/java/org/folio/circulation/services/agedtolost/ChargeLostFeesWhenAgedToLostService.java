@@ -9,7 +9,6 @@ import static org.folio.circulation.domain.representations.LoanProperties.DATE_L
 import static org.folio.circulation.domain.representations.LoanProperties.ITEM_STATUS;
 import static org.folio.circulation.domain.representations.LoanProperties.LOST_ITEM_HAS_BEEN_BILLED;
 import static org.folio.circulation.support.AsyncCoordinationUtil.allOf;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.folio.circulation.support.CqlSortBy.ascending;
 import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
 import static org.folio.circulation.support.http.client.CqlQuery.exactMatch;
@@ -20,7 +19,6 @@ import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.utils.CollectionUtil.uniqueSetOf;
 import static org.folio.circulation.support.utils.CommonUtils.pair;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,6 +48,7 @@ import org.folio.circulation.services.EventPublisher;
 import org.folio.circulation.services.FeeFineFacade;
 import org.folio.circulation.services.support.CreateAccountCommand;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.fetching.PageableFetcher;
 import org.folio.circulation.support.http.client.CqlQuery;
 import org.folio.circulation.support.results.Result;
@@ -233,9 +232,9 @@ public class ChargeLostFeesWhenAgedToLostService {
     final String lostItemHasBeenBilled = AGED_TO_LOST_DELAYED_BILLING + "."
       + LOST_ITEM_HAS_BEEN_BILLED;
 
-    final ZonedDateTime currentDate = ZonedDateTime.now(ZoneOffset.UTC);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
 
-    final Result<CqlQuery> billingDateQuery = lessThanOrEqualTo(billingDateProperty, currentDate);
+    final Result<CqlQuery> billingDateQuery = lessThanOrEqualTo(billingDateProperty, now);
     final Result<CqlQuery> agedToLostQuery = exactMatch(ITEM_STATUS, AGED_TO_LOST.getValue());
     final Result<CqlQuery> hasNotBeenBilledQuery = exactMatch(
       lostItemHasBeenBilled, "false");

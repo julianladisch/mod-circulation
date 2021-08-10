@@ -45,6 +45,7 @@ import java.util.UUID;
 
 import org.awaitility.Awaitility;
 import org.folio.circulation.domain.Request;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
@@ -789,7 +790,7 @@ public class RequestsAPIUpdatingTests extends APITests {
 
     final IndividualResource createdRequest = requestsClient.create(new RequestBuilder()
       .page()
-      .withRequestDate(ZonedDateTime.now(UTC))
+      .withRequestDate(ClockManager.getZonedDateTime())
       .forItem(temeraire)
       .by(steve)
       .fulfilToHoldShelf()

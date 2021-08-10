@@ -10,13 +10,11 @@ import static api.support.matchers.LoanAccountMatcher.hasLostItemProcessingFee;
 import static api.support.matchers.LoanAccountMatcher.hasNoOverdueFine;
 import static api.support.matchers.LoanAccountMatcher.hasOverdueFine;
 import static api.support.matchers.LoanMatchers.isClosed;
-import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.now;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 
+import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +35,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
   }
 
   protected void performActionThatRequiresRefund() {
-    performActionThatRequiresRefund(ZonedDateTime.now(Clock.systemUTC()));
+    performActionThatRequiresRefund(ClockManager.getZonedDateTime());
   }
 
   protected abstract void performActionThatRequiresRefund(ZonedDateTime actionDate);
@@ -113,7 +111,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
     feeFineAccountFixture.transferLostItemFee(loan.getId());
     feeFineAccountFixture.payLostItemProcessingFee(loan.getId());
 
-    performActionThatRequiresRefund(now(UTC).plusMinutes(2));
+    performActionThatRequiresRefund(ClockManager.getZonedDateTime());
 
     assertThat(loan, hasLostItemFee(isTransferredFully(setCostFee)));
     assertThat(loan, hasLostItemProcessingFee(isPaidFully(processingFee)));
@@ -246,7 +244,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
 
     declareItemLost();
 
-    performActionThatRequiresRefund(now(Clock.systemUTC()).plusMonths(2));
+    performActionThatRequiresRefund(ClockManager.getZonedDateTime().plusMonths(2));
 
     assertThat(loan, hasLostItemProcessingFee(isClosedCancelled(processingFee)));
     assertThat(loan, hasOverdueFine());
@@ -268,7 +266,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
 
     declareItemLost();
 
-    performActionThatRequiresRefund(now(Clock.systemUTC()).plusMonths(2));
+    performActionThatRequiresRefund(ClockManager.getZonedDateTime().plusMonths(2));
 
     assertThat(loan, hasLostItemProcessingFee(isClosedCancelled(processingFee)));
     assertThat(loan, hasNoOverdueFine());
@@ -290,7 +288,7 @@ public abstract class RefundDeclaredLostFeesTestBase extends SpringApiTest {
 
     declareItemLost();
 
-    performActionThatRequiresRefund(ZonedDateTime.now(UTC).plusMinutes(2));
+    performActionThatRequiresRefund(ClockManager.getZonedDateTime().plusMinutes(2));
 
     assertThat(loan, hasLostItemFee(isOpen(itemFee)));
     assertThat(loan, hasNoOverdueFine());

@@ -6,7 +6,6 @@ import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +16,7 @@ import org.folio.circulation.domain.Request;
 import org.folio.circulation.domain.RequestQueue;
 import org.folio.circulation.domain.RequestType;
 import org.folio.circulation.resources.renewal.RegularRenewalStrategy;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -185,7 +185,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     Loan loan = loanFor(loanDate, loanDate, loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), new RequestQueue(Collections.emptyList()));
 
     assertThat(result, hasValidationFailure(
       "the interval \"Unknown\" in the loan policy is not recognised"));
@@ -206,7 +206,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     Loan loan = loanFor(loanDate, loanDate, loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), new RequestQueue(Collections.emptyList()));
 
     assertThat(result, hasValidationFailure(
       "the loan period in the loan policy is not recognised"));
@@ -227,7 +227,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     Loan loan = loanFor(loanDate, loanDate, loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), new RequestQueue(Collections.emptyList()));
 
     assertThat(result, hasValidationFailure(
       "the loan period in the loan policy is not recognised"));
@@ -248,7 +248,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     Loan loan = loanFor(loanDate, loanDate, loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), new RequestQueue(Collections.emptyList()));
 
     assertThat(result, hasValidationFailure(
       "the loan period in the loan policy is not recognised"));
@@ -271,7 +271,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     Loan loan = loanFor(loanDate, loanDate, loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), new RequestQueue(Collections.emptyList()));
 
     assertThat(result, hasValidationFailure(
       String.format("the duration \"%s\" in the loan policy is invalid", duration)));
@@ -295,7 +295,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     Loan loan = loanFor(loanDate, loanDate.plusDays(15), loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), new RequestQueue(Collections.emptyList()));
 
     assertThat(result.value().getDueDate(),
       is(ZonedDateTime.of(2018, 4, 10, 23, 59, 59, 0, UTC)));
@@ -318,7 +318,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     Loan loan = loanFor(loanDate, loanDate.plusDays(6), loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), new RequestQueue(Collections.emptyList()));
 
     assertThat(result.value().getDueDate(),
       is(ZonedDateTime.of(2018, 3, 23, 16, 21, 43, 0, UTC)));
@@ -343,7 +343,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     Loan loan = loanFor(loanDate, loanDate, loanPolicy);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), new RequestQueue(Collections.emptyList()));
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), new RequestQueue(Collections.emptyList()));
 
     assertThat(result, hasValidationFailure(
       EXPECTED_REASON_DATE_FALLS_OTSIDE_DATE_RANGES));
@@ -369,7 +369,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
 
     RequestQueue requestQueue = new RequestQueue(Collections.emptyList());
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()),requestQueue);
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(),requestQueue);
 
     assertThat(result, hasValidationFailure(
       EXPECTED_REASON_DATE_FALLS_OTSIDE_DATE_RANGES));
@@ -392,7 +392,7 @@ public class RollingLoanPolicyRenewalDueDateCalculationTests {
     String requestId = UUID.randomUUID().toString();
     RequestQueue requestQueue = creteRequestQueue(requestId, RequestType.RECALL);
 
-    final Result<Loan> result = regularRenewalStrategy.renew(loan, ZonedDateTime.now(Clock.systemUTC()), requestQueue);
+    final Result<Loan> result = regularRenewalStrategy.renew(loan, ClockManager.getZonedDateTime(), requestQueue);
 
     assertThat(result, hasValidationFailure(
       EXPECTED_REASON_DATE_FALLS_OTSIDE_DATE_RANGES));

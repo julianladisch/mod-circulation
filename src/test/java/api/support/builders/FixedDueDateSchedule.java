@@ -1,11 +1,13 @@
 package api.support.builders;
+
+import static java.time.Year.isLeap;
 import static java.time.ZoneOffset.UTC;
 
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
-import static java.time.Year.isLeap;
+import org.folio.circulation.support.ClockManager;
 
 public class FixedDueDateSchedule {
   final ZonedDateTime from;
@@ -33,7 +35,7 @@ public class FixedDueDateSchedule {
       .of(year, month, 1, 0, 0, 0, 0, ZoneOffset.UTC);
 
     final ZonedDateTime lastOfMonth = firstOfMonth
-      .withDayOfMonth(calcualteLastDayOfMonth(firstOfMonth))
+      .withDayOfMonth(calculateLastDayOfMonth(firstOfMonth))
       .withHour(23)
       .withMinute(59)
       .withSecond(59);
@@ -54,11 +56,11 @@ public class FixedDueDateSchedule {
   }
 
   public static FixedDueDateSchedule todayOnly() {
-    return forDay(ZonedDateTime.now(UTC));
+    return forDay(ClockManager.getZonedDateTime());
   }
 
   public static FixedDueDateSchedule yesterdayOnly() {
-    return forDay(ZonedDateTime.now(UTC).minusDays(1));
+    return forDay(ClockManager.getZonedDateTime().minusDays(1));
   }
 
   public static FixedDueDateSchedule forDay(ZonedDateTime day) {
@@ -72,16 +74,13 @@ public class FixedDueDateSchedule {
     return new FixedDueDateSchedule(beginningOfDay, endOfDay, endOfDay);
   }
 
-  private static int calcualteLastDayOfMonth(ZonedDateTime firstOfMonth) {
+  private static int calculateLastDayOfMonth(ZonedDateTime firstOfMonth) {
     boolean isLeap = isLeap(firstOfMonth.getYear());
-    int lastDay;
 
     if (firstOfMonth.getMonthValue() == 2 && !isLeap) {
-      lastDay = firstOfMonth.getMonth().maxLength() - 1;
-    } else {
-      lastDay = firstOfMonth.getMonth().maxLength();
+      return firstOfMonth.getMonth().maxLength() - 1;
     }
 
-    return lastDay;
+    return firstOfMonth.getMonth().maxLength();
   }
 }

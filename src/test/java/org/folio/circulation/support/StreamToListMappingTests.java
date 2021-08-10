@@ -10,19 +10,17 @@ import java.util.stream.Stream;
 
 import org.junit.Test;
 
-import lombok.val;
-
 public class StreamToListMappingTests {
   @Test
   public void listShouldContainSameContentsAsStream() {
-    val stream = Stream.of("Foo", "Bar", "Lorem", "Ipsum");
+    Stream<?> stream = Stream.of("Foo", "Bar", "Lorem", "Ipsum");
 
     assertThat(toList(stream), contains("Foo", "Bar", "Lorem", "Ipsum"));
   }
 
   @Test
   public void shouldMapEmptyStreamToEmptyList() {
-    val emptyStream = Stream.empty();
+    Stream<?> emptyStream = Stream.empty();
 
     assertThat(toList(emptyStream), is(empty()));
   }

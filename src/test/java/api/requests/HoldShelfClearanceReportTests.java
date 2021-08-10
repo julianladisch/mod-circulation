@@ -2,17 +2,16 @@ package api.requests;
 
 import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
 import static java.net.HttpURLConnection.HTTP_OK;
-import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.support.StreamToListMapper.toList;
 import static org.folio.circulation.support.json.JsonObjectArrayPropertyFetcher.toStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import org.folio.circulation.domain.RequestStatus;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.junit.Test;
 
@@ -397,7 +396,7 @@ public class HoldShelfClearanceReportTests extends APITests {
     // #7 check-in item in SP2
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
-      .on(ZonedDateTime.now(UTC))
+      .on(ClockManager.getZonedDateTime())
       .at(secondServicePointId));
 
     // #8 Check that hold shelf expiration report doesn't contain data when the item has the status `Awaiting pickup`,
@@ -477,7 +476,7 @@ public class HoldShelfClearanceReportTests extends APITests {
     // #7 check-in item in SP2
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
-      .on(ZonedDateTime.now(UTC))
+      .on(ClockManager.getZonedDateTime())
       .at(secondServicePointId));
 
     // #8 get hold shelf expiration report in SP1 >>> empty
@@ -530,7 +529,7 @@ public class HoldShelfClearanceReportTests extends APITests {
     // #7 check-in item in SP2
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(nod)
-      .on(ZonedDateTime.now(UTC))
+      .on(ClockManager.getZonedDateTime())
       .at(secondServicePointId));
 
     // #8 get hold shelf expiration report in SP1 >>> empty

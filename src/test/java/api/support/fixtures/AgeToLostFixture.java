@@ -5,9 +5,6 @@ import static api.support.http.InterfaceUrls.scheduledAgeToLostFeeChargingUrl;
 import static api.support.http.InterfaceUrls.scheduledAgeToLostUrl;
 import static api.support.http.ResourceClient.forLoansStorage;
 import static api.support.matchers.ItemMatchers.isAgedToLost;
-import static java.time.Clock.fixed;
-import static java.time.Instant.ofEpochMilli;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.Clock;
@@ -16,6 +13,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 
 import api.support.builders.HoldingBuilder;
@@ -24,12 +22,14 @@ import api.support.builders.LostItemFeePolicyBuilder;
 import api.support.builders.NoticePolicyBuilder;
 import api.support.fixtures.policies.PoliciesActivationFixture;
 import api.support.fixtures.policies.PoliciesToActivate;
+import api.support.http.CheckOutResource;
 import api.support.http.IndividualResource;
+import api.support.http.ItemResource;
 import api.support.http.ResourceClient;
 import api.support.http.TimedTaskClient;
+import api.support.http.UserResource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 
 public final class AgeToLostFixture {
   private final PoliciesActivationFixture policiesActivation;
@@ -40,6 +40,9 @@ public final class AgeToLostFixture {
   private final UsersFixture usersFixture;
   private final TimedTaskClient timedTaskClient;
   private final ResourceClient loanStorageClient;
+
+  // Provide a clock to restore to, which is normally the system clock but may not be.
+  private Clock defaultClock = Clock.systemUTC();
 
   public AgeToLostFixture(ItemsFixture itemsFixture, UsersFixture usersFixture,
     CheckOutFixture checkOutFixture) {
@@ -75,10 +78,10 @@ public final class AgeToLostFixture {
 
     policiesActivation.use(policiesToUse);
 
-    val user = usersFixture.james();
-    val item = itemsFixture.basedUponSmallAngryPlanet(holdingsBuilder,
+    UserResource user = usersFixture.james();
+    ItemResource item = itemsFixture.basedUponSmallAngryPlanet(holdingsBuilder,
       ItemBuilder::withRandomBarcode);
-    val loan = checkOutFixture.checkOutByBarcode(item, user);
+    CheckOutResource loan = checkOutFixture.checkOutByBarcode(item, user);
 
     ageToLost();
 
@@ -148,7 +151,7 @@ public final class AgeToLostFixture {
 
     timedTaskClient.start(scheduledAgeToLostUrl(), 204, "scheduled-age-to-lost");
 
-    getClockManager().setDefaultClock();
+    ClockManager.setClock(defaultClock);
   }
 
   public void chargeFees() {
@@ -157,7 +160,7 @@ public final class AgeToLostFixture {
     timedTaskClient.start(scheduledAgeToLostFeeChargingUrl(), 204,
       "scheduled-age-to-lost-fee-charging");
 
-    getClockManager().setDefaultClock();
+    ClockManager.setClock(defaultClock);
   }
 
   public void ageToLostAndChargeFees() {
@@ -173,26 +176,35 @@ public final class AgeToLostFixture {
     final Response response = timedTaskClient.attemptRun(scheduledAgeToLostFeeChargingUrl(),
       "scheduled-age-to-lost-fee-charging");
 
-    getClockManager().setDefaultClock();
+    ClockManager.setClock(defaultClock);
 
     return response;
   }
 
   private void moveTimeForwardForAgeToLost() {
-    moveTimeForward(6);
+    moveTimeForwardWeeks(6);
   }
 
   private void moveTimeForwardForChargeFee() {
-    moveTimeForward(8);
+    moveTimeForwardWeeks(8);
   }
 
-  private void moveTimeForward(int weeks) {
-    final ZonedDateTime newDateTime = ZonedDateTime.now(Clock.systemUTC())
+  private void moveTimeForwardWeeks(int weeks) {
+    final ZonedDateTime dateTime = ClockManager.getZonedDateTime()
       .plusWeeks(weeks);
-    final Clock fixedClocks = fixed(ofEpochMilli(newDateTime
-      .toInstant().toEpochMilli()), ZoneOffset.UTC);
 
-    getClockManager().setClock(fixedClocks);
+    final Clock fixedClocks = Clock.fixed(dateTime.toInstant(),
+      ZoneOffset.UTC);
+
+    ClockManager.setClock(fixedClocks);
+  }
+
+  public Clock getDefaultClock() {
+    return defaultClock;
+  }
+
+  public void setDefaultClock(Clock clock) {
+    defaultClock = clock;
   }
 
   @Getter

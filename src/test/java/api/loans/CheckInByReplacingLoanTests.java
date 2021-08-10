@@ -11,10 +11,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.folio.circulation.support.http.client.Response;
+import org.folio.circulation.support.utils.DateTimeUtil;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -104,8 +104,8 @@ public class CheckInByReplacingLoanTests extends APITests {
     returnedLoan
       .put("status", new JsonObject().put("name", "Closed"))
       .put("action", "checkedin")
-      .put("returnDate", ZonedDateTime.of(2017, 3, 5, 14, 23, 41, 0, UTC)
-        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+      .put("returnDate", DateTimeUtil.formatDateTime(
+        ZonedDateTime.of(2017, 3, 5, 14, 23, 41, 0, UTC)));
 
     Response putResponse = loansFixture.attemptToReplaceLoan(loan.getId(),
         returnedLoan);
@@ -133,8 +133,8 @@ public class CheckInByReplacingLoanTests extends APITests {
       .put("status", new JsonObject().put("name", "Closed"))
       .put("action", "checkedin")
       .put("checkinServicePointId", unknownServicePointId.toString())
-      .put("returnDate", ZonedDateTime.of(2017, 3, 5, 14, 23, 41, 0, UTC)
-        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+      .put("returnDate", DateTimeUtil.formatDateTime(
+        ZonedDateTime.of(2017, 3, 5, 14, 23, 41, 0, UTC)));
 
     Response putResponse = loansFixture.attemptToReplaceLoan(loan.getId(),
       returnedLoan);

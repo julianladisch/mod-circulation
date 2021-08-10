@@ -311,7 +311,7 @@ public abstract class APITests {
   public void afterEach() {
     forTenantStorage().deleteAll();
 
-    mockClockManagerToReturnDefaultDateTime();
+    clockToDefaultDateTime();
   }
 
   protected void assertLoanHasFeeFinesProperties(JsonObject loan,
@@ -376,14 +376,11 @@ public abstract class APITests {
       resource), resource.getValue(property), is(nullValue()));
   }
 
-  protected void mockClockManagerToReturnFixedDateTime(ZonedDateTime dateTime) {
-    ClockManager.getClockManager().setClock(
-      Clock.fixed(
-        Instant.ofEpochMilli(dateTime.toInstant().toEpochMilli()),
-        ZoneOffset.UTC));
+  protected void clockToFixedDateTime(ZonedDateTime dateTime) {
+    ClockManager.setClock(Clock.fixed(dateTime.toInstant(), ZoneOffset.UTC));
   }
 
-  protected void mockClockManagerToReturnDefaultDateTime() {
-    ClockManager.getClockManager().setDefaultClock();
+  protected void clockToDefaultDateTime() {
+    ClockManager.setDefaultClock();
   }
 }

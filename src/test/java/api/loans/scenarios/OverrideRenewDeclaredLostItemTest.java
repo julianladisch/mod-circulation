@@ -20,7 +20,7 @@ public class OverrideRenewDeclaredLostItemTest extends RefundDeclaredLostFeesTes
 
   @Override
   protected void performActionThatRequiresRefund(ZonedDateTime actionDate) {
-    mockClockManagerToReturnFixedDateTime(actionDate);
+    clockToFixedDateTime(actionDate);
 
     overrideRenewalFixture.overrideRenewalByBarcode(loan, servicePointsFixture.cd1().getId());
   }

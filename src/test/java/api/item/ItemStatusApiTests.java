@@ -5,9 +5,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+import org.folio.circulation.support.ClockManager;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -24,9 +24,9 @@ public class ItemStatusApiTests extends APITests {
 
     IndividualResource item = itemsFixture.basedUponSmallAngryPlanet();
     IndividualResource user = usersFixture.jessica();
-    final ZonedDateTime beforeCheckOutDatetime = ZonedDateTime.now(ZoneOffset.UTC);
+    final ZonedDateTime beforeCheckOutDatetime = ClockManager.getZonedDateTime();
 
-    checkOutFixture.checkOutByBarcode(item, user, ZonedDateTime.now(ZoneOffset.UTC));
+    checkOutFixture.checkOutByBarcode(item, user, ClockManager.getZonedDateTime());
 
     JsonObject checkedOutItem = itemsClient.get(item.getId()).getJson();
 

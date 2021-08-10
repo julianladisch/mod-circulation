@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class ServicePointCheckInTests extends APITests {
         .withRequestDate(ZonedDateTime.of(2019, 7, 5, 10, 0, 0, 0, ZoneOffset.UTC))
         .withRequestExpiration(LocalDate.of(2019, 7, 11)));
 
-    final ZonedDateTime beforeCheckIn = ZonedDateTime.now(ZoneOffset.UTC);
+    final ZonedDateTime beforeCheckIn = ClockManager.getZonedDateTime();
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -140,9 +141,9 @@ public class ServicePointCheckInTests extends APITests {
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        ZonedDateTime.now(ZoneOffset.UTC), requestServicePoint.getId());
+        ClockManager.getZonedDateTime(), requestServicePoint.getId());
 
-    final ZonedDateTime beforeCheckIn = ZonedDateTime.now(ZoneOffset.UTC);
+    final ZonedDateTime beforeCheckIn = ClockManager.getZonedDateTime();
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()

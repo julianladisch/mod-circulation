@@ -10,18 +10,16 @@ import java.util.UUID;
 import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 
-import lombok.val;
-
 public class GeneralNoteTypeValidatorTests {
   @Test
   public void allowSingleNoteType() {
-    val validator = new GeneralNoteTypeValidator();
+    GeneralNoteTypeValidator validator = new GeneralNoteTypeValidator();
 
     final NoteType noteType = generateNoteType();
 
-    val singleNoteType = Result.of(() -> Optional.of(noteType));
+    Result<Optional<NoteType>> singleNoteType = Result.of(() -> Optional.of(noteType));
 
-    val result = validator.refuseIfNoteTypeNotFound(singleNoteType);
+    Result<NoteType> result = validator.refuseIfNoteTypeNotFound(singleNoteType);
 
     assertThat(result.succeeded(), is(true));
     assertThat(result.value(), is(noteType));
@@ -29,9 +27,9 @@ public class GeneralNoteTypeValidatorTests {
 
   @Test
   public void failWhenNoNoteType() {
-    val validator = new GeneralNoteTypeValidator();
+    GeneralNoteTypeValidator validator = new GeneralNoteTypeValidator();
 
-    val result = validator.refuseIfNoteTypeNotFound(Result.of(Optional::empty));
+    Result<NoteType> result = validator.refuseIfNoteTypeNotFound(Result.of(Optional::empty));
 
     assertThat(result, hasValidationFailure("No General note type found"));
   }

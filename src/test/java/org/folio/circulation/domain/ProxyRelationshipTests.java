@@ -3,10 +3,9 @@ package org.folio.circulation.domain;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.time.Clock;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import org.folio.circulation.support.ClockManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,7 +44,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .active()
-        .expires(ZonedDateTime.now(Clock.systemUTC()).plusWeeks(3))
+        .expires(ClockManager.getZonedDateTime().plusWeeks(3))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -63,7 +62,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .active()
-        .expires(ZonedDateTime.now(Clock.systemUTC()).minusMonths(2))
+        .expires(ClockManager.getZonedDateTime().minusMonths(2))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -100,7 +99,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .inactive()
-        .expires(ZonedDateTime.now(Clock.systemUTC()).plusWeeks(3))
+        .expires(ClockManager.getZonedDateTime().plusWeeks(3))
         .useMetaObject(useMetaObject)
         .create());
 
@@ -119,7 +118,7 @@ public class ProxyRelationshipTests {
         .proxy(UUID.randomUUID())
         .sponsor(UUID.randomUUID())
         .inactive()
-        .expires(ZonedDateTime.now(Clock.systemUTC()).minusMonths(2))
+        .expires(ClockManager.getZonedDateTime().minusMonths(2))
         .useMetaObject(useMetaObject)
         .create());
 

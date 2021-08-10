@@ -1,13 +1,12 @@
 package org.folio.circulation.domain.policy;
 
-import static java.time.ZonedDateTime.now;
-import static java.time.ZoneOffset.UTC;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 
+import org.folio.circulation.support.ClockManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -57,7 +56,7 @@ public class PeriodTest {
   })
   public void hasPassedSinceDateTillNowWhenNowAfterTheDate(String interval, int duration) {
     Period period = Period.from(duration, interval);
-    ZonedDateTime startDate = period.minusDate(now(UTC)).minusSeconds(1);
+    ZonedDateTime startDate = period.minusDate(ClockManager.getZonedDateTime()).minusSeconds(1);
 
     assertTrue(period.hasPassedSinceDateTillNow(startDate));
     assertFalse(period.hasNotPassedSinceDateTillNow(startDate));
@@ -73,7 +72,7 @@ public class PeriodTest {
   })
   public void hasPassedSinceDateTillNowWhenNowIsTheDate(String interval, int duration) {
     Period period = Period.from(duration, interval);
-    ZonedDateTime startDate = period.minusDate(now(UTC));
+    ZonedDateTime startDate = period.minusDate(ClockManager.getZonedDateTime());
 
     assertTrue(period.hasPassedSinceDateTillNow(startDate));
     assertFalse(period.hasNotPassedSinceDateTillNow(startDate));
@@ -89,7 +88,7 @@ public class PeriodTest {
   })
   public void hasPassedSinceDateTillNowIsFalse(String interval, int duration) {
     Period period = Period.from(duration, interval);
-    ZonedDateTime startDate = now(UTC);
+    ZonedDateTime startDate = ClockManager.getZonedDateTime();
 
     assertFalse(period.hasPassedSinceDateTillNow(startDate));
     assertTrue(period.hasNotPassedSinceDateTillNow(startDate));
@@ -105,7 +104,7 @@ public class PeriodTest {
   })
   public void hasNotPassedSinceDateTillNow(String interval, int duration) {
     Period period = Period.from(duration, interval);
-    ZonedDateTime startDate = period.plusDate(now(UTC));
+    ZonedDateTime startDate = period.plusDate(ClockManager.getZonedDateTime());
 
     assertTrue(period.hasNotPassedSinceDateTillNow(startDate));
     assertFalse(period.hasPassedSinceDateTillNow(startDate));
@@ -121,7 +120,7 @@ public class PeriodTest {
   })
   public void hasNotPassedSinceDateTillNowIsFalseWhenPassed(String interval, int duration) {
     Period period = Period.from(duration, interval);
-    ZonedDateTime startDate = period.minusDate(now(UTC)).minusSeconds(1);
+    ZonedDateTime startDate = period.minusDate(ClockManager.getZonedDateTime()).minusSeconds(1);
 
     assertFalse(period.hasNotPassedSinceDateTillNow(startDate));
     assertTrue(period.hasPassedSinceDateTillNow(startDate));
@@ -137,7 +136,7 @@ public class PeriodTest {
   })
   public void isEqualToDateTillNow(String interval, int duration) {
     Period period = Period.from(duration, interval);
-    ZonedDateTime startDate = period.minusDate(now(UTC));
+    ZonedDateTime startDate = period.minusDate(ClockManager.getZonedDateTime());
 
     assertTrue(period.isEqualToDateTillNow(startDate)
       // Sometimes there is difference in mss

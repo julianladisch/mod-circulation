@@ -459,7 +459,7 @@ public class OverdueFineCalculatorServiceTest {
   public void shouldNotCreateFeeFineWhenLoanIsNotOverdue()
     throws ExecutionException, InterruptedException {
 
-    ZonedDateTime dueDateInFuture = ZonedDateTime.now(UTC).plusDays(1);
+    ZonedDateTime dueDateInFuture = ClockManager.getZonedDateTime().plusDays(1);
     final Loan loan = createLoan().changeDueDate(dueDateInFuture);
 
     if (renewal) {
@@ -651,7 +651,7 @@ public class OverdueFineCalculatorServiceTest {
       ),
       new FeeAmount(correctOverdueFine), new FeeAmount(correctOverdueFine), "Open", "Outstanding",
       Collections.emptyList(),
-      ClockManager.getClockManager().getZonedDateTime()
+      ClockManager.getZonedDateTime()
     );
   }
 

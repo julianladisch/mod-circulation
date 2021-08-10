@@ -3,16 +3,14 @@ package api.support.fakes;
 import static api.support.APITestContext.getTenantId;
 import static api.support.fakes.Storage.getStorage;
 import static api.support.http.InterfaceUrls.holdingsStorageUrl;
-import static java.time.ZoneOffset.UTC;
 import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
 import static org.folio.circulation.domain.representations.ItemProperties.EFFECTIVE_LOCATION_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.HOLDINGS_RECORD_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.PERMANENT_LOCATION_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.TEMPORARY_LOCATION_ID;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.folio.circulation.domain.representations.ItemProperties;
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
 
@@ -61,7 +60,7 @@ public final class StorageRecordPreProcessors {
         if (!Objects.equals(oldItemStatus.getString("name"),
           newItemStatus.getString("name"))) {
           write(newItemStatus, "date",
-            formatDateTime(ZonedDateTime.now(UTC))
+            formatDateTime(ClockManager.getZonedDateTime())
           );
         }
       }

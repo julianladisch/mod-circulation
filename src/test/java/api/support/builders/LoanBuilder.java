@@ -3,7 +3,6 @@ package api.support.builders;
 import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
-import java.time.Clock;
 import java.time.Period;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -13,6 +12,7 @@ import java.util.UUID;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.Policies;
 import org.folio.circulation.domain.policy.LoanPolicy;
+import org.folio.circulation.support.ClockManager;
 
 import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
@@ -97,7 +97,7 @@ public class LoanBuilder extends JsonBuilder implements Builder {
   public LoanBuilder withRandomPastLoanDate() {
     Random random = new Random();
 
-    return withLoanDate(ZonedDateTime.now(Clock.systemUTC())
+    return withLoanDate(ClockManager.getZonedDateTime()
       .minusDays(random.nextInt(10)));
   }
 

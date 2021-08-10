@@ -11,7 +11,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.folio.circulation.domain.ItemStatus;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.json.JsonPropertyFetcher;
 import org.junit.Test;
 
@@ -71,7 +71,7 @@ public class ItemsInTransitReportTests extends APITests {
   public void afterEach() {
     super.afterEach();
 
-    mockClockManagerToReturnDefaultDateTime();
+    clockToDefaultDateTime();
   }
 
   @Test
@@ -95,7 +95,7 @@ public class ItemsInTransitReportTests extends APITests {
     checkOutFixture.checkOutByBarcode(smallAngryPlanet);
     createRequest(smallAngryPlanet, steve, secondServicePointId, requestDate, requestExpirationDate);
 
-    mockClockManagerToReturnFixedDateTime(checkInDate);
+    clockToFixedDateTime(checkInDate);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
       .on(checkInDate)
@@ -137,13 +137,13 @@ public class ItemsInTransitReportTests extends APITests {
     createRequest(smallAngryPlanet, steve, secondServicePointId, requestDate1, requestExpirationDate1);
     createRequest(nod, rebecca, secondServicePointId, requestDate2, requestExpirationDate2);
 
-    mockClockManagerToReturnFixedDateTime(checkInDate1);
+    clockToFixedDateTime(checkInDate1);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
       .on(checkInDate1)
       .at(firsServicePointId));
 
-    mockClockManagerToReturnFixedDateTime(checkInDate2);
+    clockToFixedDateTime(checkInDate2);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(nod)
       .on(checkInDate2)
@@ -186,7 +186,7 @@ public class ItemsInTransitReportTests extends APITests {
 
     createRequest(smallAngryPlanet, steve, secondServicePointId, requestDate, requestExpirationDate);
 
-    mockClockManagerToReturnFixedDateTime(checkInDate);
+    clockToFixedDateTime(checkInDate);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
       .on(checkInDate)
@@ -227,13 +227,13 @@ public class ItemsInTransitReportTests extends APITests {
     createRequest(smallAngryPlanet, steve, firstServicePointId, requestDate1, requestExpirationDate1);
     createRequest(nod, rebecca, secondServicePointId, requestDate2, requestExpirationDate2);
 
-    mockClockManagerToReturnFixedDateTime(checkInDate1);
+    clockToFixedDateTime(checkInDate1);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
       .on(checkInDate1)
       .at(secondServicePointId));
 
-    mockClockManagerToReturnFixedDateTime(checkInDate2);
+    clockToFixedDateTime(checkInDate2);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(nod)
       .on(checkInDate2)
@@ -293,13 +293,13 @@ public class ItemsInTransitReportTests extends APITests {
     createRequest(nod, rebecca, secondServicePointId, requestNodeDate1, requestNodeExpirationDate1);
     createRequest(nod, steve, secondServicePointId, requestNodeDate2, requestNodeExpirationDate2);
 
-    mockClockManagerToReturnFixedDateTime(checkInDate1);
+    clockToFixedDateTime(checkInDate1);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
       .on(checkInDate1)
       .at(secondServicePointId));
 
-    mockClockManagerToReturnFixedDateTime(checkInDate2);
+    clockToFixedDateTime(checkInDate2);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(nod)
       .on(checkInDate2)
@@ -342,13 +342,13 @@ public class ItemsInTransitReportTests extends APITests {
     checkOutFixture.checkOutByBarcode(smallAngryPlanet);
     checkOutFixture.checkOutByBarcode(nod);
 
-    mockClockManagerToReturnFixedDateTime(checkInDate1);
+    clockToFixedDateTime(checkInDate1);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
       .on(checkInDate1)
       .at(secondServicePointId));
 
-    mockClockManagerToReturnFixedDateTime(checkInDate2);
+    clockToFixedDateTime(checkInDate2);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(nod)
       .on(checkInDate2)
@@ -401,19 +401,19 @@ public class ItemsInTransitReportTests extends APITests {
     createRequest(smallAngryPlanet, steve, firstServicePointId, requestDate1, requestExpirationDate1);
     createRequest(nod, rebecca, secondServicePointId, requestDate2, requestExpirationDate2);
 
-    mockClockManagerToReturnFixedDateTime(checkInDate3);
+    clockToFixedDateTime(checkInDate3);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanetWithFourthCheckInServicePoint)
       .on(checkInDate3)
       .at(fourthServicePointId));
 
-    mockClockManagerToReturnFixedDateTime(checkInDate2);
+    clockToFixedDateTime(checkInDate2);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(nod)
       .on(checkInDate2)
       .at(firstServicePointId));
 
-    mockClockManagerToReturnFixedDateTime(checkInDate1);
+    clockToFixedDateTime(checkInDate1);
     checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(smallAngryPlanet)
       .on(checkInDate1)
@@ -461,7 +461,7 @@ public class ItemsInTransitReportTests extends APITests {
 
       checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
         .forItem(item)
-        .on(ZonedDateTime.now(Clock.systemUTC()))
+        .on(ClockManager.getZonedDateTime())
         .at(firstServicePointId));
     }
 

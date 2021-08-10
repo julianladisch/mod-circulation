@@ -39,7 +39,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -52,6 +51,7 @@ import java.util.UUID;
 
 import org.folio.circulation.domain.User;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -96,7 +96,8 @@ public class CheckInByBarcodeTests extends APITests {
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(nod, james,
       ZonedDateTime.of(2018, 3, 1, 13, 25, 46, 0, UTC));
 
-    ZonedDateTime expectedSystemReturnDate = ZonedDateTime.now(UTC);
+    final ZonedDateTime expectedSystemReturnDate =
+      ClockManager.getZonedDateTime();
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -277,7 +278,7 @@ public void verifyItemEffectiveLocationIdAtCheckOut() {
     final Response response = checkInFixture.attemptCheckInByBarcode(
       new CheckInByBarcodeRequestBuilder()
         .withItemBarcode("543593485458")
-        .on(ZonedDateTime.now(Clock.systemUTC()))
+        .on(ClockManager.getZonedDateTime())
         .at(UUID.randomUUID()));
 
     assertThat(response, hasStatus(HTTP_UNPROCESSABLE_ENTITY));
@@ -298,7 +299,7 @@ public void verifyItemEffectiveLocationIdAtCheckOut() {
     final Response response = checkInFixture.attemptCheckInByBarcode(
       new CheckInByBarcodeRequestBuilder()
         .forItem(nod)
-        .on(ZonedDateTime.now(Clock.systemUTC()))
+        .on(ClockManager.getZonedDateTime())
         .atNoServicePoint());
 
     assertThat(response, hasStatus(HTTP_UNPROCESSABLE_ENTITY));
@@ -319,7 +320,7 @@ public void verifyItemEffectiveLocationIdAtCheckOut() {
     final Response response = checkInFixture.attemptCheckInByBarcode(
       new CheckInByBarcodeRequestBuilder()
         .noItem()
-        .on(ZonedDateTime.now(Clock.systemUTC()))
+        .on(ClockManager.getZonedDateTime())
         .at(UUID.randomUUID()));
 
     assertThat(response, hasStatus(HTTP_UNPROCESSABLE_ENTITY));
@@ -896,7 +897,7 @@ public void verifyItemEffectiveLocationIdAtCheckOut() {
     ZonedDateTime checkOutDate = ZonedDateTime.of(2020, 1, 15, 0, 0, 0, 0, UTC);
     ZonedDateTime recallRequestExpirationDate = checkOutDate.plusDays(5);
     ZonedDateTime checkInDate = checkOutDate.plusDays(10);
-    mockClockManagerToReturnFixedDateTime(ZonedDateTime.of(2020, 1, 18, 0, 0, 0, 0, UTC));
+    clockToFixedDateTime(ZonedDateTime.of(2020, 1, 18, 0, 0, 0, 0, UTC));
 
     checkOutFixture.checkOutByBarcode(nod, james, checkOutDate);
 
@@ -942,7 +943,7 @@ public void verifyItemEffectiveLocationIdAtCheckOut() {
     final var createdAccounts = waitAtMost(1, SECONDS)
       .until(accountsClient::getAll, hasSize(1));
 
-    mockClockManagerToReturnDefaultDateTime();
+    clockToDefaultDateTime();
 
     JsonObject account = createdAccounts.get(0);
 

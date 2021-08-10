@@ -1,12 +1,12 @@
 package api.support.builders;
 
-import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.now;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
+
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ public class RequestByInstanceIdRequestBuilder implements Builder {
   private final String patronComments;
 
   public RequestByInstanceIdRequestBuilder() {
-    this(now(UTC), null, null, now(UTC).plusWeeks(1), null, null);
+    this(ClockManager.getZonedDateTime(), null, null, ClockManager.getZonedDateTime().plusWeeks(1), null, null);
   }
 
   @Override

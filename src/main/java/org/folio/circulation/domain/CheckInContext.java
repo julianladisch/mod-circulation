@@ -34,7 +34,7 @@ public class CheckInContext {
 
   public CheckInContext(CheckInByBarcodeRequest checkInRequest) {
     this(checkInRequest, null, null, null, null, null, null,
-      ClockManager.getClockManager().getZonedDateTime(), false, null);
+      ClockManager.getZonedDateTime(), false, null);
   }
 
   public CheckInContext withItem(Item item) {

@@ -1,8 +1,7 @@
 package org.folio.circulation.domain.representations;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.util.UUID;
 
@@ -10,6 +9,7 @@ import org.folio.circulation.domain.Account;
 import org.folio.circulation.domain.FeeAmount;
 import org.folio.circulation.domain.ServicePoint;
 import org.folio.circulation.domain.User;
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
 
@@ -27,7 +27,7 @@ public class StoredFeeFineAction extends JsonObject {
     write(this, "amountAction", builder.amount.toDouble());
     write(this, "notify", false);
     write(this, "typeAction", builder.action);
-    write(this, "dateAction", formatDateTime(getClockManager().getZonedDateTime()));
+    write(this, "dateAction", formatDateTime(ClockManager.getZonedDateTime()));
   }
 
   public static StoredFeeFineActionBuilder builder() {

@@ -6,8 +6,8 @@ import static api.support.matchers.PatronNoticeMatcher.hasEmailNoticeProperties;
 import static api.support.matchers.ScheduledNoticeMatchers.hasScheduledLoanNotice;
 import static java.util.Comparator.comparing;
 import static org.folio.circulation.domain.representations.logs.LogEventType.NOTICE;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import org.awaitility.Awaitility;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -205,16 +206,16 @@ public class DueDateScheduledNoticesProcessingTests extends APITests {
     //Clean scheduled notices before this test
     scheduledNoticesClient.deleteAll();
 
-    ZonedDateTime systemTime = ZonedDateTime.now(ZoneOffset.UTC);
+    ZonedDateTime now = ClockManager.getZonedDateTime();
     int expectedNumberOfUnprocessedNoticesInThePast = 10;
     int numberOfNoticesInThePast =
       SCHEDULED_NOTICES_PROCESSING_LIMIT + expectedNumberOfUnprocessedNoticesInThePast;
     int numberOfNoticesInTheFuture = 20;
 
     List<JsonObject> noticesInThePast =
-      createNoticesOverTime(systemTime::minusHours, numberOfNoticesInThePast);
+      createNoticesOverTime(now::minusHours, numberOfNoticesInThePast);
     List<JsonObject> noticesInTheFuture =
-      createNoticesOverTime(systemTime::plusHours, numberOfNoticesInTheFuture);
+      createNoticesOverTime(now::plusHours, numberOfNoticesInTheFuture);
 
     List<JsonObject> allScheduledNotices = new ArrayList<>(noticesInThePast);
     allScheduledNotices.addAll(noticesInTheFuture);
@@ -404,8 +405,8 @@ public class DueDateScheduledNoticesProcessingTests extends APITests {
 
   private void createNotices(int numberOfNotices) {
 
-    ZonedDateTime systemTime = ZonedDateTime.now(ZoneOffset.UTC);
-    List<JsonObject> notices = createNoticesOverTime(systemTime::minusHours, numberOfNotices);
+    ZonedDateTime now = ClockManager.getZonedDateTime();
+    List<JsonObject> notices = createNoticesOverTime(now::minusHours, numberOfNotices);
     for (JsonObject notice : notices) {
       scheduledNoticesClient.create(notice);
     }

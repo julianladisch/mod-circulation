@@ -2,12 +2,13 @@ package api.support.fixtures;
 
 import static api.support.APITestContext.circulationModuleUrl;
 import static api.support.APITestContext.getOkapiHeadersFromContext;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 
 import java.net.URL;
 import java.time.Clock;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+
+import org.folio.circulation.support.ClockManager;
 
 import api.support.http.TimedTaskClient;
 
@@ -19,8 +20,7 @@ public class ScheduledNoticeProcessingClient {
   }
 
   public void runLoanNoticesProcessing(ZonedDateTime mockSystemTime) {
-    runWithFrozenTime(this::runLoanNoticesProcessing, mockSystemTime);
-    Clock.systemDefaultZone();
+    runWithFixedClock(this::runLoanNoticesProcessing, mockSystemTime);
   }
 
   public void runLoanNoticesProcessing() {
@@ -32,8 +32,7 @@ public class ScheduledNoticeProcessingClient {
   }
 
   public void runDueDateNotRealTimeNoticesProcessing(ZonedDateTime mockSystemTime) {
-    runWithFrozenTime(this::runDueDateNotRealTimeNoticesProcessing, mockSystemTime);
-    Clock.systemDefaultZone();
+    runWithFixedClock(this::runDueDateNotRealTimeNoticesProcessing, mockSystemTime);
   }
 
   public void runDueDateNotRealTimeNoticesProcessing() {
@@ -45,8 +44,7 @@ public class ScheduledNoticeProcessingClient {
   }
 
   public void runRequestNoticesProcessing(ZonedDateTime mockSystemTime) {
-    runWithFrozenTime(this::runRequestNoticesProcessing, mockSystemTime);
-    Clock.systemDefaultZone();
+    runWithFixedClock(this::runRequestNoticesProcessing, mockSystemTime);
   }
 
   public void runRequestNoticesProcessing() {
@@ -58,7 +56,7 @@ public class ScheduledNoticeProcessingClient {
   }
 
   public void runFeeFineNoticesProcessing(ZonedDateTime mockSystemTime) {
-    runWithFrozenClock(this::runFeeFineNoticesProcessing, mockSystemTime);
+    runWithFixedClock(this::runFeeFineNoticesProcessing, mockSystemTime);
   }
 
   public void runFeeFineNoticesProcessing() {
@@ -69,20 +67,14 @@ public class ScheduledNoticeProcessingClient {
       "fee-fine-scheduled-notices-processing-request");
   }
 
-  private void runWithFrozenTime(Runnable runnable, ZonedDateTime mockSystemTime) {
-    Clock.fixed(mockSystemTime.toInstant(), mockSystemTime.getZone());
-    runnable.run();
-  }
-
-  private void runWithFrozenClock(Runnable runnable, ZonedDateTime mockSystemTime) {
+  private void runWithFixedClock(Runnable runnable, ZonedDateTime mockSystemTime) {
     try {
-      getClockManager().setClock(
-        Clock.fixed(
-          mockSystemTime.toInstant(),
-          ZoneOffset.UTC));
+      ClockManager.setClock(Clock.fixed(mockSystemTime.toInstant(),
+        ZoneOffset.UTC));
+
       runnable.run();
     } finally {
-      getClockManager().setDefaultClock();
+      ClockManager.setDefaultClock();
     }
   }
 

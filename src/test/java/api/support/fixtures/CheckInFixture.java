@@ -3,10 +3,10 @@ package api.support.fixtures;
 import static api.support.APITestContext.getOkapiHeadersFromContext;
 import static api.support.http.InterfaceUrls.checkInByBarcodeUrl;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 
 import api.support.CheckInByBarcodeResponse;
@@ -45,7 +45,7 @@ public class CheckInFixture {
   public CheckInByBarcodeResponse checkInByBarcode(IndividualResource item) {
     return checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(item)
-      .on(ZonedDateTime.now(ZoneOffset.UTC))
+      .on(ClockManager.getZonedDateTime())
       .at(defaultServicePoint()));
   }
 
@@ -68,7 +68,7 @@ public class CheckInFixture {
   public CheckInByBarcodeResponse checkInByBarcode(IndividualResource item,
     UUID servicePointId) {
 
-    return checkInByBarcode(item, ZonedDateTime.now(ZoneOffset.UTC), servicePointId);
+    return checkInByBarcode(item, ClockManager.getZonedDateTime(), servicePointId);
   }
 
   public void checkInByBarcode(IndividualResource item, ZonedDateTime checkInDate,

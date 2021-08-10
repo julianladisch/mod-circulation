@@ -32,7 +32,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.HttpURLConnection;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -43,6 +42,7 @@ import java.util.stream.Stream;
 import org.awaitility.Awaitility;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.json.JsonObjectArrayPropertyFetcher;
+import org.folio.circulation.support.utils.DateTimeUtil;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -1074,7 +1074,7 @@ public class LoanAPITests extends APITests {
 
     loanToRenew
       .put("action", "renewed")
-      .put("dueDate", newDueDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+      .put("dueDate", DateTimeUtil.formatDateTime(newDueDate))
       .put("renewalCount", 1);
 
     loansFixture.replaceLoan(loan.getId(), loanToRenew);

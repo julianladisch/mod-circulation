@@ -2,7 +2,6 @@ package api.loans;
 
 import static api.support.matchers.ScheduledNoticeMatchers.hasScheduledLoanNotice;
 import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.now;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -11,7 +10,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 
-import java.time.Clock;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -22,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.json.JsonPropertyWriter;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -653,12 +652,12 @@ public class DueDateScheduledNoticesTests extends APITests {
   @Test
   public void scheduledOverDueNoticeShouldBeDeletedAfterClaimedReturned() {
     activatePolicies(createNoticePolicy());
-    IndividualResource loan = createLoan(now(Clock.systemUTC()));
+    IndividualResource loan = createLoan(ClockManager.getZonedDateTime());
 
     claimItemReturnedFixture
       .claimItemReturned(new ClaimItemReturnedRequestBuilder()
         .forLoan(loan.getId().toString())
-        .withItemClaimedReturnedDate(now(Clock.systemUTC())));
+        .withItemClaimedReturnedDate(ClockManager.getZonedDateTime()));
 
     var dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
     scheduledNoticeProcessingClient.runLoanNoticesProcessing(dueDate.plusHours(1));
@@ -670,7 +669,7 @@ public class DueDateScheduledNoticesTests extends APITests {
   @Test
   public void scheduledOverdueNoticesShouldBeDeletedAfterDeclaredLost() {
     activatePolicies(createNoticePolicy());
-    IndividualResource loan = createLoan(now(Clock.systemUTC()));
+    IndividualResource loan = createLoan(ClockManager.getZonedDateTime());
 
     declareLostFixtures.declareItemLost(loan.getJson());
     var dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
@@ -710,7 +709,7 @@ public class DueDateScheduledNoticesTests extends APITests {
     activatePolicies(createNoticePolicy());
     IndividualResource user = usersFixture.steve();
     ItemResource item = itemsFixture.basedUponNod();
-    IndividualResource loan = createLoan(item, user, now(Clock.systemUTC()));
+    IndividualResource loan = createLoan(item, user, ClockManager.getZonedDateTime());
 
     loansFixture.renewLoan(item, user);
     var dueDate = getDateTimeProperty(loan.getJson(), "dueDate");
@@ -725,7 +724,7 @@ public class DueDateScheduledNoticesTests extends APITests {
     activatePolicies(createNoticePolicy());
     IndividualResource user = usersFixture.steve();
     ItemResource item = itemsFixture.basedUponNod();
-    IndividualResource loan = createLoan(item, user, now(Clock.systemUTC()));
+    IndividualResource loan = createLoan(item, user, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item);
     var dueDate = getDateTimeProperty(loan.getJson(), "dueDate");

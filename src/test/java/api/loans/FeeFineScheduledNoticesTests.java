@@ -15,7 +15,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +32,7 @@ import org.folio.circulation.domain.notice.NoticeEventType;
 import org.folio.circulation.domain.notice.NoticeTiming;
 import org.folio.circulation.domain.notice.schedule.TriggeringEvent;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.json.JsonPropertyWriter;
 import org.hamcrest.Matcher;
 import org.junit.Test;
@@ -293,7 +293,7 @@ public class FeeFineScheduledNoticesTests extends APITests {
       .withFeeFineType(OVERDUE_FINE)
       .withAutomatic(true));
 
-    final ZonedDateTime checkOutDate = ZonedDateTime.now(ZoneOffset.UTC).minusYears(1);
+    final ZonedDateTime checkOutDate = ClockManager.getZonedDateTime().minusYears(1);
     final ZonedDateTime checkInDate = checkOutDate.plusMonths(1);
 
     IndividualResource checkOutResponse = checkOutFixture.checkOutByBarcode(item, user, checkOutDate);

@@ -128,6 +128,6 @@ public class TextDateTimeMatcher {
   }
 
   public static Matcher<String> withinSecondsBeforeNow(int seconds) {
-    return withinSecondsBefore(seconds, ClockManager.getClockManager().getZonedDateTime());
+    return withinSecondsBefore(seconds, ClockManager.getZonedDateTime());
   }
 }

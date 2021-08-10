@@ -4,8 +4,6 @@ import static java.util.stream.Collectors.joining;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -21,6 +19,7 @@ import org.folio.circulation.domain.RequestType;
 import org.folio.circulation.domain.ServicePoint;
 import org.folio.circulation.domain.User;
 import org.folio.circulation.domain.policy.LoanPolicy;
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
 
@@ -78,7 +77,7 @@ public class TemplateContextUtil {
     JsonObject itemContext = staffSlipContext.getJsonObject(ITEM);
 
     if (ObjectUtils.allNotNull(item, itemContext)) {
-      write(itemContext, "lastCheckedInDateTime", formatDateTime(ZonedDateTime.now(ZoneOffset.UTC)));
+      write(itemContext, "lastCheckedInDateTime", formatDateTime(ClockManager.getZonedDateTime()));
       if (item.getInTransitDestinationServicePoint() != null) {
         itemContext.put("fromServicePoint", context.getCheckInServicePoint().getName());
         itemContext.put("toServicePoint", item.getInTransitDestinationServicePoint().getName());

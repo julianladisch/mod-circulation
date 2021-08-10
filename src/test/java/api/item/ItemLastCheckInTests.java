@@ -30,16 +30,14 @@ public class ItemLastCheckInTests extends APITests {
 
   @Override
   public void beforeEach() throws InterruptedException {
-
-
     super.beforeEach();
-    mockClockManagerToReturnFixedDateTime(fixedCheckInDateTime);
+    clockToFixedDateTime(fixedCheckInDateTime);
   }
 
   @Override
   public void afterEach() {
     super.afterEach();
-    mockClockManagerToReturnDefaultDateTime();
+    clockToDefaultDateTime();
   }
 
   @Test
@@ -50,7 +48,7 @@ public class ItemLastCheckInTests extends APITests {
     UUID servicePointId = servicePointsFixture.cd1().getId();
 
     checkOutFixture.checkOutByBarcode(item, user);
-    checkInFixture.checkInByBarcode(item, ZonedDateTime.now(UTC), servicePointId);
+    checkInFixture.checkInByBarcode(item, ClockManager.getZonedDateTime(), servicePointId);
     JsonObject lastCheckIn = itemsClient.get(item.getId()).getJson()
       .getJsonObject("lastCheckIn");
 
@@ -137,7 +135,7 @@ public class ItemLastCheckInTests extends APITests {
 
     IndividualResource item = itemsFixture.basedUponSmallAngryPlanet();
     UUID servicePointId = servicePointsFixture.cd1().getId();
-    ZonedDateTime firstCheckInDateTime = ZonedDateTime.now(UTC);
+    final ZonedDateTime firstCheckInDateTime = ClockManager.getZonedDateTime();
 
     checkInFixture.checkInByBarcode(item, firstCheckInDateTime, servicePointId);
     JsonObject lastCheckIn = itemsClient.get(item.getId()).getJson()
@@ -150,7 +148,7 @@ public class ItemLastCheckInTests extends APITests {
     assertThat(lastCheckIn.getString("servicePointId"), is(servicePointId.toString()));
     assertThat(lastCheckIn.getString("staffMemberId"), is(APITestContext.getUserId()));
 
-    ZonedDateTime secondCheckInDateTime = ClockManager.getClockManager().getZonedDateTime();
+    final ZonedDateTime secondCheckInDateTime = ClockManager.getZonedDateTime();
     UUID servicePointId2 = servicePointsFixture.cd2().getId();
 
     final String randomUserId = UUID.randomUUID().toString();
@@ -178,7 +176,7 @@ public class ItemLastCheckInTests extends APITests {
 
     IndividualResource item = itemsFixture.basedUponSmallAngryPlanet();
     UUID servicePointId = servicePointsFixture.cd1().getId();
-    ZonedDateTime checkInDateTimeInPast = ClockManager.getClockManager().getZonedDateTime()
+    final ZonedDateTime checkInDateTimeInPast = ClockManager.getZonedDateTime()
       .minusHours(1);
 
     checkInFixture.checkInByBarcode(item, checkInDateTimeInPast, servicePointId);

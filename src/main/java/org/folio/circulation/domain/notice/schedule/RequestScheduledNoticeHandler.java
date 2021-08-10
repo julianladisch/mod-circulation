@@ -10,7 +10,6 @@ import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
 import java.lang.invoke.MethodHandles;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +26,7 @@ import org.folio.circulation.infrastructure.storage.notices.PatronNoticePolicyRe
 import org.folio.circulation.infrastructure.storage.notices.ScheduledNoticesRepository;
 import org.folio.circulation.infrastructure.storage.requests.RequestRepository;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +144,7 @@ public class RequestScheduledNoticeHandler {
   private ScheduledNotice updateNoticeNextRunTime(
     ScheduledNotice notice, ScheduledNoticeConfig noticeConfig) {
 
-    final ZonedDateTime systemTime = ZonedDateTime.now(ZoneOffset.UTC);
+    final ZonedDateTime systemTime = ClockManager.getZonedDateTime();
 
     ZonedDateTime recurringNoticeNextRunTime = noticeConfig
       .getRecurringPeriod().plusDate(notice.getNextRunTime());

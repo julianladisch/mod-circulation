@@ -11,13 +11,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.folio.circulation.domain.Item;
 import org.folio.circulation.support.ValidationErrorFailure;
+import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import io.vertx.core.json.JsonObject;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import lombok.val;
 
 @RunWith(JUnitParamsRunner.class)
 public class CheckInValidatorsTests {
@@ -47,9 +47,9 @@ public class CheckInValidatorsTests {
     "Intellectual item"
   })
   public void cannotCheckInItemInDisallowedStatus(String itemStatus) {
-    val validator = new CheckInValidators(this::validationError);
+    CheckInValidators validator = new CheckInValidators(this::validationError);
 
-    val validationResult = validator
+    Result<Item> validationResult = validator
       .refuseWhenItemIsNotAllowedForCheckIn(itemIn(itemStatus));
 
     assertTrue(validationResult.failed());
@@ -59,7 +59,7 @@ public class CheckInValidatorsTests {
   }
 
   private Item itemIn(String itemStatus) {
-    val itemRepresentation = new JsonObject()
+    JsonObject itemRepresentation = new JsonObject()
       .put("status", new JsonObject().put("name", itemStatus));
 
     return Item.from(itemRepresentation);

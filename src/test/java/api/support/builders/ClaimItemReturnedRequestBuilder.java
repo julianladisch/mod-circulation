@@ -2,9 +2,10 @@ package api.support.builders;
 
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
+
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
 
@@ -14,7 +15,7 @@ public class ClaimItemReturnedRequestBuilder implements Builder {
   private final String loanId;
 
   public ClaimItemReturnedRequestBuilder() {
-    this(null, ZonedDateTime.now(ZoneOffset.UTC), null);
+    this(null, ClockManager.getZonedDateTime(), null);
   }
 
   private ClaimItemReturnedRequestBuilder(

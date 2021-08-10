@@ -13,11 +13,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.support.BadRequestFailure;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public class JsonSchemaValidationTest {
 
     final JsonObject checkInRequest = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("246650492")
-      .on(ZonedDateTime.now(Clock.systemUTC()))
+      .on(ClockManager.getZonedDateTime())
       .at(UUID.randomUUID())
       .create();
 
@@ -50,7 +49,7 @@ public class JsonSchemaValidationTest {
       .withItemId(UUID.randomUUID())
       .withRequesterId(UUID.randomUUID())
       .fulfilToHoldShelf(UUID.randomUUID())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(ClockManager.getZonedDateTime())
       .create();
 
     assertThat(validator.validate(request.encode()), succeeded());
@@ -64,7 +63,7 @@ public class JsonSchemaValidationTest {
 
     write(storageLoanRequest, "itemId", UUID.randomUUID());
     write(storageLoanRequest, "userId", UUID.randomUUID());
-    write(storageLoanRequest, "loanDate", formatDateTime(ZonedDateTime.now(Clock.systemUTC())));
+    write(storageLoanRequest, "loanDate", formatDateTime(ClockManager.getZonedDateTime()));
     write(storageLoanRequest, "action", "checkedout");
 
     assertThat(validator.validate(storageLoanRequest.encode()), succeeded());
@@ -93,7 +92,7 @@ public class JsonSchemaValidationTest {
 
     final JsonObject checkInRequest = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("246650492")
-      .on(ZonedDateTime.now(Clock.systemUTC()))
+      .on(ClockManager.getZonedDateTime())
       .atNoServicePoint()
       .create();
 
@@ -113,7 +112,7 @@ public class JsonSchemaValidationTest {
 
     final JsonObject checkInRequest = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("246650492")
-      .on(ZonedDateTime.now(Clock.systemUTC()))
+      .on(ClockManager.getZonedDateTime())
       .at(UUID.randomUUID())
       .create();
 
@@ -135,7 +134,7 @@ public class JsonSchemaValidationTest {
 
     final JsonObject checkInRequest = new CheckInByBarcodeRequestBuilder()
       .withItemBarcode("246650492")
-      .on(ZonedDateTime.now(Clock.systemUTC()))
+      .on(ClockManager.getZonedDateTime())
       .atNoServicePoint()
       .create();
 

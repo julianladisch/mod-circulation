@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
-import java.time.Clock;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -27,6 +26,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.junit.Before;
@@ -248,8 +248,8 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
 
     //Should fetch 10 notices, when total records is 12
     //So that notices for one of the users should not be processed
-    final ZonedDateTime runTime = ZonedDateTime.now(UTC).plusDays(15);
-    mockClockManagerToReturnFixedDateTime(runTime);
+    final ZonedDateTime runTime = ClockManager.getZonedDateTime().plusDays(15);
+    clockToFixedDateTime(runTime);
 
     scheduledNoticeProcessingClient.runDueDateNotRealTimeNoticesProcessing(runTime);
 
@@ -515,7 +515,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
       .withLoanNotices(Collections.singletonList(afterDueDateNoticeConfig));
     use(noticePolicy);
 
-    ZonedDateTime loanDate = ZonedDateTime.now(Clock.systemUTC()).minusMonths(1);
+    final ZonedDateTime loanDate = ClockManager.getZonedDateTime().minusMonths(1);
 
     IndividualResource steve = usersFixture.steve();
     ItemResource dunkirk = itemsFixture.basedUponDunkirk();
@@ -543,7 +543,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     ZonedDateTime systemTime = ZonedDateTime.of(2020, 6, 25, 0, 0, 0, 0, UTC)
       .plusMinutes(plusMinutes)
       .withZoneSameLocal(ZoneId.of(timeZoneId));
-    mockClockManagerToReturnFixedDateTime(systemTime);
+    clockToFixedDateTime(systemTime);
     configClient.create(ConfigurationExample.timezoneConfigurationFor(timeZoneId));
 
     JsonObject uponAtDueDateNoticeConfig = new NoticeConfigurationBuilder()

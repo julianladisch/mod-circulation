@@ -1,13 +1,12 @@
 package org.folio.circulation.services;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.concurrent.CompletableFuture;
 
 import org.folio.circulation.domain.CheckInContext;
 import org.folio.circulation.domain.CheckInRecord;
 import org.folio.circulation.infrastructure.storage.CheckInStorageRepository;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 
 public class LogCheckInService {
@@ -21,7 +20,7 @@ public class LogCheckInService {
     CheckInContext checkInContext) {
 
     final CheckInRecord checkInRecord = CheckInRecord.builder()
-      .withOccurredDateTime(ZonedDateTime.now(ZoneOffset.UTC))
+      .withOccurredDateTime(ClockManager.getZonedDateTime())
       .withItemId(checkInContext.getItem().getItemId())
       .withServicePointId(checkInContext.getCheckInServicePointId().toString())
       .withPerformedByUserId(checkInContext.getLoggedInUserId())

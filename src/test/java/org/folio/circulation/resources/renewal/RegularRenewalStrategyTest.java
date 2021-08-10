@@ -3,8 +3,6 @@ package org.folio.circulation.resources.renewal;
 import static api.support.matchers.ResultMatchers.hasValidationError;
 import static api.support.matchers.ResultMatchers.hasValidationErrors;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
-import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.now;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.folio.circulation.domain.ItemStatus.AGED_TO_LOST;
@@ -27,6 +25,7 @@ import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.Request;
 import org.folio.circulation.domain.RequestQueue;
 import org.folio.circulation.domain.policy.LoanPolicy;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +42,7 @@ public class RegularRenewalStrategyTest {
   @Test
   public void canRenewLoan() {
     final var rollingPeriod = days(10);
-    final var currentDueDate = now(UTC);
+    final var currentDueDate = ClockManager.getZonedDateTime();
     final var expectedDueDate = rollingPeriod.plusDate(currentDueDate);
 
     final var loanPolicy = new LoanPolicyBuilder().rolling(rollingPeriod)
@@ -54,7 +53,7 @@ public class RegularRenewalStrategyTest {
     final var renewResult = renew(loan);
 
     assertThat(renewResult.succeeded(), is(true));
-    assertThat(renewResult.value().getDueDate().toInstant().toEpochMilli(), 
+    assertThat(renewResult.value().getDueDate().toInstant().toEpochMilli(),
       is(expectedDueDate.toInstant().toEpochMilli()));
   }
 
@@ -202,7 +201,7 @@ public class RegularRenewalStrategyTest {
       .asDomainObject();
 
     final var loan = new LoanBuilder().asDomainObject()
-      .changeDueDate(now(UTC).plusMinutes(rollingPeriod.toMinutes() * 2))
+      .changeDueDate(ClockManager.getZonedDateTime().plusMinutes(rollingPeriod.toMinutes() * 2))
       .withLoanPolicy(loanPolicy);
 
     final var renewResult = renew(loan);
@@ -240,14 +239,14 @@ public class RegularRenewalStrategyTest {
 
   private Result<Loan> renew(Loan loan, Request topRequest) {
     final var requestQueue = new RequestQueue(singletonList(topRequest));
-    final var systemDate = now(UTC);
+    final var systemDate = ClockManager.getZonedDateTime();
 
     return new RegularRenewalStrategy().renew(loan, systemDate, requestQueue);
   }
 
   private Result<Loan> renew(Loan loan) {
     final var requestQueue = new RequestQueue(emptyList());
-    final var systemDate = now(UTC);
+    final var systemDate = ClockManager.getZonedDateTime();
 
     return new RegularRenewalStrategy().renew(loan, systemDate, requestQueue);
   }

@@ -269,7 +269,6 @@ public class Item {
     return getProperty(loanTypeRepresentation, "name");
   }
 
-
   public Item changeStatus(ItemStatus newStatus) {
     if (isNotSameStatus(newStatus)) {
       changed = true;

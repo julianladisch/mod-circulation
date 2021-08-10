@@ -15,7 +15,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -26,7 +25,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
+import org.junit.After;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -57,6 +58,11 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
   private final String dueDateManagement =
     DueDateManagement.MOVE_TO_END_OF_CURRENT_SERVICE_POINT_HOURS.getValue();
 
+  @After
+  public void after() {
+    ClockManager.setDefaultClock();
+  }
+
   @Test
   public void testRespectSelectedTimezoneForDueDateCalculations() throws Exception {
     String expectedTimeZone = "America/New_York";
@@ -66,7 +72,7 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       .getResponse();
     assertThat(response.getBody(), containsString(expectedTimeZone));
 
-    ZoneId zone = ZoneId.of(expectedTimeZone).getRules().getOffset(Instant.now());
+    final ZoneId zone = ZoneId.of(expectedTimeZone).getRules().getOffset(ClockManager.getInstant());
 
     ZonedDateTime loanDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE, TEST_TIME_MORNING,
@@ -77,8 +83,6 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       LocalTime.MIDNIGHT, ZoneOffset.of(zone.getId()));
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_DAY_ALL_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
-
-    Clock.systemDefaultZone();
   }
 
   @Test
@@ -96,8 +100,6 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE.plusDays(1), LocalTime.MIDNIGHT, ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_DAY_ALL_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
-
-    Clock.systemDefaultZone();
   }
 
   @Test
@@ -116,8 +118,6 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, ROLLOVER_SCENARIO_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
-
-    Clock.systemDefaultZone();
   }
 
   @Test
@@ -136,8 +136,6 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       LocalTime.MIDNIGHT.minusMinutes(1), ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, ROLLOVER_SCENARIO_NEXT_DAY_CLOSED_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
-
-    Clock.systemDefaultZone();
   }
 
   /**
@@ -158,8 +156,6 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_DAY_ALL_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
-
-    Clock.systemDefaultZone();
   }
 
   /**
@@ -178,8 +174,6 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_SERVICE_POINT_ID, INTERVAL_HOURS, 25);
-
-    Clock.systemDefaultZone();
   }
 
   /**
@@ -198,8 +192,6 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_CURRENT_IS_OPEN, INTERVAL_MINUTES, 90);
-
-    Clock.systemDefaultZone();
   }
 
   /**
@@ -227,9 +219,9 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
 
     IndividualResource response = null;
 
-    ZoneId zone = loanDate.getZone().getRules().getOffset(Instant.now());
+    final ZoneId zone = loanDate.getZone().getRules().getOffset(ClockManager.getInstant());
 
-    Clock.fixed(loanDate.toInstant(), zone);
+    ClockManager.setClock(Clock.fixed(loanDate.toInstant(), zone));
 
     response = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()

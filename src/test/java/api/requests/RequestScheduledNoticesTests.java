@@ -3,13 +3,12 @@ package api.requests;
 import static api.support.builders.RequestBuilder.OPEN_NOT_YET_FILLED;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
 import static org.folio.circulation.domain.representations.RequestProperties.HOLD_SHELF_EXPIRATION_DATE;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import java.time.Clock;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -21,6 +20,7 @@ import java.util.stream.Collectors;
 
 import org.awaitility.Awaitility;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,12 +73,13 @@ public class RequestScheduledNoticesTests extends APITests {
 
     useDefaultRollingPoliciesAndOnlyAllowPageRequests(noticePolicyBuilder);
 
-    final var requestExpiration = java.time.LocalDate.now(getClockManager().getClock()).plusMonths(3);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
+    final LocalDate requestExpiration = now.plusMonths(3).toLocalDate();
 
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(now)
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -121,7 +122,7 @@ public class RequestScheduledNoticesTests extends APITests {
     requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(ClockManager.getZonedDateTime())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint));
 
@@ -150,7 +151,7 @@ public class RequestScheduledNoticesTests extends APITests {
     requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(ClockManager.getZonedDateTime())
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withNoRequestExpiration());
@@ -176,12 +177,13 @@ public class RequestScheduledNoticesTests extends APITests {
 
     useDefaultRollingPoliciesAndOnlyAllowPageRequests(noticePolicyBuilder);
 
-    final var requestExpiration = java.time.LocalDate.now(getClockManager().getClock()).plusMonths(3);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
+    final LocalDate requestExpiration = now.plusMonths(3).toLocalDate();
 
     IndividualResource request = requestsFixture.place(new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(now)
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration));
@@ -221,12 +223,13 @@ public class RequestScheduledNoticesTests extends APITests {
 
     useDefaultRollingPoliciesAndOnlyAllowPageRequests(noticePolicyBuilder);
 
-    final var requestExpiration = java.time.LocalDate.now(getClockManager().getClock()).plusMonths(3);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
+    final LocalDate requestExpiration = now.plusMonths(3).toLocalDate();
 
     RequestBuilder requestBuilder = new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(now)
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration);
@@ -290,12 +293,13 @@ public class RequestScheduledNoticesTests extends APITests {
 
     useDefaultRollingPoliciesAndOnlyAllowPageRequests(noticePolicyBuilder);
 
-    final var requestExpiration = java.time.LocalDate.now(getClockManager().getClock()).plusMonths(3);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
+    final LocalDate requestExpiration = now.plusMonths(3).toLocalDate();
 
     RequestBuilder requestBuilder = new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(now)
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration);
@@ -342,12 +346,13 @@ public class RequestScheduledNoticesTests extends APITests {
 
     useDefaultRollingPoliciesAndOnlyAllowPageRequests(noticePolicyBuilder);
 
-    final var requestExpiration = java.time.LocalDate.now(getClockManager().getClock()).plusMonths(3);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
+    final var requestExpiration = now.plusMonths(3).toLocalDate();
 
     RequestBuilder requestBuilder = new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(now)
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration);
@@ -412,12 +417,13 @@ public class RequestScheduledNoticesTests extends APITests {
 
     useDefaultRollingPoliciesAndOnlyAllowPageRequests(noticePolicyBuilder);
 
-    final var requestExpiration = java.time.LocalDate.now(getClockManager().getClock()).plusMonths(3);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
+    final LocalDate requestExpiration = now.plusMonths(3).toLocalDate();
 
     RequestBuilder requestBuilder = new RequestBuilder().page()
       .forItem(item)
       .withRequesterId(requester.getId())
-      .withRequestDate(ZonedDateTime.now(Clock.systemUTC()))
+      .withRequestDate(now)
       .withStatus(OPEN_NOT_YET_FILLED)
       .withPickupServicePoint(pickupServicePoint)
       .withRequestExpiration(requestExpiration);

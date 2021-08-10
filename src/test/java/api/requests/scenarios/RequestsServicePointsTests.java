@@ -1,15 +1,14 @@
 package api.requests.scenarios;
 
-import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.lang.invoke.MethodHandles;
-import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.ItemStatus;
 import org.folio.circulation.domain.MultipleRecords;
 import org.folio.circulation.domain.RequestStatus;
+import org.folio.circulation.support.ClockManager;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +39,7 @@ public class RequestsServicePointsTests extends APITests {
     assertThat(requestItem.getString("status"), is(ItemStatus.PAGED.getValue()));
     assertThat(firstRequest.getJson().getString("status"), is(RequestStatus.OPEN_NOT_YET_FILLED.getValue()));
 
-    checkInFixture.checkInByBarcode(smallAngryPlanet, ZonedDateTime.now(UTC), servicePoint.getId());
+    checkInFixture.checkInByBarcode(smallAngryPlanet, ClockManager.getZonedDateTime(), servicePoint.getId());
 
     MultipleRecords<JsonObject> requests = requestsFixture.getQueueFor(smallAngryPlanet);
     JsonObject pagedRequestRecord = requests.getRecords().iterator().next();
@@ -60,7 +59,7 @@ public class RequestsServicePointsTests extends APITests {
       usersFixture, requestsFixture, checkInFixture);
 
     //now, check in at intended service point.
-    checkInFixture.checkInByBarcode(inTransitItem, ZonedDateTime.now(UTC), requestPickupServicePoint.getId());
+    checkInFixture.checkInByBarcode(inTransitItem, ClockManager.getZonedDateTime(), requestPickupServicePoint.getId());
     MultipleRecords<JsonObject> requests = requestsFixture.getQueueFor(inTransitItem);
     JsonObject pagedRequestRecord = requests.getRecords().iterator().next();
 
@@ -88,7 +87,7 @@ public class RequestsServicePointsTests extends APITests {
     log.info("requestServicePoint" + requestPickupServicePoint.getId());
     log.info("pickupServicePoint" + pickupServicePoint.getId());
 
-    checkInFixture.checkInByBarcode(smallAngryPlanet, ZonedDateTime.now(UTC), pickupServicePoint.getId());
+    checkInFixture.checkInByBarcode(smallAngryPlanet, ClockManager.getZonedDateTime(), pickupServicePoint.getId());
 
     MultipleRecords<JsonObject> requests = requestsFixture.getQueueFor(smallAngryPlanet);
     JsonObject pagedRequestRecord = requests.getRecords().iterator().next();

@@ -11,8 +11,6 @@ import static api.support.matchers.ItemMatchers.isCheckedOut;
 import static api.support.matchers.ItemMatchers.isClaimedReturned;
 import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
-import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.now;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimePropertyByPath;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -22,7 +20,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.iterableWithSize;
 import static org.hamcrest.Matchers.not;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -131,7 +129,7 @@ public class ScheduledAgeToLostApiTest extends SpringApiTest {
         .forItem(overdueItem)
         .at(servicePointsFixture.cd1())
         .to(usersFixture.james())
-        .on(now(ZoneOffset.UTC)));
+        .on(ClockManager.getZonedDateTime()));
 
     scheduledAgeToLostClient.triggerJob();
 
@@ -147,9 +145,9 @@ public class ScheduledAgeToLostApiTest extends SpringApiTest {
     checkOutItem();
     scheduledAgeToLostClient.triggerJob();
 
-    mockClockManagerToReturnFixedDateTime(ZonedDateTime.now(UTC).plusMinutes(30));
+    clockToFixedDateTime(ClockManager.getZonedDateTime().plusMinutes(30));
     scheduledAgeToLostClient.triggerJob();
-    mockClockManagerToReturnDefaultDateTime();
+    clockToDefaultDateTime();
 
     assertThat(itemsClient.get(overdueItem).getJson(), isAgedToLost());
     assertThat(getLoanActions(), hasAgedToLostAction());
@@ -164,7 +162,7 @@ public class ScheduledAgeToLostApiTest extends SpringApiTest {
   }
 
   private ZonedDateTime getLoanOverdueDate() {
-    return now(UTC).minusWeeks(3);
+    return ClockManager.getZonedDateTime().minusWeeks(3);
   }
 
   private void checkOutItem() {

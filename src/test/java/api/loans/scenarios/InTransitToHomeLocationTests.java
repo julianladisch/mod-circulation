@@ -8,11 +8,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
@@ -528,7 +527,7 @@ public class InTransitToHomeLocationTests extends APITests {
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(nod, james);
 
     requestsFixture.placeHoldShelfRequest(
-      nod, jessica, ZonedDateTime.now(ZoneOffset.UTC), otherServicePoint.getId());
+      nod, jessica, ClockManager.getZonedDateTime(), otherServicePoint.getId());
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()

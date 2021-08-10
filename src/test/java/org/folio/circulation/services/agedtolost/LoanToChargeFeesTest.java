@@ -11,13 +11,12 @@ import org.junit.Test;
 
 import api.support.builders.LostItemFeePolicyBuilder;
 import io.vertx.core.json.JsonObject;
-import lombok.val;
 
 public class LoanToChargeFeesTest {
 
   @Test
   public void shouldCloseLoanIfNoFeesToChargeForImmediateBilling() {
-    val lostItemPolicy = new LostItemFeePolicyBuilder()
+    LostItemFeePolicyBuilder lostItemPolicy = new LostItemFeePolicyBuilder()
       .billPatronImmediatelyWhenAgedToLost()
       .withNoChargeAmountItem()
       .doNotChargeProcessingFeeWhenAgedToLost();
@@ -27,7 +26,7 @@ public class LoanToChargeFeesTest {
 
   @Test
   public void shouldCloseLoanIfNoFeesToChargeForDelayedBilling() {
-    val lostItemPolicy = new LostItemFeePolicyBuilder()
+    LostItemFeePolicyBuilder lostItemPolicy = new LostItemFeePolicyBuilder()
       .withPatronBilledAfterItemAgedToLost(Period.minutes(1));
 
     assertTrue(loanForLostItemPolicy(lostItemPolicy).shouldCloseLoan());
@@ -35,7 +34,7 @@ public class LoanToChargeFeesTest {
 
   @Test
   public void shouldNotCloseLoanIfProcessingFeeHasToBeCharged() {
-    val lostItemPolicy = new LostItemFeePolicyBuilder()
+    LostItemFeePolicyBuilder lostItemPolicy = new LostItemFeePolicyBuilder()
       .billPatronImmediatelyWhenAgedToLost()
       .chargeProcessingFeeWhenAgedToLost(10.00);
 
@@ -44,7 +43,7 @@ public class LoanToChargeFeesTest {
 
   @Test
   public void shouldNotCloseLoanIfActualCostFeeHasToBeCharged() {
-    val lostItemPolicy = new LostItemFeePolicyBuilder()
+    LostItemFeePolicyBuilder lostItemPolicy = new LostItemFeePolicyBuilder()
       .billPatronImmediatelyWhenAgedToLost()
       .withActualCost(11.00);
 
@@ -53,7 +52,7 @@ public class LoanToChargeFeesTest {
 
   @Test
   public void shouldNotCloseLoanIfSetCostFeeHasToBeCharged() {
-    val lostItemPolicy = new LostItemFeePolicyBuilder()
+    LostItemFeePolicyBuilder lostItemPolicy = new LostItemFeePolicyBuilder()
       .billPatronImmediatelyWhenAgedToLost()
       .withSetCost(11.00);
 

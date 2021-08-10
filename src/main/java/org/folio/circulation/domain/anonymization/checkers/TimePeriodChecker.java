@@ -17,8 +17,7 @@ abstract class TimePeriodChecker implements AnonymizationChecker {
 
   boolean checkTimePeriodPassed(ZonedDateTime startDate) {
     return startDate != null && isAfterMillis(
-      ClockManager.getClockManager().getZonedDateTime(),
-      period.plusDate(startDate));
+      ClockManager.getZonedDateTime(), period.plusDate(startDate));
   }
 
 }

@@ -10,7 +10,6 @@ import static api.support.builders.RequestBuilder.OPEN_NOT_YET_FILLED;
 import static api.support.matchers.ItemStatusCodeMatcher.hasItemStatus;
 import static api.support.matchers.ResponseStatusCodeMatcher.hasStatus;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
-import static java.time.ZoneOffset.UTC;
 import static org.folio.HttpStatus.HTTP_OK;
 import static org.folio.circulation.support.utils.DateTimeUtil.atEndOfTheDay;
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,19 +41,24 @@ import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 
 @RunWith(JUnitParamsRunner.class)
-public class HoldShelfExpirationDateTests extends APITests{
+public class HoldShelfExpirationDateTests extends APITests {
   private static Clock clock;
 
   @BeforeClass
   public static void setUpBeforeClass() {
-    clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
-    ClockManager.getClockManager().setClock(clock);
+    clock = Clock.fixed(ClockManager.getInstant(), ZoneOffset.UTC);
+    ClockManager.setClock(clock);
   }
 
   @Before
   public void setUp() {
     // reset the clock before each test (just in case)
-    ClockManager.getClockManager().setClock(clock);
+    ClockManager.setClock(clock);
+  }
+
+  @After
+  public void after() {
+    ClockManager.setDefaultClock();
   }
 
   @Test
@@ -80,7 +85,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), checkInServicePoint.getId());
+      ClockManager.getZonedDateTime(), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -94,7 +99,7 @@ public class HoldShelfExpirationDateTests extends APITests{
 
     assertThat("request hold shelf expiration date is " + amount + " " + interval.toString() + " in the future",
       storedRequest.getString("holdShelfExpirationDate"),
-      isEquivalentTo(interval.addTo(ZonedDateTime.now(clock), amount)));
+      isEquivalentTo(interval.addTo(ClockManager.getZonedDateTime(), amount)));
   }
 
   @Test
@@ -122,7 +127,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), checkInServicePoint.getId());
+      ClockManager.getZonedDateTime(), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -134,7 +139,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     assertThat("request status snapshot in storage is " + OPEN_AWAITING_PICKUP,
       storedRequest.getString("status"), is(OPEN_AWAITING_PICKUP));
 
-    ZonedDateTime expectedExpirationDate = atEndOfTheDay(interval.addTo(ZonedDateTime.now(clock), amount));
+    ZonedDateTime expectedExpirationDate = atEndOfTheDay(interval.addTo(ClockManager.getZonedDateTime(), amount));
 
     assertThat("request hold shelf expiration date is " + amount + " " + interval.toString() + " in the future",
       storedRequest.getString("holdShelfExpirationDate"),
@@ -160,7 +165,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), checkInServicePoint.getId());
+      ClockManager.getZonedDateTime(), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -170,7 +175,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     final JsonObject storedRequest = requestsClient.getById(request.getId()).getJson();
 
     ZonedDateTime expectedExpirationDate = atEndOfTheDay(
-      interval.addTo(Instant.now(clock).atZone(tenantTimeZone), amount))
+      interval.addTo(ClockManager.getInstant().atZone(tenantTimeZone), amount))
       .toInstant()
       .atZone(ZoneOffset.UTC);
 
@@ -198,7 +203,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), checkInServicePoint.getId());
+      ClockManager.getZonedDateTime(), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -208,7 +213,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     final JsonObject storedRequest = requestsClient.getById(request.getId()).getJson();
 
     ZonedDateTime expectedExpirationDate = interval
-      .addTo(Instant.now(clock).atZone(tenantTimeZone), amount)
+      .addTo(ClockManager.getInstant().atZone(tenantTimeZone), amount)
       .toInstant()
       .atZone(ZoneOffset.UTC);
 
@@ -229,7 +234,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), checkInServicePoint.getId());
+      ClockManager.getZonedDateTime(), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -246,7 +251,7 @@ public class HoldShelfExpirationDateTests extends APITests{
         storedRequest.getString("status"), is(OPEN_AWAITING_PICKUP));
 
     final ZonedDateTime expectedExpirationDate = atEndOfTheDay(
-      ChronoUnit.DAYS.addTo(ZonedDateTime.now(clock), 30));
+      ChronoUnit.DAYS.addTo(ClockManager.getZonedDateTime(), 30));
 
     assertThat("request hold shelf expiration date is 30 days in the future",
       storedRequest.getString("holdShelfExpirationDate"),
@@ -254,7 +259,7 @@ public class HoldShelfExpirationDateTests extends APITests{
 
     Clock not30Days = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC);
 
-    ClockManager.getClockManager().setClock(not30Days);
+    ClockManager.setClock(not30Days);
 
     checkInFixture.checkInByBarcode(
         new CheckInByBarcodeRequestBuilder()
@@ -271,7 +276,7 @@ public class HoldShelfExpirationDateTests extends APITests{
         storedSecondCheckInRequest.getString("status"), is(OPEN_AWAITING_PICKUP));
 
     final ZonedDateTime expectedExpirationDateAfterUpdate = atEndOfTheDay(
-      ChronoUnit.DAYS.addTo(ZonedDateTime.now(clock), 30));
+      ChronoUnit.DAYS.addTo(ClockManager.getZonedDateTime(), 30));
 
     assertThat("request hold shelf expiration date is 30 days in the future and has not been updated",
       storedRequest.getString("holdShelfExpirationDate"),
@@ -291,7 +296,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), checkInServicePoint.getId());
+      ClockManager.getZonedDateTime(), checkInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -309,7 +314,7 @@ public class HoldShelfExpirationDateTests extends APITests{
       storedRequest.getString("status"), is(OPEN_AWAITING_PICKUP));
 
     final ZonedDateTime expectedExpirationDate = atEndOfTheDay(
-      ChronoUnit.DAYS.addTo(ZonedDateTime.now(clock), 30));
+      ChronoUnit.DAYS.addTo(ClockManager.getZonedDateTime(), 30));
 
     assertThat("request hold shelf expiration date is 30 days in the future",
       storedRequest.getString("holdShelfExpirationDate"),
@@ -340,7 +345,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     final IndividualResource requestServicePoint = checkInServicePoint;
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), requestServicePoint.getId(), "Page");
+      ClockManager.getZonedDateTime(), requestServicePoint.getId(), "Page");
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()
@@ -357,7 +362,7 @@ public class HoldShelfExpirationDateTests extends APITests{
       storedRequest.getString("status"), is(OPEN_AWAITING_PICKUP));
 
     final ZonedDateTime expectedExpirationDate = atEndOfTheDay(
-      ChronoUnit.DAYS.addTo(ZonedDateTime.now(clock), 30));
+      ChronoUnit.DAYS.addTo(ClockManager.getZonedDateTime(), 30));
 
     assertThat("request hold shelf expiration date is 30 days in the future",
       storedRequest.getString("holdShelfExpirationDate"),
@@ -377,7 +382,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), alternateCheckInServicePoint.getId());
+      ClockManager.getZonedDateTime(), alternateCheckInServicePoint.getId());
 
     nod = itemsClient.get(nod);
 
@@ -415,7 +420,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     final IndividualResource requestServicePoint = alternateServicePoint;
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), requestServicePoint.getId(), "Page");
+      ClockManager.getZonedDateTime(), requestServicePoint.getId(), "Page");
 
     nod = itemsClient.get(nod);
 
@@ -455,7 +460,7 @@ public class HoldShelfExpirationDateTests extends APITests{
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-      ZonedDateTime.now(UTC), alternateCheckInServicePoint.getId());
+      ClockManager.getZonedDateTime(), alternateCheckInServicePoint.getId());
 
     checkInFixture.checkInByBarcode(
       new CheckInByBarcodeRequestBuilder()

@@ -51,7 +51,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Random;
@@ -60,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.junit.Test;
 
@@ -250,7 +250,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final ZonedDateTime loanDate = ZonedDateTime.now(UTC)
+    final ZonedDateTime loanDate = ClockManager.getZonedDateTime()
       .withMonth(3)
       .withDayOfMonth(18)
       .withHour(11)
@@ -354,7 +354,7 @@ public class CheckOutByBarcodeTests extends APITests {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
 
-    final ZonedDateTime requestDate = ZonedDateTime.now(Clock.systemUTC());
+    final ZonedDateTime requestDate = ClockManager.getZonedDateTime();
 
     final IndividualResource response = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -1309,7 +1309,7 @@ public class CheckOutByBarcodeTests extends APITests {
       new CheckOutByBarcodeRequestBuilder()
         .forItem(smallAngryPlanet)
         .to(steve)
-        .on(ZonedDateTime.now(UTC))
+        .on(ClockManager.getZonedDateTime())
         .at(UUID.randomUUID()));
 
     final JsonObject loan = response.getJson();
@@ -1354,7 +1354,7 @@ public class CheckOutByBarcodeTests extends APITests {
       new CheckOutByBarcodeRequestBuilder()
         .forItem(smallAngryPlanet)
         .to(steve)
-        .on(ZonedDateTime.now(UTC))
+        .on(ClockManager.getZonedDateTime())
         .at(UUID.randomUUID()));
 
     assertThat(response.getBody(), containsString(
@@ -1376,7 +1376,7 @@ public class CheckOutByBarcodeTests extends APITests {
       new CheckOutByBarcodeRequestBuilder()
         .forItem(smallAngryPlanet)
         .to(steve)
-        .on(ZonedDateTime.now(UTC))
+        .on(ClockManager.getZonedDateTime())
         .at(UUID.randomUUID()));
 
     usersFixture.remove(steve);

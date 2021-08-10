@@ -5,10 +5,9 @@ import static api.support.matchers.LoanMatchers.isOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
-import java.time.Clock;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.junit.Test;
 
@@ -94,7 +93,7 @@ public class AnonymizeLoansByUserIdAPITests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now(Clock.systemUTC()));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 

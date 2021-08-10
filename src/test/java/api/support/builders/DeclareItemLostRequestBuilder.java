@@ -1,11 +1,12 @@
 package api.support.builders;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
+
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
 
@@ -16,7 +17,7 @@ public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builde
   private final String servicePointId;
 
   public DeclareItemLostRequestBuilder() {
-    this(null, ZonedDateTime.now(ZoneOffset.UTC), null, null);
+    this(null, ClockManager.getZonedDateTime(), null, null);
   }
 
   public String getLoanId() {
@@ -76,6 +77,6 @@ public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builde
       .forLoanId(loanId)
       .withServicePointId(UUID.randomUUID())
       .withComment("Declaring item lost")
-      .on(ZonedDateTime.now(ZoneOffset.UTC));
+      .on(ClockManager.getZonedDateTime());
   }
 }

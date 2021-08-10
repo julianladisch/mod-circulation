@@ -14,7 +14,6 @@ import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,6 +23,7 @@ import org.folio.circulation.domain.RequestType;
 import org.folio.circulation.domain.policy.LoanPolicy;
 import org.folio.circulation.resources.context.RenewalContext;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 
 import io.vertx.core.json.JsonObject;
@@ -51,7 +51,7 @@ public class OverrideRenewalStrategy implements RenewalStrategy {
       .map(r -> r.getRequestType() == RequestType.RECALL)
       .orElse(false);
 
-    return completedFuture(overrideRenewal(loan, ZonedDateTime.now(ZoneOffset.UTC),
+    return completedFuture(overrideRenewal(loan, ClockManager.getZonedDateTime(),
       overrideDueDate, comment, hasRecallRequest))
       .thenApply(mapResult(context::withLoan));
   }

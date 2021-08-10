@@ -23,6 +23,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.folio.circulation.domain.policy.LoanPolicy;
 import org.folio.circulation.domain.policy.OverdueFinePolicy;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -44,52 +45,52 @@ public class OverduePeriodCalculatorServiceTest {
 
   @Test
   public void preconditionsCheckLoanHasNoDueDate() {
-    ZonedDateTime systemTime = ZonedDateTime.now(UTC);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     Loan loan = new LoanBuilder().asDomainObject();
 
-    assertFalse(calculator.preconditionsAreMet(loan, systemTime, true));
+    assertFalse(calculator.preconditionsAreMet(loan, now, true));
   }
 
   @Test
   public void preconditionsCheckLoanDueDateIsInFuture() {
-    ZonedDateTime systemTime = ZonedDateTime.now(UTC);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     Loan loan = new LoanBuilder()
-      .withDueDate(systemTime.plusDays(1))
+      .withDueDate(now.plusDays(1))
       .asDomainObject();
 
-    assertFalse(calculator.preconditionsAreMet(loan, systemTime, true));
+    assertFalse(calculator.preconditionsAreMet(loan, now, true));
   }
 
   @Test
   public void preconditionsCheckCountClosedIsNull() {
-    ZonedDateTime systemTime = ZonedDateTime.now(UTC);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     Loan loan = new LoanBuilder()
-      .withDueDate(systemTime.minusDays(1))
+      .withDueDate(now.minusDays(1))
       .asDomainObject();
 
-    assertFalse(calculator.preconditionsAreMet(loan, systemTime, null));
+    assertFalse(calculator.preconditionsAreMet(loan, now, null));
   }
 
   @Test
   public void allPreconditionsAreMet() {
-    ZonedDateTime systemTime = ZonedDateTime.now(UTC);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
     Loan loan = new LoanBuilder()
-      .withDueDate(systemTime.minusDays(1))
+      .withDueDate(now.minusDays(1))
       .asDomainObject();
 
-    assertTrue(calculator.preconditionsAreMet(loan, systemTime, true));
+    assertTrue(calculator.preconditionsAreMet(loan, now, true));
   }
 
   @Test
   public void countOverdueMinutesWithClosedDays() throws ExecutionException, InterruptedException {
     int expectedResult = MINUTES_PER_WEEK + MINUTES_PER_DAY + MINUTES_PER_HOUR + 1;
-    ZonedDateTime systemTime = ZonedDateTime.now(UTC);
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
 
     Loan loan = new LoanBuilder()
-      .withDueDate(systemTime.minusMinutes(expectedResult))
+      .withDueDate(now.minusMinutes(expectedResult))
       .asDomainObject();
 
-    int actualResult = calculator.getOverdueMinutes(loan, systemTime, true).get().value();
+    int actualResult = calculator.getOverdueMinutes(loan, now, true).get().value();
 
     assertEquals(expectedResult, actualResult);
   }
@@ -97,7 +98,6 @@ public class OverduePeriodCalculatorServiceTest {
   @Test
   @Parameters
   public void getOpeningDayDurationTest(List<OpeningDay> openingDays, int expectedResult) {
-
     LocalDateTime dueDate = LocalDateTime.parse("2020-04-08T14:00:00.000");
     LocalDateTime returnDate = LocalDateTime.parse("2020-04-10T15:00:00.000");
 
@@ -124,7 +124,7 @@ public class OverduePeriodCalculatorServiceTest {
       createOpeningDay(true, LocalDate.parse("2020-04-09"), ZoneOffset.of("Europe/London")),
       createOpeningDay(false, LocalDate.parse("2020-04-10"), ZoneOffset.of("Europe/London")));
 
-    LocalTime now = LocalTime.now(UTC);
+    LocalTime now = ClockManager.getLocalTime();
 
     List<OpeningDay> invalid = Arrays.asList(
       OpeningDay.createOpeningDay(

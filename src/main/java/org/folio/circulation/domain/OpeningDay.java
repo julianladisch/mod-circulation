@@ -7,7 +7,6 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getLocalDat
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
@@ -15,6 +14,8 @@ import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
+
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -44,7 +45,7 @@ public class OpeningDay {
     return new OpeningDay(fillOpeningDay(openingDayJson),
       getLocalDateProperty(openingDayJson, DATE_KEY),
       getBooleanProperty(openingDayJson, ALL_DAY_KEY),
-      getBooleanProperty(openingDayJson, OPEN_KEY), ZonedDateTime.now(Clock.systemUTC()));
+      getBooleanProperty(openingDayJson, OPEN_KEY), ClockManager.getZonedDateTime());
   }
 
   public static OpeningDay fromOpeningPeriodJson(JsonObject openingPeriod, ZoneOffset zone) {
@@ -59,7 +60,7 @@ public class OpeningDay {
   public static OpeningDay createOpeningDay(List<OpeningHour> openingHour, LocalDate date,
     boolean allDay, boolean open) {
 
-    return new OpeningDay(openingHour, date, allDay, open, ZonedDateTime.now(Clock.systemUTC()));
+    return new OpeningDay(openingHour, date, allDay, open, ClockManager.getZonedDateTime());
   }
 
   public static OpeningDay createOpeningDay(List<OpeningHour> openingHour,
@@ -106,7 +107,7 @@ public class OpeningDay {
   }
 
   public JsonObject toJson() {
-    final var json = new JsonObject();
+    final JsonObject json = new JsonObject();
 
     write(json, DATE_KEY, formatDateTime(
       ZonedDateTime.of(date, LocalTime.MIDNIGHT, ZoneOffset.UTC)));

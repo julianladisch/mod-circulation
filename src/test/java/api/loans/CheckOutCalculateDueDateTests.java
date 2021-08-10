@@ -51,6 +51,7 @@ import org.folio.circulation.domain.OpeningDay;
 import org.folio.circulation.domain.OpeningHour;
 import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.junit.Test;
 
@@ -881,7 +882,7 @@ public class CheckOutCalculateDueDateTests extends APITests {
   private ZonedDateTime currentYearDateTime(int month, int day, int hour, int minute,
     int second, ZoneId zone) {
 
-    return ZonedDateTime.now(zone)
+    return ClockManager.getZonedDateTime()
       .withMonth(month)
       .withDayOfMonth(day)
       .withHour(hour)

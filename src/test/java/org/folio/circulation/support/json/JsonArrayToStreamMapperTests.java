@@ -10,21 +10,20 @@ import static org.hamcrest.Matchers.emptyArray;
 import org.junit.Test;
 
 import io.vertx.core.json.JsonArray;
-import lombok.val;
 
 public class JsonArrayToStreamMapperTests {
   @Test
   public void shouldMapNullToEmptyStream() {
-    val mapper = new JsonArrayToStreamMapper<>(identity());
+    JsonArrayToStreamMapper<?> mapper = new JsonArrayToStreamMapper<>(identity());
 
     assertThat(mapper.toStream(null).toArray(), emptyArray());
   }
 
   @Test
   public void shouldSkipNullElements() {
-    val mapper = new JsonArrayToStreamMapper<>(identity());
+    JsonArrayToStreamMapper<?> mapper = new JsonArrayToStreamMapper<>(identity());
 
-    val array = new JsonArray(toList(of("Foo", "Bar", null, "Ipsum")));
+    JsonArray array = new JsonArray(toList(of("Foo", "Bar", null, "Ipsum")));
 
     assertThat(toList(mapper.toStream(array)), contains("Foo", "Bar", "Ipsum"));
   }

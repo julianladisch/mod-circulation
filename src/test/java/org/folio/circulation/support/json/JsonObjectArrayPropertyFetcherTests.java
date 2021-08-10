@@ -18,12 +18,11 @@ import org.junit.Test;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import lombok.val;
 
 public class JsonObjectArrayPropertyFetcherTests {
   @Test
   public void StreamShouldContainSameContentsAsArray() {
-    val json = objectWithJsonArrayOf(createObjectWithName("Foo"),
+    JsonObject json = objectWithJsonArrayOf(createObjectWithName("Foo"),
       createObjectWithName("Bar"), createObjectWithName("Lorem"), createObjectWithName("Ipsum"));
 
     assertThat(toList(toStream(json, "array")), contains(objectWithName("Foo"),
@@ -32,17 +31,17 @@ public class JsonObjectArrayPropertyFetcherTests {
 
   @Test
   public void shouldMapEmptyArrayToEmptyStream() {
-    val json = objectWithJsonArrayOf();
+    JsonObject json = objectWithJsonArrayOf();
 
     assertThat(toList(toStream(json, "array")), is(empty()));
   }
 
   @Test
   public void shouldSkipNonObjectElements() {
-    val array = new JsonArray(toList(of(createObjectWithName("Foo"), "Bar",
+    JsonArray array = new JsonArray(toList(of(createObjectWithName("Foo"), "Bar",
       createObjectWithName("Lorem"), createObjectWithName("Ipsum"))));
 
-    val json = new JsonObject().put("array", array);
+    JsonObject json = new JsonObject().put("array", array);
 
     assertThat(toList(toStream(json, "array")),
       contains(objectWithName("Foo"), objectWithName("Lorem"), objectWithName("Ipsum")));
@@ -50,7 +49,7 @@ public class JsonObjectArrayPropertyFetcherTests {
 
   @Test
   public void ListShouldContainMappedContents() {
-    val json = objectWithJsonArrayOf(createObjectWithName("Foo"),
+    JsonObject json = objectWithJsonArrayOf(createObjectWithName("Foo"),
       createObjectWithName("Bar"), createObjectWithName("Lorem"), createObjectWithName("Ipsum"));
 
     List<String> list = mapToList(json, "array",
@@ -64,7 +63,7 @@ public class JsonObjectArrayPropertyFetcherTests {
   }
 
   private JsonObject objectWithJsonArrayOf(JsonObject... objects) {
-    val array = jsonArrayOf(objects);
+    JsonArray array = jsonArrayOf(objects);
 
     return new JsonObject().put("array", array);
   }

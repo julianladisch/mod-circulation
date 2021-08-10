@@ -5,8 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.time.Clock;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -16,6 +14,7 @@ import org.folio.circulation.domain.Item;
 import org.folio.circulation.domain.RequestQueue;
 import org.folio.circulation.domain.representations.CheckInByBarcodeRequest;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.CollectionResourceClient;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.results.Result;
@@ -64,7 +63,7 @@ public class LogCheckInServiceTest {
     JsonObject requestRepresentation = new JsonObject()
       .put("servicePointId", UUID.randomUUID().toString())
       .put("itemBarcode", "barcode")
-      .put("checkInDate", ZonedDateTime.now(Clock.systemUTC()).toString());
+      .put("checkInDate", ClockManager.getZonedDateTime().toString());
 
     JsonObject itemRepresentation = new JsonObject()
       .put("id", UUID.randomUUID().toString())

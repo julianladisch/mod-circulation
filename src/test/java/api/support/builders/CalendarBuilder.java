@@ -2,11 +2,12 @@ package api.support.builders;
 
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
-import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collector;
+
+import org.folio.circulation.support.ClockManager;
 
 import api.support.OpeningDayPeriod;
 import io.vertx.core.json.JsonArray;
@@ -14,11 +15,11 @@ import io.vertx.core.json.JsonObject;
 
 public class CalendarBuilder extends JsonBuilder implements Builder {
 
+  private static final ZonedDateTime NOW = ClockManager.getZonedDateTime();
+
   private static final String CALENDAR_NAME = "Calendar Name";
-  private static final String START_DATE = formatDateTime(
-    ZonedDateTime.now(Clock.systemUTC()).minusMonths(1));
-  private static final String END_DATE = formatDateTime(
-    ZonedDateTime.now(Clock.systemUTC()).plusMonths(6));
+  private static final String START_DATE = formatDateTime(NOW.minusMonths(1));
+  private static final String END_DATE = formatDateTime(NOW.plusMonths(6));
 
   private static final String ID_KEY = "id";
   private static final String SERVICE_POINT_ID_KEY = "servicePointId";

@@ -4,8 +4,6 @@ import static org.folio.circulation.domain.notice.schedule.TriggeringEvent.AGED_
 import static org.folio.circulation.domain.notice.schedule.TriggeringEvent.DUE_DATE;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -15,6 +13,7 @@ import org.folio.circulation.domain.notice.schedule.ScheduledNotice;
 import org.folio.circulation.infrastructure.storage.ConfigurationRepository;
 import org.folio.circulation.infrastructure.storage.notices.ScheduledNoticesRepository;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.CqlSortBy;
 import org.folio.circulation.support.http.client.PageLimit;
 import org.folio.circulation.support.results.Result;
@@ -33,7 +32,7 @@ public class LoanScheduledNoticeProcessingResource extends ScheduledNoticeProces
     ScheduledNoticesRepository scheduledNoticesRepository, PageLimit pageLimit) {
 
     return scheduledNoticesRepository.findNotices(
-      ZonedDateTime.now(ZoneOffset.UTC), true,
+      ClockManager.getZonedDateTime(), true,
       List.of(DUE_DATE, AGED_TO_LOST),
       CqlSortBy.ascending("nextRunTime"), pageLimit);
   }
@@ -43,7 +42,7 @@ public class LoanScheduledNoticeProcessingResource extends ScheduledNoticeProces
     Clients clients, MultipleRecords<ScheduledNotice> noticesResult) {
 
     final LoanScheduledNoticeHandler loanNoticeHandler =
-      LoanScheduledNoticeHandler.using(clients, ZonedDateTime.now(ZoneOffset.UTC));
+      LoanScheduledNoticeHandler.using(clients, ClockManager.getZonedDateTime());
 
     return loanNoticeHandler.handleNotices(noticesResult.getRecords())
       .thenApply(mapResult(v -> noticesResult));

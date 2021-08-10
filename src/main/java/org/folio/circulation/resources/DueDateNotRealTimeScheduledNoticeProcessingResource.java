@@ -57,7 +57,7 @@ public class DueDateNotRealTimeScheduledNoticeProcessingResource extends Schedul
   }
 
   private ZonedDateTime startOfTodayInTimeZone(ZoneOffset zone) {
-    return ClockManager.getClockManager().getZonedDateTime().toLocalDate()
+    return ClockManager.getZonedDateTime().toLocalDate()
       .atStartOfDay(zone);
   }
 
@@ -75,7 +75,7 @@ public class DueDateNotRealTimeScheduledNoticeProcessingResource extends Schedul
     Clients clients, MultipleRecords<ScheduledNotice> notices) {
 
     final DueDateNotRealTimeScheduledNoticeHandler dueDateNoticeHandler =
-      DueDateNotRealTimeScheduledNoticeHandler.using(clients, ZonedDateTime.now(ZoneOffset.UTC));
+      DueDateNotRealTimeScheduledNoticeHandler.using(clients, ClockManager.getZonedDateTime());
 
     Map<ScheduledNoticeGroupDefinition, List<ScheduledNotice>> orderedGroups =
       notices.getRecords().stream().collect(Collectors.groupingBy(

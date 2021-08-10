@@ -3,14 +3,13 @@ package org.folio.circulation.domain;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.folio.circulation.support.results.Result.succeeded;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import org.folio.circulation.domain.policy.LoanPolicy;
 import org.folio.circulation.domain.policy.library.ClosedLibraryStrategyService;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 
 public class LoanService {
@@ -19,7 +18,7 @@ public class LoanService {
 
   public LoanService(Clients clients) {
     closedLibraryStrategyService = ClosedLibraryStrategyService.using(clients,
-      ZonedDateTime.now(ZoneOffset.UTC), false);
+      ClockManager.getZonedDateTime(), false);
   }
 
   public CompletableFuture<Result<LoanAndRelatedRecords>> truncateLoanWhenItemRecalled(

@@ -9,7 +9,6 @@ import static java.time.temporal.ChronoField.NANO_OF_SECOND;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,6 +24,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import org.folio.circulation.support.ClockManager;
 
 public class DateTimeUtil {
   private DateTimeUtil() {
@@ -67,7 +68,6 @@ public class DateTimeUtil {
       .append(TIME_SECONDS)
       .optionalStart()
       .appendFraction(MILLI_OF_SECOND, 3, 3, true)
-      //.appendFraction(NANO_OF_SECOND, 0, 9, true)
       .parseLenient()
       .appendOffset("+HHMM", "Z")
       .parseStrict()
@@ -306,8 +306,9 @@ public class DateTimeUtil {
    */
   public static ZoneId normalizeZone(ZoneId zone) {
     if (zone == null) {
-      return ZoneId.systemDefault();
+      return ClockManager.getZoneId();
     }
+
     return zone;
   }
 
@@ -323,8 +324,9 @@ public class DateTimeUtil {
    */
   public static ZonedDateTime normalizeDateTime(ZonedDateTime dateTime) {
     if (dateTime == null) {
-      return ZonedDateTime.now(Clock.systemUTC());
+      return ClockManager.getZonedDateTime();
     }
+
     return dateTime;
   }
 
@@ -339,8 +341,9 @@ public class DateTimeUtil {
    */
   public static OffsetDateTime normalizeDateTime(OffsetDateTime dateTime) {
     if (dateTime == null) {
-      return OffsetDateTime.now(Clock.systemUTC());
+      return ClockManager.getOffsetDateTime();
     }
+
     return dateTime;
   }
 
@@ -355,8 +358,9 @@ public class DateTimeUtil {
    */
   public static LocalDateTime normalizeDateTime(LocalDateTime dateTime) {
     if (dateTime == null) {
-      return LocalDateTime.now(Clock.systemUTC());
+      return ClockManager.getLocalDateTime();
     }
+
     return dateTime;
   }
 
@@ -371,8 +375,9 @@ public class DateTimeUtil {
    */
   public static LocalDate normalizeDate(LocalDate date) {
     if (date == null) {
-      return LocalDate.now(Clock.systemUTC());
+      return ClockManager.getLocalDate();
     }
+
     return date;
   }
 
@@ -389,6 +394,7 @@ public class DateTimeUtil {
     if (time == null) {
       return LocalTime.now(Clock.systemUTC());
     }
+
     return time;
   }
 
@@ -444,19 +450,6 @@ public class DateTimeUtil {
   }
 
   /**
-   * Format the dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
-   *
-   * This will normalize the dateTime.
-   *
-   * @param dateTime The dateTime to convert to a string.
-   * @return The converted dateTime string.
-   */
-  public static String formatDateTimeNanoseconds(ZonedDateTime dateTime) {
-    return normalizeDateTime(dateTime).withZoneSameInstant(UTC)
-      .format(DATE_TIME_NANOSECONDS);
-  }
-
-  /**
    * Format the offset dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
    *
    * This will normalize the offset dateTime.
@@ -504,11 +497,13 @@ public class DateTimeUtil {
   }
 
   public static ZoneOffset toZoneOffset(ZoneId zoneId) {
-    return ZoneOffset.of(zoneId.getRules().getOffset(Instant.now()).getId());
+    return ZoneOffset.of(zoneId.getRules()
+      .getOffset(ClockManager.getInstant()).getId());
   }
 
   public static ZoneOffset toZoneOffset(String timezone) {
-    return ZoneOffset.of(ZoneId.of(timezone).getRules().getOffset(Instant.now()).getId());
+    return ZoneOffset.of(ZoneId.of(timezone).getRules()
+      .getOffset(ClockManager.getInstant()).getId());
   }
 
   public static ZonedDateTime toStartOfDayDateTime(LocalDate localDate) {

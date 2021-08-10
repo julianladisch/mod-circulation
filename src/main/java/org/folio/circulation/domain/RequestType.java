@@ -38,7 +38,7 @@ public enum RequestType {
     return equalsIgnoreCase(getValue(), value);
   }
 
-    boolean isPage() {
-      return equals(PAGE);
-    }
+  boolean isPage() {
+    return equals(PAGE);
+  }
 }

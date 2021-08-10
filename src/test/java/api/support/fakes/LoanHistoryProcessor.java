@@ -4,10 +4,11 @@ import static api.support.APITestContext.getTenantId;
 import static api.support.fakes.Storage.getStorage;
 import static api.support.http.InterfaceUrls.loanHistoryStorageUrl;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
-import static org.folio.circulation.support.ClockManager.getClockManager;
 
 import java.util.Map;
 import java.util.UUID;
+
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
 
@@ -25,7 +26,7 @@ public final class LoanHistoryProcessor {
     final JsonObject historyRecord = new JsonObject()
       .put("id", id)
       .put("operation", operation)
-      .put("createdDate", formatDateTime(getClockManager().getZonedDateTime()))
+      .put("createdDate", formatDateTime(ClockManager.getZonedDateTime()))
       .put("loan", newLoan);
 
     getLoanHistoryStorage().put(id, historyRecord);

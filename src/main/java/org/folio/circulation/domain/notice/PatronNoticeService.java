@@ -10,8 +10,6 @@ import static org.folio.circulation.support.logging.PatronNoticeLogHelper.logRes
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
-import java.time.Clock;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +28,7 @@ import org.folio.circulation.infrastructure.storage.notices.PatronNoticePolicyRe
 import org.folio.circulation.rules.AppliedRuleConditions;
 import org.folio.circulation.services.EventPublisher;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.CollectionResourceClient;
 import org.folio.circulation.support.http.client.ResponseInterpreter;
 import org.folio.circulation.support.results.Result;
@@ -175,7 +174,7 @@ public class PatronNoticeService {
   }
 
   private CompletableFuture<Result<Void>> publishAuditLogEvent(NoticeLogContext noticeLogContext) {
-    return eventPublisher.publishLogRecord(noticeLogContext.withDate(ZonedDateTime.now(Clock.systemUTC())).asJson(), NOTICE);
+    return eventPublisher.publishLogRecord(noticeLogContext.withDate(ClockManager.getZonedDateTime()).asJson(), NOTICE);
   }
 
   private static class NoticeEventGroupDefinition {

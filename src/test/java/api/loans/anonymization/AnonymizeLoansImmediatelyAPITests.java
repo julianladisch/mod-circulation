@@ -6,10 +6,9 @@ import static java.time.temporal.ChronoUnit.MILLIS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import org.folio.circulation.support.ClockManager;
 import org.junit.Test;
 
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
@@ -70,7 +69,7 @@ public class AnonymizeLoansImmediatelyAPITests extends LoanAnonymizationTests {
     UUID loanID = loanResource.getId();
 
     createClosedAccountWithFeeFines(loanResource,
-      ZonedDateTime.now(ZoneOffset.UTC));
+      ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -134,7 +133,7 @@ public class AnonymizeLoansImmediatelyAPITests extends LoanAnonymizationTests {
     UUID loanID = loanResource.getId();
 
     createClosedAccountWithFeeFines(loanResource,
-      ZonedDateTime.now(ZoneOffset.UTC));
+      ClockManager.getZonedDateTime());
 
     anonymizeLoansInTenant();
 
@@ -163,7 +162,7 @@ public class AnonymizeLoansImmediatelyAPITests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now(ZoneOffset.UTC));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
@@ -195,12 +194,12 @@ public class AnonymizeLoansImmediatelyAPITests extends LoanAnonymizationTests {
       .at(servicePoint.getId()));
     UUID loanID = loanResource.getId();
 
-    createClosedAccountWithFeeFines(loanResource, ZonedDateTime.now(ZoneOffset.UTC));
+    createClosedAccountWithFeeFines(loanResource, ClockManager.getZonedDateTime());
 
     checkInFixture.checkInByBarcode(item1);
 
-    mockClockManagerToReturnFixedDateTime(
-      ZonedDateTime.now(ZoneOffset.UTC).plus(ONE_MINUTE_AND_ONE, MILLIS));
+    clockToFixedDateTime(
+      ClockManager.getZonedDateTime().plus(ONE_MINUTE_AND_ONE, MILLIS));
 
     anonymizeLoansInTenant();
 

@@ -9,12 +9,13 @@ import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectPr
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.stream.Stream;
+
+import org.folio.circulation.support.ClockManager;
 
 import io.vertx.core.json.JsonObject;
-import lombok.val;
 
 public class User {
   private static final String PERSONAL_PROPERTY_NAME = "personal";
@@ -50,13 +51,13 @@ public class User {
   }
 
   private boolean isExpired() {
-    val expirationDate = getDateTimeProperty(representation, "expirationDate", null);
+    ZonedDateTime expirationDate = getDateTimeProperty(representation, "expirationDate", null);
 
     if (expirationDate == null) {
       return false;
     }
     else {
-      return isBeforeMillis(expirationDate, ZonedDateTime.now(ZoneOffset.UTC));
+      return isBeforeMillis(expirationDate, ClockManager.getZonedDateTime());
     }
   }
 
@@ -95,7 +96,7 @@ public class User {
   public JsonObject getAddressByType(String type) {
     JsonObject personal = getObjectProperty(representation, PERSONAL_PROPERTY_NAME);
 
-    val addresses = toStream(personal, "addresses");
+    Stream<JsonObject> addresses = toStream(personal, "addresses");
 
     return addresses
       .filter(Objects::nonNull)

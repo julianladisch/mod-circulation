@@ -12,10 +12,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.CqlSortBy;
 import org.folio.circulation.support.CqlSortClause;
 import org.folio.circulation.support.ServerErrorFailure;
@@ -91,7 +91,7 @@ public class CqlQueryTests {
 
   @Test
   public void canApplyLessThenOperator() {
-    ZonedDateTime dateTime = ZonedDateTime.now(ZoneOffset.UTC);
+    ZonedDateTime dateTime = ClockManager.getZonedDateTime();
     Result<CqlQuery> query = lessThan("nextRunTime", dateTime);
 
     assertThat(query.value().asText(), is(format("nextRunTime<\"%s\"", dateTime)));
@@ -99,7 +99,7 @@ public class CqlQueryTests {
 
   @Test
   public void canApplyGreaterThenOperator() {
-    ZonedDateTime dateTime = ZonedDateTime.now(ZoneOffset.UTC);
+    ZonedDateTime dateTime = ClockManager.getZonedDateTime();
 
     Result<CqlQuery> query = greaterThan("lastTime", dateTime);
 
@@ -108,7 +108,7 @@ public class CqlQueryTests {
 
   @Test
   public void canApplyNotEqualOperator() {
-    ZonedDateTime dateTime = ZonedDateTime.now(ZoneOffset.UTC);
+    ZonedDateTime dateTime = ClockManager.getZonedDateTime();
     Result<CqlQuery> query = notEqual("lastTime", dateTime);
 
     assertThat(query.value().asText(), is(format("lastTime<>\"%s\"", dateTime)));

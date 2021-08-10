@@ -1,7 +1,7 @@
 package org.folio.circulation.domain.validation;
 
-import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
+import static org.folio.circulation.support.results.Result.succeeded;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,15 +10,14 @@ import static org.junit.Assert.assertTrue;
 import org.folio.circulation.domain.Item;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.LoanAndRelatedRecords;
-import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.ValidationErrorFailure;
+import org.folio.circulation.support.results.Result;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import io.vertx.core.json.JsonObject;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import lombok.val;
 
 @RunWith(JUnitParamsRunner.class)
 public class ItemStatusValidatorTest {
@@ -32,9 +31,9 @@ public class ItemStatusValidatorTest {
     "Unknown"
   })
   public void canCheckOutItemInAllowedStatus(String itemStatus) {
-    val validator = new ItemStatusValidator(this::validationError);
+    ItemStatusValidator validator = new ItemStatusValidator(this::validationError);
 
-    val validationResult  = validator
+    Result<LoanAndRelatedRecords> validationResult  = validator
       .refuseWhenItemIsNotAllowedForCheckOut(loanWithItemInStatus(itemStatus));
 
     assertTrue(validationResult.succeeded());
@@ -49,9 +48,9 @@ public class ItemStatusValidatorTest {
     "Intellectual item"
   })
   public void cannotCheckOutItemInDisallowedStatus(String itemStatus) {
-    val validator = new ItemStatusValidator(this::validationError);
+    ItemStatusValidator validator = new ItemStatusValidator(this::validationError);
 
-    val validationResult  = validator
+    Result<LoanAndRelatedRecords> validationResult  = validator
       .refuseWhenItemIsNotAllowedForCheckOut(loanWithItemInStatus(itemStatus));
 
     assertTrue(validationResult.failed());
@@ -65,9 +64,9 @@ public class ItemStatusValidatorTest {
     "Aged to lost"
   })
   public void cannotChangeDueDateForItemInDisallowedStatus(String itemStatus) {
-    val validator = new ItemStatusValidator(this::validationError);
+    ItemStatusValidator validator = new ItemStatusValidator(this::validationError);
 
-    val validationResult  = validator
+    Result<LoanAndRelatedRecords> validationResult  = validator
       .refuseWhenItemStatusDoesNotAllowDueDateChange(loanWithItemInStatus(itemStatus));
 
     assertTrue(validationResult.failed());
@@ -75,12 +74,12 @@ public class ItemStatusValidatorTest {
   }
 
   private Result<LoanAndRelatedRecords> loanWithItemInStatus(String itemStatus) {
-    val itemRepresentation = new JsonObject()
+    JsonObject itemRepresentation = new JsonObject()
       .put("status", new JsonObject().put("name", itemStatus));
-    val item = Item.from(itemRepresentation);
+    Item item = Item.from(itemRepresentation);
 
-    val loan = Loan.from(new JsonObject()).withItem(item);
-    val context = new LoanAndRelatedRecords(loan);
+    Loan loan = Loan.from(new JsonObject()).withItem(item);
+    LoanAndRelatedRecords context = new LoanAndRelatedRecords(loan);
 
     return succeeded(context.withItem(item));
   }

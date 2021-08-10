@@ -18,6 +18,7 @@ import org.folio.circulation.infrastructure.storage.requests.RequestQueueReposit
 import org.folio.circulation.infrastructure.storage.requests.RequestRepository;
 import org.folio.circulation.resources.context.ReorderRequestContext;
 import org.folio.circulation.support.Clients;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.utils.DateTimeUtil;
 import org.slf4j.Logger;
@@ -286,7 +287,7 @@ public class UpdateRequestQueue {
     TimePeriod holdShelfExpiryPeriod, ZoneOffset tenantTimeZone) {
 
     ZonedDateTime holdShelfExpirationDate = holdShelfExpiryPeriod.getInterval()
-      .addTo(ZonedDateTime.now(ZoneOffset.UTC), holdShelfExpiryPeriod.getDuration());
+      .addTo(ClockManager.getZonedDateTime(), holdShelfExpiryPeriod.getDuration());
 
     if (holdShelfExpiryPeriod.isLongTermPeriod()) {
       holdShelfExpirationDate = DateTimeUtil.atEndOfTheDay(holdShelfExpirationDate);

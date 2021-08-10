@@ -3,9 +3,7 @@ package org.folio.circulation.domain;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import java.time.Clock;
-import java.time.ZonedDateTime;
-
+import org.folio.circulation.support.ClockManager;
 import org.junit.Test;
 
 import api.support.builders.UserBuilder;
@@ -35,7 +33,7 @@ public class ActiveUserTests {
   public void userIsInactiveWhenExpiredInThePast() {
     final User activeUser = new User(new UserBuilder()
       .active()
-      .expires(ZonedDateTime.now(Clock.systemUTC()).minusDays(10))
+      .expires(ClockManager.getZonedDateTime().minusDays(10))
       .create());
 
     assertThat(activeUser.isActive(), is(false));
@@ -46,7 +44,7 @@ public class ActiveUserTests {
   public void userIsActiveWhenExpiresInTheFuture() {
     final User activeUser = new User(new UserBuilder()
       .active()
-      .expires(ZonedDateTime.now(Clock.systemUTC()).plusDays(30))
+      .expires(ClockManager.getZonedDateTime().plusDays(30))
       .create());
 
     assertThat(activeUser.isActive(), is(true));

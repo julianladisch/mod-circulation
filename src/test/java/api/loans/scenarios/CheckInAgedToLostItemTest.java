@@ -25,7 +25,7 @@ public class CheckInAgedToLostItemTest extends RefundAgedToLostFeesTestBase {
   protected void performActionThatRequiresRefund(AgeToLostFixture.AgeToLostResult result,
     ZonedDateTime actionDate) {
 
-    mockClockManagerToReturnFixedDateTime(actionDate);
+    clockToFixedDateTime(actionDate);
 
     final JsonObject loan = checkInFixture.checkInByBarcode(new CheckInByBarcodeRequestBuilder()
       .forItem(result.getItem())

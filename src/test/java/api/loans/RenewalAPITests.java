@@ -46,7 +46,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -64,13 +63,12 @@ import org.folio.circulation.domain.override.BlockOverrides;
 import org.folio.circulation.domain.override.PatronBlockOverride;
 import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.Is;
 import org.junit.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 
 import api.support.APITests;
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
@@ -128,7 +126,7 @@ public abstract class RenewalAPITests extends APITests {
 
     //TODO: Renewal based upon system date,
     // needs to be approximated, at least until we introduce a calendar and clock
-    ZonedDateTime approximateRenewalDate = ZonedDateTime.now(UTC);
+    final ZonedDateTime approximateRenewalDate = ClockManager.getZonedDateTime();
 
     final JsonObject renewedLoan = renew(smallAngryPlanet, jessica).getJson();
 
@@ -394,7 +392,7 @@ public abstract class RenewalAPITests extends APITests {
   @Test
   public void canCheckOutUsingFixedDueDateLoanPolicy() {
     //TODO: Need to be able to inject system date here
-    final ZonedDateTime renewalDate = ZonedDateTime.now(UTC);
+    final ZonedDateTime renewalDate = ClockManager.getZonedDateTime();
     //e.g. Clock.freeze(renewalDate)
 
     FixedDueDateSchedulesBuilder fixedDueDateSchedules = new FixedDueDateSchedulesBuilder()
@@ -504,7 +502,7 @@ public abstract class RenewalAPITests extends APITests {
 
     //TODO: Renewal based upon system date,
     // needs to be approximated, at least until we introduce a calendar and clock
-    ZonedDateTime approximateRenewalDate = ZonedDateTime.now(UTC);
+    final ZonedDateTime approximateRenewalDate = ClockManager.getZonedDateTime();
 
     final IndividualResource response = renew(smallAngryPlanet, jessica);
 
@@ -685,7 +683,7 @@ public abstract class RenewalAPITests extends APITests {
     use(limitedRenewalsPolicy);
 
     checkOutFixture.checkOutByBarcode(smallAngryPlanet, jessica,
-      ZonedDateTime.now(UTC).minusDays(1)).getJson();
+      ClockManager.getZonedDateTime().minusDays(1)).getJson();
 
     renew(smallAngryPlanet, jessica);
 
@@ -752,7 +750,7 @@ public abstract class RenewalAPITests extends APITests {
     use(limitedRenewalsPolicy);
 
     checkOutFixture.checkOutByBarcode(smallAngryPlanet, jessica,
-      ZonedDateTime.now(UTC));
+      ClockManager.getZonedDateTime());
 
     final Response response = attemptRenewal(smallAngryPlanet, jessica);
 
@@ -825,7 +823,7 @@ public abstract class RenewalAPITests extends APITests {
     final IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource jessica = usersFixture.jessica();
     final String comment = "testing";
-    final ZonedDateTime dateTime = ZonedDateTime.now(Clock.systemUTC());
+    final ZonedDateTime now = ClockManager.getZonedDateTime();
 
     final JsonObject loanJson = checkOutFixture.checkOutByBarcode(smallAngryPlanet,
       usersFixture.jessica())
@@ -833,7 +831,7 @@ public abstract class RenewalAPITests extends APITests {
 
     claimItemReturnedFixture.claimItemReturned(new ClaimItemReturnedRequestBuilder()
         .forLoan(loanJson.getString("id"))
-        .withItemClaimedReturnedDate(dateTime)
+        .withItemClaimedReturnedDate(now)
         .withComment(comment));
 
     final Response response = attemptRenewal(smallAngryPlanet, jessica);
@@ -1161,7 +1159,7 @@ public abstract class RenewalAPITests extends APITests {
       .addSchedule(todayOnly());
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(
-      LocalDate.now(Clock.systemUTC()), LocalTime.MIN, UTC)
+      ClockManager.getLocalDate(), LocalTime.MIN, UTC)
         .withHour(23)
         .withMinute(59)
         .withSecond(59);
@@ -1183,7 +1181,7 @@ public abstract class RenewalAPITests extends APITests {
 
   @Test
   public void cannotRenewWhenCurrentDueDateDoesNotFallWithinLimitingDueDateSchedule() {
-    ZonedDateTime futureDateTime = ZonedDateTime.now(UTC).plusMonths(1);
+    ZonedDateTime futureDateTime = ClockManager.getZonedDateTime().plusMonths(1);
 
     FixedDueDateSchedulesBuilder fixedDueDateSchedules = new FixedDueDateSchedulesBuilder()
       .withName("Fixed Due Date Schedule in the Future")
@@ -1247,7 +1245,7 @@ public abstract class RenewalAPITests extends APITests {
       .addSchedule(todayOnly());
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(
-      LocalDate.now(Clock.systemUTC()), LocalTime.MIN, UTC)
+      ClockManager.getLocalDate(), LocalTime.MIN, UTC)
         .withHour(23)
         .withMinute(59)
         .withSecond(59);
