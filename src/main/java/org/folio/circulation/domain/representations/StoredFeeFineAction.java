@@ -1,7 +1,7 @@
 package org.folio.circulation.domain.representations;
 
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.util.UUID;
 
@@ -27,7 +27,7 @@ public class StoredFeeFineAction extends JsonObject {
     write(this, "amountAction", builder.amount.toDouble());
     write(this, "notify", false);
     write(this, "typeAction", builder.action);
-    write(this, "dateAction", formatDateTime(ClockManager.getZonedDateTime()));
+    write(this, "dateAction", formatDateTimeOptional(ClockManager.getZonedDateTime()));
   }
 
   public static StoredFeeFineActionBuilder builder() {

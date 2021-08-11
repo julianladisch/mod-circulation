@@ -9,7 +9,7 @@ import static org.folio.circulation.domain.representations.logs.LogEventPayloadF
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.REQ_ID;
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.USER_BARCODE;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class NoticeLogContext {
       .map(NoticeLogContextItem::asJson)
       .collect(collectingAndThen(toList(), JsonArray::new));
     write(json, ITEMS.value(), itemsArray);
-    write(json, DATE.value(), formatDateTime(date));
+    write(json, DATE.value(), formatDateTimeOptional(date));
     ofNullable(requestId).ifPresent(s ->
       write(json, REQ_ID.value(), requestId));
     write(json, ACCOUNT_ID.value(), accountId);

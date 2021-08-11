@@ -22,6 +22,7 @@ import org.awaitility.Awaitility;
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.json.JsonPropertyWriter;
+import org.folio.circulation.support.utils.DateTimeUtil;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -690,8 +691,9 @@ public class DueDateScheduledNoticesTests extends APITests {
     Awaitility.await()
       .atMost(1, TimeUnit.SECONDS)
       .until(scheduledNoticesClient::getAll, hasSize(1));
-    assertThat(scheduledNoticesClient.getAll().get(0).getString("nextRunTime"),
-      is(dueDate.plusMinutes(5).toString()));
+
+    assertThat(DateTimeUtil.parseDateTime(scheduledNoticesClient.getAll()
+      .get(0).getString("nextRunTime")), is(dueDate.plusMinutes(5)));
 
     changeDueDateFixture.changeDueDate(new ChangeDueDateRequestBuilder()
       .forLoan(loan.getId())
@@ -700,8 +702,9 @@ public class DueDateScheduledNoticesTests extends APITests {
     scheduledNoticeProcessingClient.runLoanNoticesProcessing(dueDate.plusHours(1));
 
     assertThat(scheduledNoticesClient.getAll(), hasSize(1));
-    assertThat(scheduledNoticesClient.getAll().get(0).getString("nextRunTime"),
-      is(dueDate.plusWeeks(2).plusMinutes(5).toString()));
+    assertThat(DateTimeUtil.parseDateTime(scheduledNoticesClient
+      .getAll().get(0).getString("nextRunTime")), is(dueDate
+       .plusWeeks(2).plusMinutes(5)));
   }
 
   @Test

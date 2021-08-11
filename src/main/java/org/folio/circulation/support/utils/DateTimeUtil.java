@@ -460,6 +460,23 @@ public class DateTimeUtil {
   }
 
   /**
+   * Format the dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
+   *
+   * This will not normalize the dateTime and will instead return NULL if dateTime is NULL.
+   *
+   * @param dateTime The dateTime to convert to a string.
+   * @return The converted dateTime string or NULL.
+   */
+  public static String formatDateTimeOptional(ZonedDateTime dateTime) {
+    if (dateTime == null) {
+      return null;
+    }
+
+    return normalizeDateTime(dateTime).withZoneSameInstant(UTC)
+      .format(DATE_TIME);
+  }
+
+  /**
    * Format the offset dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
    *
    * This will normalize the offset dateTime.

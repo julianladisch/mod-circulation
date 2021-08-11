@@ -5,7 +5,7 @@ import static org.folio.circulation.support.json.JsonObjectArrayPropertyFetcher.
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getBooleanProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getLocalDateProperty;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -109,7 +109,7 @@ public class OpeningDay {
   public JsonObject toJson() {
     final JsonObject json = new JsonObject();
 
-    write(json, DATE_KEY, formatDateTime(
+    write(json, DATE_KEY, formatDateTimeOptional(
       ZonedDateTime.of(date, LocalTime.MIDNIGHT, ZoneOffset.UTC)));
     write(json, ALL_DAY_KEY, allDay);
     write(json, OPEN_KEY, open);

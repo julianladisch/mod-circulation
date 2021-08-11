@@ -68,6 +68,8 @@ import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.Is;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -113,6 +115,16 @@ public abstract class RenewalAPITests extends APITests {
   abstract Matcher<ValidationError> hasItemRelatedParameter(IndividualResource item);
 
   abstract Matcher<ValidationError> hasItemNotFoundMessage(IndividualResource item);
+
+  @Before
+  public void setup() {
+    ClockManager.setDefaultClock();
+  }
+
+  @After
+  public void after() {
+    ClockManager.setDefaultClock();
+  }
 
   @Test
   public void canRenewRollingLoanFromSystemDate() {
@@ -1064,7 +1076,7 @@ public abstract class RenewalAPITests extends APITests {
 
     JsonObject renewedLoan = null;
 
-    Clock.fixed(loanDate.toInstant(), loanDate.getZone());
+    ClockManager.setClock(Clock.fixed(loanDate.toInstant(), loanDate.getZone()));
 
     renewedLoan = renew(smallAngryPlanet, jessica).getJson();
 
@@ -1073,7 +1085,7 @@ public abstract class RenewalAPITests extends APITests {
     assertThat("due date should be " + expectedDate,
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
 
-    Clock.systemDefaultZone();
+    ClockManager.setDefaultClock();
   }
 
   @Test

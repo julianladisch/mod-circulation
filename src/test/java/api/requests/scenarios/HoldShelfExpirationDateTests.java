@@ -257,9 +257,7 @@ public class HoldShelfExpirationDateTests extends APITests {
       storedRequest.getString("holdShelfExpirationDate"),
       isEquivalentTo(expectedExpirationDate));
 
-    Clock not30Days = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC);
-
-    ClockManager.setClock(not30Days);
+    ClockManager.setClock(Clock.fixed(Instant.EPOCH, ZoneOffset.UTC));
 
     checkInFixture.checkInByBarcode(
         new CheckInByBarcodeRequestBuilder()

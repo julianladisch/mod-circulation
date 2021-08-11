@@ -28,7 +28,6 @@ import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.utils.DateTimeUtil;
-import org.joda.time.Instant;
 import org.junit.After;
 import org.junit.Test;
 
@@ -74,7 +73,7 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       .getResponse();
     assertThat(response.getBody(), containsString(expectedTimeZone));
 
-    final ZoneId zone = ZoneId.of(expectedTimeZone).getRules().getOffset(Clock.systemUTC().instant());
+    final ZoneId zone = ZoneId.of(expectedTimeZone).getRules().getOffset(ClockManager.getInstant());
 
     ZonedDateTime loanDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE, TEST_TIME_MORNING,

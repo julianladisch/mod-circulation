@@ -63,7 +63,7 @@ public class OverduePeriodCalculatorService {
       Loan loan, ZonedDateTime systemTime) {
 
     final int overdueMinutes = (int) Duration.between(loan.getDueDate().toInstant(),
-      loan.getDueDate().toInstant()).toMinutes(); 
+      systemTime.toInstant()).toMinutes();
     return completedFuture(succeeded(overdueMinutes));
   }
 

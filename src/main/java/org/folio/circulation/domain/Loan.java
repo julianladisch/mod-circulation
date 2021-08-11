@@ -50,7 +50,7 @@ import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.utils.CommonUtils.executeIfNotNull;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.mostRecentDate;
@@ -113,7 +113,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public Loan changeDueDate(ZonedDateTime newDueDate) {
-    write(representation, DUE_DATE, formatDateTime(newDueDate));
+    write(representation, DUE_DATE, formatDateTimeOptional(newDueDate));
 
     return this;
   }
@@ -125,11 +125,11 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   private void changeReturnDate(ZonedDateTime returnDate) {
-    write(representation, RETURN_DATE, formatDateTime(returnDate));
+    write(representation, RETURN_DATE, formatDateTimeOptional(returnDate));
   }
 
   private void changeSystemReturnDate(ZonedDateTime systemReturnDate) {
-    write(representation, SYSTEM_RETURN_DATE, formatDateTime(systemReturnDate));
+    write(representation, SYSTEM_RETURN_DATE, formatDateTimeOptional(systemReturnDate));
   }
 
   public void changeAction(LoanAction action) {
@@ -528,7 +528,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public void changeDeclaredLostDateTime(ZonedDateTime dateTime) {
-    write(representation, DECLARED_LOST_DATE, formatDateTime(dateTime));
+    write(representation, DECLARED_LOST_DATE, formatDateTimeOptional(dateTime));
   }
 
   public ZonedDateTime getDeclareLostDateTime() {
@@ -565,7 +565,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
 
   private void changeClaimedReturnedDate(ZonedDateTime claimedReturnedDate) {
     write(representation, CLAIMED_RETURNED_DATE,
-      formatDateTime(claimedReturnedDate));
+      formatDateTimeOptional(claimedReturnedDate));
   }
 
   public Loan closeLoan(LoanAction action) {
@@ -647,7 +647,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   private void setAgedToLostDate(ZonedDateTime agedToLostDate) {
-    writeByPath(representation, formatDateTime(agedToLostDate),
+    writeByPath(representation, formatDateTimeOptional(agedToLostDate),
       AGED_TO_LOST_DELAYED_BILLING, AGED_TO_LOST_DATE);
   }
 

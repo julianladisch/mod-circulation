@@ -1,8 +1,9 @@
 package org.folio.circulation.domain.notice;
+
 import static java.lang.Math.max;
 import static java.util.stream.Collectors.joining;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.util.Optional;
 
@@ -77,7 +78,7 @@ public class TemplateContextUtil {
     JsonObject itemContext = staffSlipContext.getJsonObject(ITEM);
 
     if (ObjectUtils.allNotNull(item, itemContext)) {
-      write(itemContext, "lastCheckedInDateTime", formatDateTime(ClockManager.getZonedDateTime()));
+      write(itemContext, "lastCheckedInDateTime", formatDateTimeOptional(ClockManager.getZonedDateTime()));
       if (item.getInTransitDestinationServicePoint() != null) {
         itemContext.put("fromServicePoint", context.getCheckInServicePoint().getName());
         itemContext.put("toServicePoint", item.getInTransitDestinationServicePoint().getName());
@@ -104,7 +105,7 @@ public class TemplateContextUtil {
       JsonObject itemContext = createItemContext(item);
       if (item.getLastCheckIn() != null) {
         write(itemContext, "lastCheckedInDateTime",
-          formatDateTime(item.getLastCheckIn().getDateTime()));
+          formatDateTimeOptional(item.getLastCheckIn().getDateTime()));
       }
       staffSlipContext.put(ITEM, itemContext);
     }
@@ -204,10 +205,10 @@ public class TemplateContextUtil {
       .ifPresent(value -> requestContext.put("servicePointPickup", value));
     optionalRequest
       .map(Request::getRequestExpirationDate)
-      .ifPresent(value -> write(requestContext, "requestExpirationDate", formatDateTime(value)));
+      .ifPresent(value -> write(requestContext, "requestExpirationDate", formatDateTimeOptional(value)));
     optionalRequest
       .map(Request::getHoldShelfExpirationDate)
-      .ifPresent(value -> write(requestContext, "holdShelfExpirationDate", formatDateTime(value)));
+      .ifPresent(value -> write(requestContext, "holdShelfExpirationDate", formatDateTimeOptional(value)));
     optionalRequest
       .map(Request::getCancellationAdditionalInformation)
       .ifPresent(value -> requestContext.put("additionalInfo", value));
@@ -230,10 +231,10 @@ public class TemplateContextUtil {
   private static JsonObject createLoanContext(Loan loan) {
     JsonObject loanContext = new JsonObject();
 
-    write(loanContext, "initialBorrowDate", formatDateTime(loan.getLoanDate()));
-    write(loanContext, "dueDate", formatDateTime(loan.getDueDate()));
+    write(loanContext, "initialBorrowDate", formatDateTimeOptional(loan.getLoanDate()));
+    write(loanContext, "dueDate", formatDateTimeOptional(loan.getDueDate()));
     if (loan.getReturnDate() != null) {
-      write(loanContext, "checkedInDate", formatDateTime(loan.getReturnDate()));
+      write(loanContext, "checkedInDate", formatDateTimeOptional(loan.getReturnDate()));
     }
 
     loanContext.put("numberOfRenewalsTaken", Integer.toString(loan.getRenewalCount()));
@@ -273,15 +274,15 @@ public class TemplateContextUtil {
     write(context, "paymentStatus", account.getPaymentStatus());
     write(context, "amount", account.getAmount().toDouble());
     write(context, "remainingAmount", account.getRemaining().toDouble());
-    write(context, "chargeDate", formatDateTime(account.getCreationDate()));
-    write(context, "chargeDateTime", formatDateTime(account.getCreationDate()));
+    write(context, "chargeDate", formatDateTimeOptional(account.getCreationDate()));
+    write(context, "chargeDateTime", formatDateTimeOptional(account.getCreationDate()));
 
     return context;
   }
 
   private static JsonObject createFeeActionContext(FeeFineAction feeFineAction) {
     final JsonObject context = new JsonObject();
-    String actionDateTime = formatDateTime(feeFineAction.getDateAction());
+    String actionDateTime = formatDateTimeOptional(feeFineAction.getDateAction());
 
     write(context, "type", feeFineAction.getActionType());
     write(context, "actionDate", actionDateTime);

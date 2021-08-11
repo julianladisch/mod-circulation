@@ -28,7 +28,7 @@ import static org.folio.circulation.domain.representations.logs.LogEventPayloadF
 import static org.folio.circulation.domain.representations.logs.LogEventPayloadField.USER_ID;
 import static org.folio.circulation.domain.representations.logs.LogEventType.CHECK_IN;
 import static org.folio.circulation.domain.representations.logs.LogEventType.CHECK_OUT;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
 import java.util.List;
@@ -131,9 +131,9 @@ public class CirculationCheckInCheckOutLogEventMapper {
       .ifPresent(loan -> {
         write(logEventPayload, LOAN_ID.value(), loan.getId());
         write(logEventPayload, IS_LOAN_CLOSED.value(), loan.isClosed());
-        write(logEventPayload, SYSTEM_RETURN_DATE.value(), formatDateTime(loan.getSystemReturnDate()));
-        write(logEventPayload, RETURN_DATE.value(), formatDateTime(loan.getReturnDate()));
-        write(logEventPayload, DUE_DATE.value(), formatDateTime(loan.getDueDate()));
+        write(logEventPayload, SYSTEM_RETURN_DATE.value(), formatDateTimeOptional(loan.getSystemReturnDate()));
+        write(logEventPayload, RETURN_DATE.value(), formatDateTimeOptional(loan.getReturnDate()));
+        write(logEventPayload, DUE_DATE.value(), formatDateTimeOptional(loan.getDueDate()));
         ofNullable(loan.getUser())
           .ifPresent(user -> {
             write(logEventPayload, USER_ID.value(), user.getId());

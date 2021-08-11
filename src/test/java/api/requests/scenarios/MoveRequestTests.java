@@ -7,8 +7,6 @@ import static api.support.fixtures.ConfigurationExample.timezoneConfigurationFor
 import static api.support.matchers.EventMatchers.isValidLoanDueDateChangedEvent;
 import static api.support.matchers.ItemStatusCodeMatcher.hasItemStatus;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
-import static java.time.Clock.fixed;
-import static java.time.Clock.offset;
 import static java.time.Duration.ofDays;
 import static java.util.stream.Collectors.groupingBy;
 import static org.folio.circulation.domain.EventType.LOAN_DUE_DATE_CHANGED;
@@ -27,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -962,14 +959,14 @@ public class MoveRequestTests extends APITests {
       overdueFinePoliciesFixture.facultyStandard().getId(),
       lostItemFeePoliciesFixture.facultyStandard().getId());
 
-    ClockManager.setClock(fixed(Instant.parse("2021-02-15T11:24:45Z"), ZoneId.of("UTC")));
+    ClockManager.setClock(Clock.fixed(Instant.parse("2021-02-15T11:24:45Z"), ZoneOffset.UTC));
 
     checkOutFixture.checkOutByBarcode(sourceItem, steve);
 
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(destinationItem, steve);
 
     //3 days later
-    ClockManager.setClock(offset(ClockManager.getClock(), ofDays(3)));
+    ClockManager.setClock(Clock.offset(ClockManager.getClock(), ofDays(3)));
 
     final IndividualResource recallRequest = requestsFixture.place(
       new RequestBuilder()
