@@ -537,7 +537,7 @@ public class DueDateScheduledNoticesProcessingTests extends APITests {
       .put("id", UUID.randomUUID().toString())
       .put("loanId", loan.getId().toString())
       .put(NEXT_RUN_TIME,
-        formatDateTime(nextRunTime.withZoneSameLocal(ZoneOffset.UTC)))
+        formatDateTime(nextRunTime.withZoneSameInstant(ZoneOffset.UTC)))
       .put("triggeringEvent", "Due date")
       .put("noticeConfig",
         new JsonObject()

@@ -8,7 +8,6 @@ import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.NANO_OF_SECOND;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
-import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,6 +26,17 @@ import java.util.stream.Stream;
 
 import org.folio.circulation.support.ClockManager;
 
+/**
+ * A utility for centralizing common date time operations.
+ *
+ * Be careful with the differences of withZoneSameInstant() vs
+ * withZoneSameLocal().
+ *
+ * The "SameInstant" version changes the timezone so that the representation
+ * changes but the actual date does not.
+ *
+ * The "SameLocal" version changes the actual time and preserves the timezone.
+ */
 public class DateTimeUtil {
   private DateTimeUtil() {
     throw new UnsupportedOperationException("Do not instantiate");
@@ -320,7 +330,7 @@ public class DateTimeUtil {
    * Java time does not.
    *
    * @param dateTime The dateTime to normalize.
-   * @return The provided dateTime or if dateTime is null now(Clock.systemUTC()).
+   * @return The provided dateTime or if dateTime is null then ClockManager.getZonedDateTime().
    */
   public static ZonedDateTime normalizeDateTime(ZonedDateTime dateTime) {
     if (dateTime == null) {
@@ -337,7 +347,7 @@ public class DateTimeUtil {
    * Java time does not.
    *
    * @param dateTime The dateTime to normalize.
-   * @return The provided dateTime or if dateTime is null now(Clock.systemUTC()).
+   * @return The provided dateTime or if dateTime is null then ClockManager.getZonedDateTime().
    */
   public static OffsetDateTime normalizeDateTime(OffsetDateTime dateTime) {
     if (dateTime == null) {
@@ -354,7 +364,7 @@ public class DateTimeUtil {
    * Java time does not.
    *
    * @param dateTime The dateTime to normalize.
-   * @return The provided dateTime or if dateTime is null now(Clock.systemUTC()).
+   * @return The provided dateTime or if dateTime is null then ClockManager.getZonedDateTime().
    */
   public static LocalDateTime normalizeDateTime(LocalDateTime dateTime) {
     if (dateTime == null) {
@@ -371,7 +381,7 @@ public class DateTimeUtil {
    * Java time does not.
    *
    * @param date The date to normalize.
-   * @return The provided date or if date is null now(Clock.systemUTC()).
+   * @return The provided date or if date is null then ClockManager.getZonedDate().
    */
   public static LocalDate normalizeDate(LocalDate date) {
     if (date == null) {
@@ -388,11 +398,11 @@ public class DateTimeUtil {
    * Java time does not.
    *
    * @param time The time to normalize.
-   * @return The provided date or if time is null now(Clock.systemUTC()).
+   * @return The provided date or if time is null then ClockManager.getLocalTime().
    */
   public static LocalTime normalizeTime(LocalTime time) {
     if (time == null) {
-      return LocalTime.now(Clock.systemUTC());
+      return ClockManager.getLocalTime();
     }
 
     return time;
@@ -465,7 +475,8 @@ public class DateTimeUtil {
   /**
    * Format the date as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
    *
-   * The time is set to Midnight.
+   * The time is set to Midnight for the system clock's timezone and not
+   * midnight of UTC.
    *
    * This will normalize the date.
    *
@@ -474,17 +485,38 @@ public class DateTimeUtil {
    */
   public static String formatDateTime(LocalDate date) {
     return ZonedDateTime.of(normalizeDate(date), LocalTime.MIDNIGHT,
-      UTC).format(DATE_TIME);
+      ClockManager.getZoneId()).withZoneSameInstant(UTC).format(DATE_TIME);
   }
 
+  /**
+   * Get the last second of the day.
+   *
+   * This operates in the timezone specified by dateTime.
+   *
+   * @param dateTime The dateTime to convert.
+   * @return The converted dateTime.
+   */
   public static ZonedDateTime atEndOfTheDay(ZonedDateTime dateTime) {
     return dateTime.withHour(23).withMinute(59).withSecond(59);
   }
 
+  /**
+   * Convert the ZonedDateTime to an OffsetDateTime.
+   *
+   * @param dateTime The dateTime to convert.
+   * @return The converted dateTime.
+   */
   public static OffsetDateTime toOffsetDateTime(ZonedDateTime dateTime) {
     return OffsetDateTime.ofInstant(dateTime.toInstant(), dateTime.getZone());
   }
 
+  /**
+   * Finds the most recent dateTime from a series of dateTimes.
+   *
+   * @param dates A series of dateTimes.
+   * @return The dateTime that is most recent or NULL if no valid dateTimes
+   * provided.
+   */
   public static ZonedDateTime mostRecentDate(ZonedDateTime... dates) {
     return Stream.of(dates)
       .filter(Objects::nonNull)
@@ -492,21 +524,67 @@ public class DateTimeUtil {
       .orElse(null);
   }
 
+  /**
+   * Convert the Local Date Time to a dateTime.
+   *
+   * @param date The date to convert.
+   * @param time The time to convert.
+   * @return The converted dateTime.
+   */
+  public static ZonedDateTime toDateTime(LocalDate date, LocalTime time) {
+    return ZonedDateTime.of(date, time, ClockManager.getZoneId());
+  }
+
+  /**
+   * Convert the Local Date Time to a dateTime set to UTC.
+   *
+   * @param date The date to convert.
+   * @param time The time to convert.
+   * @return The converted dateTime.
+   */
   public static ZonedDateTime toUtcDateTime(LocalDate date, LocalTime time) {
     return ZonedDateTime.of(date, time, UTC);
   }
 
+  /**
+   * Convert the Zone ID to a Zone Offset.
+   *
+   * @param zoneId The ZoneId to convert.
+   * @return The converted ZoneOffset.
+   */
   public static ZoneOffset toZoneOffset(ZoneId zoneId) {
     return ZoneOffset.of(zoneId.getRules()
       .getOffset(ClockManager.getInstant()).getId());
   }
 
+  /**
+   * Convert the Zone ID to a Zone Offset.
+   *
+   * @param zoneId A string representing the ZoneId to convert.
+   * @return The converted ZoneOffset.
+   */
   public static ZoneOffset toZoneOffset(String timezone) {
     return ZoneOffset.of(ZoneId.of(timezone).getRules()
       .getOffset(ClockManager.getInstant()).getId());
   }
 
+  /**
+   * Get the start of the day in the timezone of the current Clock.
+   *
+   * @param localDate The local date to convert from.
+   * @return The converted dateTime.
+   */
   public static ZonedDateTime toStartOfDayDateTime(LocalDate localDate) {
+    return toDateTime(localDate, LocalTime.MIDNIGHT);
+  }
+
+  /**
+   * Get the start of the day in the UTC.
+   *
+   * @param localDate The local date to convert from.
+   * @return The converted dateTime.
+   */
+  public static ZonedDateTime toUtcStartOfDayDateTime(LocalDate localDate) {
     return toUtcDateTime(localDate, LocalTime.MIDNIGHT);
   }
 

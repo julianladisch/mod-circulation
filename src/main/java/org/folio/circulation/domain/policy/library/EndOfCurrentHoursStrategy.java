@@ -15,6 +15,8 @@ import org.folio.circulation.support.results.Result;
 
 public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
 
+  public static final LocalTime END_OF_A_DAY = LocalTime.MIDNIGHT.minusSeconds(1);
+
   private final ZonedDateTime currentTime;
 
   public EndOfCurrentHoursStrategy(ZonedDateTime currentTime, ZoneOffset zone) {
@@ -25,20 +27,26 @@ public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
   @Override
   protected Result<ZonedDateTime> calculateIfClosed(
       LibraryTimetable libraryTimetable, LibraryInterval requestedInterval) {
+
     LibraryInterval currentTimeInterval = libraryTimetable.findInterval(currentTime);
+
     if (currentTimeInterval == null) {
       return failed(failureForAbsentTimetable());
     }
-    if (hasLibraryRolloverWorkingDay(libraryTimetable, requestedInterval)){
-      return succeeded(requestedInterval.getPrevious().getEndTime());
-    }
-    if (currentTimeInterval.isOpen()) {
-      return succeeded(currentTimeInterval.getEndTime());
-    }
-    return succeeded(currentTimeInterval.getNext().getEndTime());
-  }
 
-  public static final LocalTime END_OF_A_DAY = LocalTime.MIDNIGHT.minusSeconds(1);
+    if (hasLibraryRolloverWorkingDay(libraryTimetable, requestedInterval)){
+      return succeeded(requestedInterval.getPrevious().getEndTime()
+        .withZoneSameInstant(zone));
+    }
+
+    if (currentTimeInterval.isOpen()) {
+      return succeeded(currentTimeInterval.getEndTime()
+        .withZoneSameInstant(zone));
+    }
+
+    return succeeded(currentTimeInterval.getNext().getEndTime()
+      .withZoneSameInstant(zone));
+  }
 
   private boolean hasLibraryRolloverWorkingDay(LibraryTimetable libraryTimetable,
     LibraryInterval requestedInterval) {
@@ -47,18 +55,22 @@ public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
       return false;
     }
 
-    LocalTime endLocalTime = libraryTimetable.getHead().getEndTime().toLocalTime();
-    LocalTime startLocalTime = requestedInterval.getPrevious().getStartTime().toLocalTime();
+    LocalTime endLocalTime = libraryTimetable.getHead().getEndTime()
+      .withZoneSameInstant(zone).toLocalTime();
+    LocalTime startLocalTime = requestedInterval.getPrevious().getStartTime()
+      .withZoneSameInstant(zone).toLocalTime();
 
-    return isDateEqualToBoundaryValueOfDay(endLocalTime, LocalTime.MIDNIGHT.minusMinutes(1))
+    return isDateEqualToBoundaryValueOfDay(endLocalTime, END_OF_A_DAY)
       && isDateEqualToBoundaryValueOfDay(startLocalTime, LocalTime.MIDNIGHT);
   }
 
   private boolean isNotSequenceOfWorkingDays(LibraryTimetable libraryTimetable,
     LibraryInterval requestedInterval) {
 
-    LocalDate start = requestedInterval.getPrevious().getStartTime().toLocalDate();
-    LocalDate end = libraryTimetable.getHead().getEndTime().toLocalDate();
+    LocalDate start = requestedInterval.getPrevious().getStartTime()
+      .withZoneSameInstant(zone).toLocalDate();
+    LocalDate end = libraryTimetable.getHead().getEndTime()
+      .withZoneSameInstant(zone).toLocalDate();
 
     return Math.abs(Duration.between(start.atStartOfDay(), end.atStartOfDay()).toDays()) == 0;
   }

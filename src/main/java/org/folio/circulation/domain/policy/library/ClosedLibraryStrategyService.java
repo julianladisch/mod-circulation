@@ -60,26 +60,26 @@ public class ClosedLibraryStrategyService {
   }
 
   private CompletableFuture<Result<ZonedDateTime>> applyClosedLibraryDueDateManagement(
-    Loan loan, LoanPolicy loanPolicy, ZoneOffset timeZone) {
+    Loan loan, LoanPolicy loanPolicy, ZoneOffset zone) {
 
-    LocalDate requestedDate = loan.getDueDate().withZoneSameInstant(timeZone).toLocalDate();
+    LocalDate requestedDate = loan.getDueDate().withZoneSameInstant(zone).toLocalDate();
     return calendarRepository.lookupOpeningDays(requestedDate, loan.getCheckoutServicePointId())
-      .thenApply(r -> r.next(openingDays -> applyStrategy(loan, loanPolicy, openingDays, timeZone)));
+      .thenApply(r -> r.next(openingDays -> applyStrategy(loan, loanPolicy, openingDays, zone)));
   }
 
   private Result<ZonedDateTime> applyStrategy(
-    Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays, ZoneOffset timeZone) {
+    Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays, ZoneOffset zone) {
     ZonedDateTime initialDueDate = loan.getDueDate();
 
-    ClosedLibraryStrategy strategy = determineClosedLibraryStrategy(loanPolicy, currentDateTime, timeZone);
+    ClosedLibraryStrategy strategy = determineClosedLibraryStrategy(loanPolicy, currentDateTime, zone);
 
     return strategy.calculateDueDate(initialDueDate, openingDays)
-      .next(dateTime -> applyFixedDueDateLimit(dateTime, loan, loanPolicy, openingDays, timeZone));
+      .next(dateTime -> applyFixedDueDateLimit(dateTime, loan, loanPolicy, openingDays, zone));
   }
 
   private Result<ZonedDateTime> applyFixedDueDateLimit(
     ZonedDateTime dueDate, Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays,
-    ZoneOffset timeZone) {
+    ZoneOffset zone) {
 
     Optional<ZonedDateTime> optionalDueDateLimit =
       loanPolicy.getScheduleLimit(loan.getLoanDate(), isRenewal, currentDateTime);
@@ -89,14 +89,14 @@ public class ClosedLibraryStrategyService {
 
     ZonedDateTime dueDateLimit = optionalDueDateLimit.get();
     Comparator<ZonedDateTime> dateComparator =
-      Comparator.comparing(dateTime -> dateTime.withZoneSameInstant(timeZone).toLocalDate());
+      Comparator.comparing(dateTime -> dateTime.withZoneSameInstant(zone).toLocalDate());
     if (dateComparator.compare(dueDate, dueDateLimit) <= 0) {
       return succeeded(dueDate);
     }
 
     ClosedLibraryStrategy strategy =
       ClosedLibraryStrategyUtils.determineStrategyForMovingBackward(
-        loanPolicy, currentDateTime, timeZone);
+        loanPolicy, currentDateTime, zone);
     return strategy.calculateDueDate(dueDateLimit, openingDays);
   }
 }

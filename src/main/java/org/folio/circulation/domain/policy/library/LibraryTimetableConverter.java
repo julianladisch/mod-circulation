@@ -87,6 +87,7 @@ public class LibraryTimetableConverter {
     if (day.getAllDay()) {
       return Collections.singletonList(buildAllDayOpenInterval(day, zone));
     }
+
     return day.getOpeningHour().stream()
       .map(hour -> buildIntervalFromOpeningHour(day, hour, zone))
       .collect(Collectors.toList());
@@ -94,18 +95,22 @@ public class LibraryTimetableConverter {
 
   private static Interval buildAllDayOpenInterval(
     OpeningDay day, ZoneOffset zone) {
+
     ZonedDateTime startDateTime =
       ZonedDateTime.of(day.getDate(), LocalTime.MIDNIGHT, zone);
     ZonedDateTime endDateTime = startDateTime.plusDays(1);
+
     return new Interval(startDateTime, endDateTime);
   }
 
   private static Interval buildIntervalFromOpeningHour(
     OpeningDay day, OpeningHour hour, ZoneOffset zone) {
+
     ZonedDateTime startDateTime =
       ZonedDateTime.of(day.getDate(), hour.getStartTime(), zone);
     ZonedDateTime endDateTime =
       ZonedDateTime.of(day.getDate(), hour.getEndTime(), zone);
+
     return new Interval(startDateTime, endDateTime);
   }
 

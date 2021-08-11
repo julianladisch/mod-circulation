@@ -3,7 +3,6 @@ package org.folio.circulation.domain.policy.library;
 import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyUtils.END_OF_A_DAY;
 import static org.folio.circulation.support.results.Result.succeeded;
 
-import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
@@ -21,8 +20,7 @@ public class KeepCurrentDateStrategy implements ClosedLibraryStrategy {
   public Result<ZonedDateTime> calculateDueDate(ZonedDateTime requestedDate,
     AdjacentOpeningDays openingDays) {
 
-    LocalDate date = LocalDate.ofInstant(requestedDate
-      .withZoneSameLocal(zone).toInstant(), zone);
-    return succeeded(ZonedDateTime.of(date, END_OF_A_DAY, zone));
+    return succeeded(ZonedDateTime.of(
+      requestedDate.toLocalDate().atTime(END_OF_A_DAY), zone));
   }
 }

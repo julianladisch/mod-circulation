@@ -89,7 +89,7 @@ public class JsonScheduledNoticeMapper {
       .put(RECIPIENT_USER_ID, notice.getRecipientUserId())
       .put(TRIGGERING_EVENT, notice.getTriggeringEvent().getRepresentation())
       .put(NEXT_RUN_TIME, formatDateTime(notice.getNextRunTime()
-        .withZoneSameLocal(ZoneOffset.UTC)))
+        .withZoneSameInstant(ZoneOffset.UTC)))
       .put(NOTICE_CONFIG, mapConfigToJson(notice.getConfiguration()));
   }
 

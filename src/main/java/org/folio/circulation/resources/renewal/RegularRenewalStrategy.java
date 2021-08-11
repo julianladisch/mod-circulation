@@ -17,7 +17,6 @@ import static org.folio.circulation.support.ValidationErrorFailure.failedValidat
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectProperty;
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -47,7 +46,7 @@ public class RegularRenewalStrategy implements RenewalStrategy {
     Clients clients) {
 
     final ClosedLibraryStrategyService strategyService =
-      ClosedLibraryStrategyService.using(clients, ZonedDateTime.now(ZoneOffset.UTC), true);
+      ClosedLibraryStrategyService.using(clients, ClockManager.getZonedDateTime(), true);
 
     return completedFuture(renew(context)
       .map(context::withLoan))
@@ -99,7 +98,7 @@ public class RegularRenewalStrategy implements RenewalStrategy {
       final Result<ZonedDateTime> proposedDueDateResult =
         calculateNewDueDate(loan, requestQueue, systemDate);
 
-      //TODO: Need a more elegent way of combining validation errors
+      //TODO: Need a more elegant way of combining validation errors
       addErrorsIfDueDateResultFailed(loan, errors, proposedDueDateResult);
 
       if (errors.isEmpty()) {

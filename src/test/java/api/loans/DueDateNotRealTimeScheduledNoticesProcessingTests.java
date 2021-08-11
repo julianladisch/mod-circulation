@@ -542,7 +542,7 @@ public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests 
     String timeZoneId = "America/New_York";
     ZonedDateTime systemTime = ZonedDateTime.of(2020, 6, 25, 0, 0, 0, 0, UTC)
       .plusMinutes(plusMinutes)
-      .withZoneSameLocal(ZoneId.of(timeZoneId));
+      .withZoneSameInstant(ZoneId.of(timeZoneId));
     clockToFixedDateTime(systemTime);
     configClient.create(ConfigurationExample.timezoneConfigurationFor(timeZoneId));
 

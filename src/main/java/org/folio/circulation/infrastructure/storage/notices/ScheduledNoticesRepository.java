@@ -82,7 +82,7 @@ public class ScheduledNoticesRepository {
       .map(TriggeringEvent::getRepresentation)
       .collect(Collectors.toList());
 
-    return CqlQuery.lessThan("nextRunTime", formatDateTime(timeLimit.withZoneSameLocal(ZoneOffset.UTC)))
+    return CqlQuery.lessThan("nextRunTime", formatDateTime(timeLimit.withZoneSameInstant(ZoneOffset.UTC)))
       .combine(exactMatch("noticeConfig.sendInRealTime", Boolean.toString(realTime)), CqlQuery::and)
       .combine(exactMatchAny("triggeringEvent", triggeringEventRepresentations), CqlQuery::and)
       .map(cqlQuery -> cqlQuery.sortBy(cqlSortBy))

@@ -377,7 +377,7 @@ public abstract class APITests {
   }
 
   protected void clockToFixedDateTime(ZonedDateTime dateTime) {
-    ClockManager.setClock(Clock.fixed(dateTime.toInstant(), ZoneOffset.UTC));
+    ClockManager.setClock(Clock.fixed(dateTime.toInstant(), dateTime.getZone()));
   }
 
   protected void clockToDefaultDateTime() {

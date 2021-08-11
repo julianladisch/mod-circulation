@@ -458,7 +458,7 @@ public class CheckOutCalculateDueDateTests extends APITests {
     ZonedDateTime loanDate = ZonedDateTime.of(THURSDAY_DATE,
       TEST_TIME_MORNING, UTC);
     ZonedDateTime dateTime = ZonedDateTime.of(localDate, MIDNIGHT, UTC);
-    ZonedDateTime expectedDueDate = dateTime.withZoneSameLocal(UTC);
+    ZonedDateTime expectedDueDate = dateTime.withZoneSameInstant(UTC);
 
     checkFixedDayOrTime(loanDate, servicePointId, MOVE_TO_BEGINNING_OF_NEXT_OPEN_SERVICE_POINT_HOURS,
       duration, INTERVAL_HOURS, expectedDueDate, true);
@@ -708,7 +708,7 @@ public class CheckOutCalculateDueDateTests extends APITests {
     if (interval.equalsIgnoreCase(HOURS.name())) {
       if (currentDayPeriod.getOpeningDay().getAllDay()) {
         ZonedDateTime dateTime = TEST_DATE.plusHours(duration);
-        return dateTime.withZoneSameLocal(UTC);
+        return dateTime.withZoneSameInstant(UTC);
       } else {
         LocalTime offsetTime = TEST_TIME_MORNING.plusHours(duration);
         LocalDate currentDate = currentDayPeriod.getOpeningDay().getDate();
@@ -741,7 +741,7 @@ public class CheckOutCalculateDueDateTests extends APITests {
             .plusMinutes(duration);
 
           if (isInCurrentDateTime(currentEndDateTime, offsetDateTime)) {
-            return offsetDateTime.withZoneSameLocal(UTC);
+            return offsetDateTime.withZoneSameInstant(UTC);
           } else {
             OpeningDay nextOpeningDay = nextDayPeriod.getOpeningDay();
             LocalDate nextDate = nextOpeningDay.getDate();

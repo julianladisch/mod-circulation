@@ -23,6 +23,7 @@ public final class ClosedLibraryStrategyUtils {
 
   public static ClosedLibraryStrategy determineClosedLibraryStrategy(
       LoanPolicy loanPolicy, ZonedDateTime startDate, ZoneOffset zone) {
+
     DueDateManagement dueDateManagement = loanPolicy.getDueDateManagement();
     LoanPolicyPeriod offsetInterval = loanPolicy.getOffsetPeriodInterval();
     int offsetDuration = loanPolicy.getOffsetPeriodDuration();
@@ -47,6 +48,7 @@ public final class ClosedLibraryStrategyUtils {
 
   public static ClosedLibraryStrategy determineStrategyForMovingBackward(
       LoanPolicy loanPolicy, ZonedDateTime startDate, ZoneOffset zone) {
+
     LoanPolicyPeriod loanPeriod = loanPolicy.getPeriodInterval();
 
     return isShortTermLoans(loanPeriod)

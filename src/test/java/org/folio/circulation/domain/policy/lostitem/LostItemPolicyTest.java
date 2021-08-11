@@ -1,7 +1,6 @@
 package org.folio.circulation.domain.policy.lostitem;
 
 import static java.time.ZoneOffset.UTC;
-import static java.time.ZonedDateTime.now;
 import static org.folio.circulation.domain.policy.Period.from;
 import static org.folio.circulation.domain.policy.Period.minutes;
 import static org.hamcrest.MatcherAssert.assertThat;

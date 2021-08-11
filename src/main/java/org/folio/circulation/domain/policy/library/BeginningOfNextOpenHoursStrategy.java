@@ -27,9 +27,10 @@ public class BeginningOfNextOpenHoursStrategy extends ShortTermLoansBaseStrategy
     if (nextInterval == null) {
       return failed(failureForAbsentTimetable());
     }
+
     ZonedDateTime dueDateWithOffset = ZonedDateTime.ofInstant(nextInterval
       .getStartTime().toInstant()
-      .plusMillis(duration.toMillis()), ZoneOffset.UTC);
+      .plusMillis(duration.toMillis()), zone);
 
     if (nextInterval.getInterval().contains(dueDateWithOffset)) {
       return succeeded(dueDateWithOffset);

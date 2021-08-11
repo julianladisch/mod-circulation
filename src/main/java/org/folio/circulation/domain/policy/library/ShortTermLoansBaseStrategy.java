@@ -13,7 +13,7 @@ import org.folio.circulation.support.results.Result;
 
 public abstract class ShortTermLoansBaseStrategy implements ClosedLibraryStrategy {
 
-  private final ZoneOffset zone;
+  protected final ZoneOffset zone;
 
   protected ShortTermLoansBaseStrategy(ZoneOffset zone) {
     this.zone = zone;
