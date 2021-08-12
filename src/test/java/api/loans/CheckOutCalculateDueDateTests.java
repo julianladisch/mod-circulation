@@ -882,13 +882,9 @@ public class CheckOutCalculateDueDateTests extends APITests {
   private ZonedDateTime currentYearDateTime(int month, int day, int hour, int minute,
     int second, ZoneId zone) {
 
-    return ClockManager.getZonedDateTime()
-      .withMonth(month)
-      .withDayOfMonth(day)
-      .withHour(hour)
-      .withMinute(minute)
-      .withSecond(second)
-      .withNano(0);
+    return ZonedDateTime.of(
+      LocalDate.of(ClockManager.getZonedDateTime().getYear(), month, day),
+      LocalTime.of(hour, minute, second), zone);
   }
 
   private void useFixedPolicy(UUID fixedDueDateScheduleId,
