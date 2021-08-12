@@ -45,7 +45,7 @@ public class OpeningDay {
     return new OpeningDay(fillOpeningDay(openingDayJson),
       getLocalDateProperty(openingDayJson, DATE_KEY),
       getBooleanProperty(openingDayJson, ALL_DAY_KEY),
-      getBooleanProperty(openingDayJson, OPEN_KEY), ClockManager.getZonedDateTime());
+      getBooleanProperty(openingDayJson, OPEN_KEY), null);
   }
 
   public static OpeningDay fromOpeningPeriodJson(JsonObject openingPeriod, ZoneOffset zone) {

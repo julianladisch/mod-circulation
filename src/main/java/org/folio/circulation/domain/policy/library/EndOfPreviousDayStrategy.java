@@ -35,7 +35,7 @@ public class EndOfPreviousDayStrategy implements ClosedLibraryStrategy {
     if (!previousDay.getOpen()) {
       return failed(failureForAbsentTimetable());
     }
-    LocalDate date = previousDay.getDayWithTimeZone().toLocalDate();
+    LocalDate date = previousDay.getDate();
     return succeeded(ZonedDateTime.of(date, END_OF_A_DAY, zone));
   }
 }
