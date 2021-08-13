@@ -19,6 +19,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -251,7 +252,7 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
    * Minor threshold when comparing minutes or milliseconds of dateTime
    */
   private ZonedDateTime getThresholdDateTime(ZonedDateTime dateTime) {
-    return dateTime.withSecond(0).withNano(0);
+    return dateTime.withSecond(0).truncatedTo(ChronoUnit.SECONDS);
   }
 
   private IndividualResource createLoanPolicy(JsonObject loanPolicyEntry) {
