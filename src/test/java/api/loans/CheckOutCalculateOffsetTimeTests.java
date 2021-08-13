@@ -259,12 +259,13 @@ public class CheckOutCalculateOffsetTimeTests extends APITests {
     duration = hoursBetween(timeNow, endTimeOfPeriod);
 
     OpeningDay openingDay = getLastFakeOpeningDayByServId(servicePointId).getOpeningDay();
-    ZonedDateTime loanDate = ZonedDateTime.of(openingDay.getDate(), LocalTime.of(5, 0), UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(openingDay.getDate(),
+      LocalTime.of(5, 0), openingDay.getZone());
     LocalDate expectedDate = openingDay.getDate();
     LocalTime expectedTime = END_TIME_SECOND_PERIOD.plusHours(offsetDuration);
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(expectedDate,
-      expectedTime, UTC);
+      expectedTime, openingDay.getZone());
     checkOffsetTime(loanDate, expectedDueDate, servicePointId, INTERVAL_HOURS, duration,
       OFFSET_INTERVAL_HOURS, offsetDuration);
   }
@@ -291,13 +292,13 @@ public class CheckOutCalculateOffsetTimeTests extends APITests {
     OpeningDay openingDay = getLastFakeOpeningDayByServId(servicePointId).getOpeningDay();
 
     ZonedDateTime loanDate = ZonedDateTime.of(openingDay.getDate(),
-      LocalTime.of(5, 0), UTC);
+      LocalTime.of(5, 0), openingDay.getZone());
 
     LocalDate expectedDate = openingDay.getDate();
     LocalTime expectedTime = START_TIME_SECOND_PERIOD.plusHours(offsetDuration);
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(expectedDate,
-      expectedTime, UTC);
+      expectedTime, openingDay.getZone());
     checkOffsetTime(loanDate, expectedDueDate, servicePointId, INTERVAL_HOURS, duration,
       OFFSET_INTERVAL_HOURS, offsetDuration);
   }
@@ -386,7 +387,7 @@ public class CheckOutCalculateOffsetTimeTests extends APITests {
 
     OpeningDayPeriod dayPeriod = getFirstFakeOpeningDayByServId(servicePointId);
     ZonedDateTime loanDate = ZonedDateTime.of(dayPeriod.getOpeningDay()
-      .getDate(), LocalTime.of(6, 0), UTC);
+      .getDate(), LocalTime.of(6, 0), dayPeriod.getOpeningDay().getZone());
 
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource steve = usersFixture.steve();
@@ -458,7 +459,7 @@ public class CheckOutCalculateOffsetTimeTests extends APITests {
       : time.plusMinutes(duration);
 
     LocalDate date = openingDay.getDate();
-    return ZonedDateTime.of(date, timeShift, UTC);
+    return ZonedDateTime.of(date, timeShift, openingDay.getZone());
   }
 
   private ZonedDateTime getExpectedDateTimeOfOpeningAllDay(OpeningDayPeriod openingDayPeriod,
@@ -470,7 +471,7 @@ public class CheckOutCalculateOffsetTimeTests extends APITests {
       ? LocalTime.MIDNIGHT.plusHours(offsetDuration)
       : LocalTime.MIDNIGHT.plusMinutes(offsetDuration);
 
-    return ZonedDateTime.of(date, timeOffset, UTC);
+    return ZonedDateTime.of(date, timeOffset, openingDay.getZone());
   }
 
   private IndividualResource createLoanPolicy(JsonObject loanPolicyEntry) {

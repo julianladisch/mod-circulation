@@ -8,9 +8,8 @@ import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.UUID;
@@ -90,36 +89,23 @@ public class OverduePeriodCalculatorService {
   private int getOpeningDayDurationMinutes(
     OpeningDay openingDay, LocalDateTime dueDate, LocalDateTime systemTime) {
 
-    ZonedDateTime datePart = ZonedDateTime.of(openingDay.getDate(),
-      LocalTime.MIDNIGHT, openingDay.getZone());
-
     return openingDay.getOpeningHour()
       .stream()
       .mapToInt(openingHour -> getOpeningHourDurationMinutes(
-        openingHour, datePart, dueDate, systemTime))
+        openingDay.getDate(), openingHour, dueDate, systemTime))
       .sum();
   }
 
-  private int getOpeningHourDurationMinutes(OpeningHour openingHour,
-    ZonedDateTime datePart, LocalDateTime dueDate, LocalDateTime returnDate) {
+  private int getOpeningHourDurationMinutes(LocalDate openingDay, OpeningHour openingHour,
+    LocalDateTime dueDate, LocalDateTime returnDate) {
 
-    if (allNotNull(datePart, dueDate, openingHour.getStartTime(),
+    if (allNotNull(openingDay, dueDate, openingHour.getStartTime(),
       openingHour.getEndTime())) {
 
-      LocalDateTime startTime =  datePart
-        .withHour(openingHour.getStartTime().getHour())
-        .withMinute(openingHour.getStartTime().getMinute())
-        .withSecond(openingHour.getStartTime().getSecond())
-        .withNano(openingHour.getStartTime().getNano())
-        .withZoneSameInstant(ZoneOffset.UTC)
-        .toLocalDateTime();
-      LocalDateTime endTime =  datePart
-        .withHour(openingHour.getEndTime().getHour())
-        .withMinute(openingHour.getEndTime().getMinute())
-        .withSecond(openingHour.getEndTime().getSecond())
-        .withNano(openingHour.getEndTime().getNano())
-        .withZoneSameInstant(ZoneOffset.UTC)
-        .toLocalDateTime();
+      LocalDateTime startTime = LocalDateTime.of(openingDay,
+        openingHour.getStartTime());
+      LocalDateTime endTime = LocalDateTime.of(openingDay,
+        openingHour.getEndTime());
 
       if (isAfterMillis(dueDate, startTime) && isBeforeMillis(dueDate, endTime)) {
         startTime = dueDate;
