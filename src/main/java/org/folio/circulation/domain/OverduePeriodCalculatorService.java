@@ -9,6 +9,7 @@ import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -89,7 +90,8 @@ public class OverduePeriodCalculatorService {
   private int getOpeningDayDurationMinutes(
     OpeningDay openingDay, LocalDateTime dueDate, LocalDateTime systemTime) {
 
-    ZonedDateTime datePart = openingDay.getDayWithTimeZone();
+    ZonedDateTime datePart = ZonedDateTime.of(openingDay.getDate(),
+      LocalTime.MIDNIGHT, openingDay.getZone());
 
     return openingDay.getOpeningHour()
       .stream()

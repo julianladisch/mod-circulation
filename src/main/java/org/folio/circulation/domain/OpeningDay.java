@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
 
-import org.folio.circulation.support.ClockManager;
-
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -35,7 +33,7 @@ public class OpeningDay {
   private final LocalDate date;
   private final boolean allDay;
   private final boolean open;
-  private final ZonedDateTime dayWithTimeZone;
+  private final ZoneOffset zone;
 
   public static OpeningDay fromJsonByDefaultKey(JsonObject jsonObject) {
     JsonObject openingDayJson = jsonObject.getJsonObject(OPENING_DAY_KEY);
@@ -57,35 +55,38 @@ public class OpeningDay {
       getBooleanProperty(openingDayJson, OPEN_KEY), zone);
   }
 
-  public static OpeningDay createOpeningDay(List<OpeningHour> openingHour, LocalDate date,
-    boolean allDay, boolean open) {
+  public static OpeningDay createOpeningDay(List<OpeningHour> openingHour,
+    LocalDate date, boolean allDay, boolean open) {
 
-    return new OpeningDay(openingHour, date, allDay, open, ClockManager.getZonedDateTime());
+    return new OpeningDay(openingHour, date, allDay, open, null);
   }
 
   public static OpeningDay createOpeningDay(List<OpeningHour> openingHour,
     LocalDate date, boolean allDay, boolean open, ZoneOffset zone) {
 
-    return new OpeningDay(openingHour, date, allDay, open,
-      ZonedDateTime.of(date, LocalTime.MIDNIGHT, zone));
+    return new OpeningDay(openingHour, date, allDay, open, zone);
   }
 
   public OpeningDay(List<OpeningHour> openingHour, LocalDate date,
-    boolean allDay, boolean open, ZonedDateTime dateWithTimeZone) {
+    boolean allDay, boolean open, ZoneOffset zone) {
 
     this.openingHour = openingHour;
-    this.date = date;
     this.allDay = allDay;
     this.open = open;
-    this.dayWithTimeZone = dateWithTimeZone;
+
+    if (zone != null && zone != ZoneOffset.UTC) {
+      this.date = ZonedDateTime.of(date, LocalTime.MIDNIGHT, zone)
+        .withZoneSameInstant(ZoneOffset.UTC).toLocalDate();
+      this.zone = zone;
+    }
+    else {
+      this.date = date;
+      this.zone = ZoneOffset.UTC;
+    }
   }
 
   public LocalDate getDate() {
     return date;
-  }
-
-  public ZonedDateTime getDayWithTimeZone() {
-    return dayWithTimeZone;
   }
 
   public boolean getAllDay() {
@@ -98,6 +99,10 @@ public class OpeningDay {
 
   public List<OpeningHour> getOpeningHour() {
     return openingHour;
+  }
+
+  public ZoneOffset getZone() {
+    return zone;
   }
 
   private JsonArray openingHourToJsonArray() {

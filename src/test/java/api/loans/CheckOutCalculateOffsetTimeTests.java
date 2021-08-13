@@ -259,8 +259,7 @@ public class CheckOutCalculateOffsetTimeTests extends APITests {
     duration = hoursBetween(timeNow, endTimeOfPeriod);
 
     OpeningDay openingDay = getLastFakeOpeningDayByServId(servicePointId).getOpeningDay();
-    ZonedDateTime loanDate = ZonedDateTime.of(openingDay
-      .getDayWithTimeZone().toLocalDate(), LocalTime.of(5, 0), UTC);
+    ZonedDateTime loanDate = ZonedDateTime.of(openingDay.getDate(), LocalTime.of(5, 0), UTC);
     LocalDate expectedDate = openingDay.getDate();
     LocalTime expectedTime = END_TIME_SECOND_PERIOD.plusHours(offsetDuration);
 
@@ -290,8 +289,10 @@ public class CheckOutCalculateOffsetTimeTests extends APITests {
     duration = hoursBetween(timeNow, endTimeOfPeriod);
 
     OpeningDay openingDay = getLastFakeOpeningDayByServId(servicePointId).getOpeningDay();
-    ZonedDateTime loanDate = ZonedDateTime.of(openingDay
-      .getDayWithTimeZone().toLocalDate(), LocalTime.of(5, 0), UTC);
+
+    ZonedDateTime loanDate = ZonedDateTime.of(openingDay.getDate(),
+      LocalTime.of(5, 0), UTC);
+
     LocalDate expectedDate = openingDay.getDate();
     LocalTime expectedTime = START_TIME_SECOND_PERIOD.plusHours(offsetDuration);
 
