@@ -4,7 +4,6 @@ import static org.folio.circulation.domain.InstanceRequestItemsComparer.sortRequ
 import static org.folio.circulation.domain.representations.RequestProperties.ITEM_ID;
 import static org.folio.circulation.domain.representations.RequestProperties.PROXY_USER_ID;
 import static org.folio.circulation.domain.representations.RequestProperties.REQUESTER_ID;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.resources.RequestBlockValidators.regularRequestBlockValidators;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
@@ -12,6 +11,7 @@ import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 import static org.folio.circulation.support.results.Result.of;
 import static org.folio.circulation.support.results.Result.succeeded;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.lang.invoke.MethodHandles;
 import java.time.ZonedDateTime;
@@ -336,7 +336,7 @@ public class RequestByInstanceIdResource extends Resource {
 
           write(requestBody, ITEM_ID, item.getItemId());
           write(requestBody, "requestDate",
-            formatDateTime(requestByInstanceIdRequest.getRequestDate()));
+            formatDateTimeOptional(requestByInstanceIdRequest.getRequestDate()));
           write(requestBody, REQUESTER_ID, requestByInstanceIdRequest.getRequesterId().toString());
           write(requestBody, "pickupServicePointId",
             requestByInstanceIdRequest.getPickupServicePointId().toString());
@@ -344,7 +344,7 @@ public class RequestByInstanceIdResource extends Resource {
           write(requestBody, "requestType", reqType.getValue());
           if (requestByInstanceIdRequest.getRequestExpirationDate() != null) {
             write(requestBody, "requestExpirationDate",
-              formatDateTime(requestByInstanceIdRequest.getRequestExpirationDate()));
+              formatDateTimeOptional(requestByInstanceIdRequest.getRequestExpirationDate()));
           }
           write(requestBody, "patronComments", requestByInstanceIdRequest.getPatronComments());
           requests.add(requestBody);

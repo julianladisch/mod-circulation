@@ -23,7 +23,7 @@ import static org.folio.circulation.support.http.client.CqlQuery.exactMatch;
 import static org.folio.circulation.support.http.client.CqlQuery.exactMatchAny;
 import static org.folio.circulation.support.logging.PatronNoticeLogHelper.logResponse;
 import static org.folio.circulation.support.results.ResultBinding.flatMapResult;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -82,7 +82,7 @@ public class ScheduledNoticesRepository {
       .map(TriggeringEvent::getRepresentation)
       .collect(Collectors.toList());
 
-    return CqlQuery.lessThan("nextRunTime", formatDateTime(timeLimit.withZoneSameInstant(ZoneOffset.UTC)))
+    return CqlQuery.lessThan("nextRunTime", formatDateTimeOptional(timeLimit.withZoneSameInstant(ZoneOffset.UTC)))
       .combine(exactMatch("noticeConfig.sendInRealTime", Boolean.toString(realTime)), CqlQuery::and)
       .combine(exactMatchAny("triggeringEvent", triggeringEventRepresentations), CqlQuery::and)
       .map(cqlQuery -> cqlQuery.sortBy(cqlSortBy))

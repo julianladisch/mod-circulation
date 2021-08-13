@@ -7,7 +7,7 @@ import static org.folio.circulation.domain.representations.ContributorsToNamesMa
 import static org.folio.circulation.domain.representations.ItemProperties.CALL_NUMBER_COMPONENTS;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.copyProperty;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.lang.invoke.MethodHandles;
 
@@ -154,7 +154,7 @@ public class RequestRepresentation {
       : new JsonObject();
 
     if (loan.getDueDate() != null) {
-      loanSummary.put("dueDate", formatDateTime(loan.getDueDate()));
+      loanSummary.put("dueDate", formatDateTimeOptional(loan.getDueDate()));
       log.info("Adding loan properties to request {}", request.getString("id"));
     }
 

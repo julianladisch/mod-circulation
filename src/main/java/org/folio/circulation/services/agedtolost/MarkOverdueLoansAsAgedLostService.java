@@ -10,7 +10,7 @@ import static org.folio.circulation.support.http.client.CqlQuery.exactMatch;
 import static org.folio.circulation.support.http.client.CqlQuery.lessThan;
 import static org.folio.circulation.support.http.client.CqlQuery.notEqual;
 import static org.folio.circulation.support.results.Result.ofAsync;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.time.ZonedDateTime;
@@ -139,7 +139,7 @@ public class MarkOverdueLoansAsAgedLostService {
 
   private Result<CqlQuery> loanFetchQuery() {
     final Result<CqlQuery> statusQuery = exactMatch("status.name", "Open");
-    final Result<CqlQuery> dueDateQuery = lessThan("dueDate", formatDateTime(ClockManager.getZonedDateTime()));
+    final Result<CqlQuery> dueDateQuery = lessThan("dueDate", formatDateTimeOptional(ClockManager.getZonedDateTime()));
     final Result<CqlQuery> claimedReturnedQuery = notEqual("itemStatus", CLAIMED_RETURNED.getValue());
     final Result<CqlQuery> agedToLostQuery = notEqual("itemStatus", AGED_TO_LOST.getValue());
     final Result<CqlQuery> declaredLostQuery = notEqual("itemStatus", DECLARED_LOST.getValue());
