@@ -43,6 +43,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -884,7 +885,7 @@ public class CheckOutCalculateDueDateTests extends APITests {
 
     return ZonedDateTime.of(
       LocalDate.of(ClockManager.getZonedDateTime().getYear(), month, day),
-      LocalTime.of(hour, minute, second), zone);
+      LocalTime.of(hour, minute, second), zone).truncatedTo(ChronoUnit.SECONDS);
   }
 
   private void useFixedPolicy(UUID fixedDueDateScheduleId,

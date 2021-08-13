@@ -12,10 +12,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.Period;
+import org.folio.circulation.support.utils.DateTimeUtil;
 import org.junit.Test;
 
 import api.support.APITests;
@@ -64,7 +66,9 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
         .on(loanDate));
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
-      CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, LocalTime.MAX, ZoneOffset.UTC);
+      CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, LocalTime.MAX, ZoneOffset.UTC)
+      .truncatedTo(ChronoUnit.SECONDS);
+
     assertThat("due date should be " + formatDateTime(expectedDate),
       loan.getJson().getString("dueDate"), isEquivalentTo(expectedDate));
   }
@@ -103,7 +107,9 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
         .on(loanDate));
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
-      CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, LocalTime.MAX, ZoneOffset.UTC);
+      CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, LocalTime.MAX, ZoneOffset.UTC)
+      .truncatedTo(ChronoUnit.SECONDS);
+
     assertThat("due date should be " + expectedDate,
       loan.getJson().getString("dueDate"), isEquivalentTo(expectedDate));
   }
@@ -143,7 +149,9 @@ public class CheckOutByBarcodeFixedDueDateScenariosTest extends APITests {
         .on(loanDate));
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
-      CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY, LocalTime.MAX, ZoneOffset.UTC); 
+      CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY, LocalTime.MAX, ZoneOffset.UTC)
+      .truncatedTo(ChronoUnit.SECONDS);
+
     assertThat("due date should be " + expectedDate,
       loan.getJson().getString("dueDate"), isEquivalentTo(expectedDate));
   }
