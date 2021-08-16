@@ -28,13 +28,13 @@ import org.folio.circulation.support.ClockManager;
 
 /**
  * A utility for centralizing common date time operations.
- *
+ * <p>
  * Be careful with the differences of withZoneSameInstant() vs
  * withZoneSameLocal().
- *
+ * <p>
  * The "SameInstant" version changes the timezone so that the representation
  * changes but the actual date does not.
- *
+ * <p>
  * The "SameLocal" version changes the actual time and preserves the timezone.
  */
 public class DateTimeUtil {
@@ -173,7 +173,8 @@ public class DateTimeUtil {
   /**
    * Parse the given value, returning a date using system time zone.
    *
-   * For compatibility with JodaTime, when value is null, then used now(Clock.systemUTC()).
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param value The value to parse into a LocalDate.
    * @return A date parsed from the value.
@@ -184,10 +185,11 @@ public class DateTimeUtil {
 
   /**
    * Parse the given value, returning a date.
-   *
-   * For compatibility with JodaTime, when value is null, then used now(Clock.systemUTC()).
-   * For compatibility with JodaTime, when zone is null, then
-   * system default.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
+   * For compatibility with JodaTime, when zone is null, then use the zone from
+   * the ClockManager.
    *
    * @param value The value to parse into a LocalDate.
    * @param zone The time zone to use when parsing.
@@ -217,8 +219,9 @@ public class DateTimeUtil {
 
   /**
    * Parse the given value, returning a dateTime using system time zone.
-   *
-   * For compatibility with JodaTime, when value is null, then used now(Clock.systemUTC()).
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param value The value to parse into a LocalDate.
    * @return A dateTime parsed from the value.
@@ -229,10 +232,11 @@ public class DateTimeUtil {
 
   /**
    * Parse the given value, returning a dateTime.
-   *
-   * For compatibility with JodaTime, when value is null, then used now(Clock.systemUTC()).
-   * For compatibility with JodaTime, when zone is null, then
-   * system default.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
+   * For compatibility with JodaTime, when zone is null, then use the zone from
+   * the ClockManager.
    *
    * @param value The value to parse into a LocalDate.
    * @param zone The time zone to use when parsing.
@@ -262,8 +266,9 @@ public class DateTimeUtil {
 
   /**
    * Parse the given value, returning a time using system time zone.
-   *
-   * For compatibility with JodaTime, when value is null, then used now(Clock.systemUTC()).
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param value The value to parse into a LocalDate.
    * @return A time parsed from the value.
@@ -274,10 +279,11 @@ public class DateTimeUtil {
 
   /**
    * Parse the given value, returning a date.
-   *
-   * For compatibility with JodaTime, when value is null, then used now(Clock.systemUTC()).
-   * For compatibility with JodaTime, when zone is null, then
-   * system default.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
+   * For compatibility with JodaTime, when zone is null, then use the zone from
+   * the ClockManager.
    *
    * @param value The value to parse into a LocalDate.
    * @param zone The time zone to use when parsing.
@@ -307,9 +313,9 @@ public class DateTimeUtil {
 
   /**
    * Given a time zone, normalize it.
-   *
-   * JodaTime defaults the time zone when zone is null.
-   * Java time does not.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param zone The time zone to normalize.
    * @return The provided time zone or if zone is null a default time zone.
@@ -325,9 +331,9 @@ public class DateTimeUtil {
 
   /**
    * Given a dateTime, normalize it.
-   *
-   * JodaTime defaults the now() when dateTime is null.
-   * Java time does not.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param dateTime The dateTime to normalize.
    * @return The provided dateTime or if dateTime is null then ClockManager.getZonedDateTime().
@@ -342,9 +348,9 @@ public class DateTimeUtil {
 
   /**
    * Given an offset dateTime, normalize it.
-   *
-   * JodaTime defaults the now() when dateTime is null.
-   * Java time does not.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param dateTime The dateTime to normalize.
    * @return The provided dateTime or if dateTime is null then ClockManager.getZonedDateTime().
@@ -359,9 +365,9 @@ public class DateTimeUtil {
 
   /**
    * Given a local dateTime, normalize it.
-   *
-   * JodaTime defaults the now() when dateTime is null.
-   * Java time does not.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param dateTime The dateTime to normalize.
    * @return The provided dateTime or if dateTime is null then ClockManager.getZonedDateTime().
@@ -376,9 +382,9 @@ public class DateTimeUtil {
 
   /**
    * Given a date, normalize it.
-   *
-   * JodaTime defaults the now() when date is null.
-   * Java time does not.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param date The date to normalize.
    * @return The provided date or if date is null then ClockManager.getZonedDate().
@@ -393,9 +399,9 @@ public class DateTimeUtil {
 
   /**
    * Given a time, normalize it.
-   *
-   * JodaTime defaults the now() when time is null.
-   * Java time does not.
+   * <p>
+   * For compatibility with JodaTime, when value is null, then a now() call
+   * via ClockManager is used.
    *
    * @param time The time to normalize.
    * @return The provided date or if time is null then ClockManager.getLocalTime().
@@ -410,7 +416,7 @@ public class DateTimeUtil {
 
   /**
    * Format the dateTime as a string using format "yyyy-MM-dd", in UTC.
-   *
+   * <p>
    * This will normalize the dateTime.
    *
    * @param dateTime The dateTime to convert to a string.
@@ -423,7 +429,7 @@ public class DateTimeUtil {
 
   /**
    * Format the offset dateTime as a string using format "yyyy-MM-dd", in UTC.
-   *
+   * <p>
    * This will normalize the offset dateTime.
    *
    * @param dateTime The dateTime to convert to a string.
@@ -436,7 +442,7 @@ public class DateTimeUtil {
 
   /**
    * Format the date as a string using format "yyyy-MM-dd".
-   *
+   * <p>
    * This will normalize the date.
    *
    * @param date The date to convert to a string.
@@ -448,7 +454,7 @@ public class DateTimeUtil {
 
   /**
    * Format the dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
-   *
+   * <p>
    * This will normalize the dateTime.
    *
    * @param dateTime The dateTime to convert to a string.
@@ -461,8 +467,9 @@ public class DateTimeUtil {
 
   /**
    * Format the dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
-   *
-   * This will not normalize the dateTime and will instead return NULL if dateTime is NULL.
+   * <p>
+   * This will not normalize the dateTime and will instead return NULL if
+   * dateTime is NULL.
    *
    * @param dateTime The dateTime to convert to a string.
    * @return The converted dateTime string or NULL.
@@ -478,7 +485,7 @@ public class DateTimeUtil {
 
   /**
    * Format the offset dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
-   *
+   * <p>
    * This will normalize the offset dateTime.
    *
    * @param dateTime The dateTime to convert to a string.
@@ -491,10 +498,10 @@ public class DateTimeUtil {
 
   /**
    * Format the date as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
-   *
+   * <p>
    * The time is set to Midnight for the system clock's timezone and not
    * midnight of UTC.
-   *
+   * <p>
    * This will normalize the date.
    *
    * @param date The date to convert to a string.
@@ -507,7 +514,7 @@ public class DateTimeUtil {
 
   /**
    * Get the last second of the day.
-   *
+   * <p>
    * This operates in the timezone specified by dateTime.
    *
    * @param dateTime The dateTime to convert.
@@ -570,8 +577,7 @@ public class DateTimeUtil {
    * @return The converted ZoneOffset.
    */
   public static ZoneOffset toZoneOffset(ZoneId zoneId) {
-    return ZoneOffset.of(zoneId.getRules()
-      .getOffset(ClockManager.getInstant()).getId());
+    return zoneId.getRules().getOffset(ClockManager.getInstant());
   }
 
   /**
@@ -607,10 +613,10 @@ public class DateTimeUtil {
 
   /**
    * Check if the the left date is before the right date in milliseconds.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
-   *
+   * <p>
    * The compareTo() method states that it compares to millis but this appears
    * to not be the case. Instead, this takes the approach of directly
    * converting to epoch millis to guarantee positioning and granularity before
@@ -627,10 +633,10 @@ public class DateTimeUtil {
 
   /**
    * Check if the the left date is before the right date in milliseconds.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
-   *
+   * <p>
    * The compareTo() method states that it compares to millis but this appears
    * to not be the case. Instead, this takes the approach of directly
    * converting to epoch millis to guarantee positioning and granularity before
@@ -647,7 +653,7 @@ public class DateTimeUtil {
 
   /**
    * Check if the the left time is before the right time in milliseconds.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
    *
@@ -662,10 +668,10 @@ public class DateTimeUtil {
 
   /**
    * Check if the the left date is after the right date in milliseconds.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
-   *
+   * <p>
    * The compareTo() method states that it compares to millis but this appears
    * to not be the case. Instead, this takes the approach of directly
    * converting to epoch millis to guarantee positioning and granularity before
@@ -682,10 +688,10 @@ public class DateTimeUtil {
 
   /**
    * Check if the the left date is after the right date in milliseconds.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
-   *
+   * <p>
    * The compareTo() method states that it compares to millis but this appears
    * to not be the case. Instead, this takes the approach of directly
    * converting to epoch millis to guarantee positioning and granularity before
@@ -717,7 +723,7 @@ public class DateTimeUtil {
 
   /**
    * Check if the date is within the first and last dates, exclusively.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
    *
@@ -742,7 +748,7 @@ public class DateTimeUtil {
 
   /**
    * Check if the date is within the first and last dates, exclusively.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
    *
@@ -787,10 +793,10 @@ public class DateTimeUtil {
 
   /**
    * Check if the the left date is the same as the right date in milliseconds.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
-   *
+   * <p>
    * The compareTo() method states that it compares to millis but this appears
    * to not be the case. Instead, this takes the approach of directly
    * converting to epoch millis to guarantee positioning and granularity before
@@ -822,10 +828,10 @@ public class DateTimeUtil {
 
   /**
    * Compare the the left date with the right date in milliseconds.
-   *
+   * <p>
    * The isBefore()/isAfter() methods tend to work with nanoseconds and cannot
    * be used safely for millisecond comparisons.
-   *
+   * <p>
    * The compareTo() method states that it compares to millis but this appears
    * to not be the case. Instead, this takes the approach of directly
    * converting to epoch millis to guarantee positioning and granularity before
@@ -860,4 +866,65 @@ public class DateTimeUtil {
     return normalizeTime(left).truncatedTo(ChronoUnit.MILLIS)
       .compareTo(normalizeTime(right).truncatedTo(ChronoUnit.MILLIS));
   }
+
+  /**
+   * Get the number of milliseconds between two date times.
+   * <p>
+   * If "begin" is greater than "end", then milliseconds is set to 0.
+   * <p>
+   * LocalDateTime does not have the time zone so be sure that these dates are
+   * both representative of the same time zone.
+   *
+   * @param begin The inclusive begin time.
+   * @param end The exclusive end time.
+   * @return The number of milliseconds between the inclusive begin and the
+   * exclusive end.
+   */
+  public static long millisBetween(LocalDateTime begin, LocalDateTime end) {
+    final ZonedDateTime zonedBegin = ZonedDateTime.of(begin, UTC);
+    final ZonedDateTime zonedEnd = ZonedDateTime.of(end, UTC);
+
+    return millisBetween(zonedBegin, zonedEnd);
+  }
+
+  /**
+   * Get the number of milliseconds between two date times.
+   * <p>
+   * If "begin" is greater than "end", then milliseconds is set to 0.
+   *
+   * @param begin The inclusive begin time.
+   * @param end The exclusive end time.
+   *
+   * @return The number of milliseconds between the inclusive begin and the
+   * exclusive end.
+   */
+  public static long millisBetween(ZonedDateTime begin, ZonedDateTime end) {
+    if (isBeforeMillis(begin, end)) {
+      return end.toInstant().toEpochMilli() - begin.toInstant().toEpochMilli();
+    }
+
+    return 0L;
+  }
+
+  /**
+   * Get the number of milliseconds between two date times.
+   * <p>
+   * If "begin" is greater than "end", then milliseconds is set to 0.
+   * <p>
+   * LocalDateTime does not have the time zone so be sure that these dates are
+   * both representative of the same time zone.
+   *
+   * @param begin The inclusive begin time.
+   * @param end The exclusive end time.
+   * @return The number of milliseconds between the inclusive begin and the
+   * exclusive end.
+   */
+  public static long millisBetween(long begin, long end) {
+    if (begin < end) {
+      return end - begin;
+    }
+
+    return 0L;
+  }
+
 }

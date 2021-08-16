@@ -1,18 +1,20 @@
 package org.folio.circulation.domain.time;
 
 import static java.time.Duration.ofMillis;
+import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
+import static org.folio.circulation.support.utils.DateTimeUtil.millisBetween;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.ClockManager;
+import org.folio.circulation.support.utils.DateTimeUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,60 +37,58 @@ import lombok.With;
 @With
 public class Interval {
 
-  private final ZonedDateTime begin;
+  private final LocalDateTime begin;
+  private final ZoneId zone;
   private final Duration duration;
 
   /**
    * Initialize to current time at UTC and a 0 duration.
    */
   public Interval() {
-    begin = ClockManager.getZonedDateTime();
+    begin = ClockManager.getLocalDateTime();
+    zone = ClockManager.getZoneId();
     this.duration = ofMillis(0L);
   }
 
   /**
    * Initialize from date and time range, with timezone.
+   * <p>
+   * If "begin" is greater than "end", then duration is set to 0.
    *
    * @param begin The inclusive begin time.
    * @param end The exclusive end time.
    */
   public Interval(ZonedDateTime begin, ZonedDateTime end) {
-    this.begin = begin;
-    if (isBeforeMillis(begin, end)) {
-      this.duration = ofMillis(end.toInstant().toEpochMilli()
-        - begin.toInstant().toEpochMilli());
-    }
-    else {
-      this.duration = ofMillis(0L);
-    }
+    zone = begin.getZone();
+    this.begin = begin.withZoneSameInstant(UTC).toLocalDateTime();
+    this.duration = ofMillis(millisBetween(begin, end));
   }
 
   /**
    * Initialize from date and time range, without timezone.
    * <p>
-   * This will use the system's timezone to locally represent the range.
+   * If "begin" is greater than "end", then duration is set to 0.
+   * <p>
+   * This will use the UTC to locally represent the range.
    *
    * @param begin The inclusive begin time.
    * @param end The exclusive end time.
    */
   public Interval(LocalDateTime begin, LocalDateTime end) {
-    final ZoneOffset zone = ClockManager.getZoneOffset();
-    this.begin = ZonedDateTime.of(begin, zone);
-    if (isBeforeMillis(begin, end)) {
-      this.duration = ofMillis(end.toInstant(zone).toEpochMilli()
-        - begin.toInstant(zone).toEpochMilli());
-    }
-    else {
-      this.duration = ofMillis(0L);
-    }
+    zone = UTC;
+    this.begin = begin;
+    this.duration = ofMillis(millisBetween(begin, end));
   }
 
   /**
    * Initialize from date and time range, in Epoch milliseconds.
+   * <p>
+   * If "begin" is greater than "end", then duration is set to 0.
+   * <p>
+   * This will default to the time zone specified in the ClockManager.
    *
    * @param begin The inclusive begin time, in Epoch milliseconds.
    * @param end The exclusive end time, in Epoch milliseconds.
-   * @param zone The time zone.
    */
   public Interval(long begin, long end) {
     this(begin, end, ClockManager.getZoneId());
@@ -96,19 +96,23 @@ public class Interval {
 
   /**
    * Initialize from date and time range, in Epoch milliseconds.
+   * <p>
+   * If "begin" is greater than "end", then duration is set to 0.
    *
    * @param begin The inclusive begin time, in Epoch milliseconds.
    * @param end The exclusive end time, in Epoch milliseconds.
-   * @param zone The time zone.
+   * @param zone The time zone both begin time and end time are representative
+   * of.
    */
   public Interval(long begin, long end, ZoneId zone) {
-    this.begin = ZonedDateTime.ofInstant(Instant.ofEpochMilli(begin), zone);
-    if (begin < end) {
-      this.duration = ofMillis(end - begin);
-    }
-    else {
-      this.duration = ofMillis(0L);
-    }
+    // Begin must be converted to UTC, so use a ZonedDateTime to convert.
+    final ZonedDateTime dateTime = ZonedDateTime.ofInstant(
+      Instant.ofEpochMilli(begin), zone);
+
+    this.zone = zone;
+    this.begin = dateTime.withZoneSameInstant(UTC)
+      .toLocalDateTime();
+    this.duration = ofMillis(DateTimeUtil.millisBetween(begin, end));
   }
 
   /**
@@ -120,8 +124,11 @@ public class Interval {
    * @return A boolean of if the dateTime was found within the duration.
    */
   public boolean contains(ZonedDateTime dateTime) {
-    return isSameMillis(begin, dateTime) || isAfterMillis(dateTime, begin)
-      && isBeforeMillis(dateTime, begin.plus(duration));
+    final LocalDateTime localDateTime = dateTime.withZoneSameInstant(UTC)
+      .toLocalDateTime();
+
+    return isSameMillis(begin, localDateTime) || isAfterMillis(localDateTime, begin)
+      && isBeforeMillis(localDateTime, begin.plus(duration));
   }
 
   /**
@@ -130,7 +137,7 @@ public class Interval {
    * @return The date and time.
    */
   public ZonedDateTime getStart() {
-    return ZonedDateTime.from(begin);
+    return ZonedDateTime.of(begin, UTC).withZoneSameInstant(zone);
   }
 
   /**
@@ -139,7 +146,8 @@ public class Interval {
    * @return The date and time.
    */
   public ZonedDateTime getEnd() {
-    return begin.plus(duration);
+    return ZonedDateTime.of(begin.plus(duration), UTC)
+      .withZoneSameInstant(zone);
   }
 
   /**
@@ -148,7 +156,7 @@ public class Interval {
    * @return The timezone.
    */
   public ZoneId getZone() {
-    return begin.getZone();
+    return zone;
   }
 
   /**
@@ -159,7 +167,8 @@ public class Interval {
    * @return true if abuts, false otherwise.
    */
   public boolean abuts(Interval interval) {
-    final long start = begin.toInstant().toEpochMilli();
+    final ZonedDateTime dateTime = ZonedDateTime.of(begin, UTC);
+    final long start = dateTime.toInstant().toEpochMilli();
     final long end = getEnd().toInstant().toEpochMilli();
 
     if (interval == null) {
@@ -178,7 +187,8 @@ public class Interval {
    * @return A new interval representing the gap or null if no gap found.
    */
   public Interval gap(Interval interval) {
-    final long start = begin.toInstant().toEpochMilli();
+    final ZonedDateTime dateTime = ZonedDateTime.of(begin, UTC);
+    final long start = dateTime.toInstant().toEpochMilli();
     final long end = getEnd().toInstant().toEpochMilli();
     final long iStart = interval.getStart().toInstant().toEpochMilli();
     final long iEnd = interval.getEnd().toInstant().toEpochMilli();
