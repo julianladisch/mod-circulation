@@ -6,6 +6,7 @@ import static org.folio.circulation.support.results.Result.ofAsync;
 import static org.folio.circulation.support.results.Result.succeeded;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -143,7 +144,7 @@ public class UpdateRequestQueue {
     return completedFuture(succeeded(request));
   }
 
-  private Result<Request> populateHoldShelfExpirationDate(Request request, ZoneOffset tenantTimeZone) {
+  private Result<Request> populateHoldShelfExpirationDate(Request request, ZoneId tenantTimeZone) {
     ServicePoint pickupServicePoint = request.getPickupServicePoint();
     TimePeriod holdShelfExpiryPeriod = pickupServicePoint.getHoldShelfExpiryPeriod();
 
@@ -284,7 +285,7 @@ public class UpdateRequestQueue {
   }
 
   private ZonedDateTime calculateHoldShelfExpirationDate(
-    TimePeriod holdShelfExpiryPeriod, ZoneOffset tenantTimeZone) {
+    TimePeriod holdShelfExpiryPeriod, ZoneId tenantTimeZone) {
 
     ZonedDateTime holdShelfExpirationDate = holdShelfExpiryPeriod.getInterval()
       .addTo(ClockManager.getZonedDateTime(), holdShelfExpiryPeriod.getDuration());

@@ -9,6 +9,7 @@ import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -33,7 +34,7 @@ public class OpeningDay {
   private final LocalDate date;
   private final boolean allDay;
   private final boolean open;
-  private final ZoneOffset zone;
+  private final ZoneId zone;
 
   public static OpeningDay fromJsonByDefaultKey(JsonObject jsonObject) {
     JsonObject openingDayJson = jsonObject.getJsonObject(OPENING_DAY_KEY);
@@ -46,7 +47,7 @@ public class OpeningDay {
       getBooleanProperty(openingDayJson, OPEN_KEY), null);
   }
 
-  public static OpeningDay fromOpeningPeriodJson(JsonObject openingPeriod, ZoneOffset zone) {
+  public static OpeningDay fromOpeningPeriodJson(JsonObject openingPeriod, ZoneId zone) {
     JsonObject openingDayJson = openingPeriod.getJsonObject(OPENING_DAY_KEY);
 
     return createOpeningDay(fillOpeningDay(openingDayJson),
@@ -62,13 +63,13 @@ public class OpeningDay {
   }
 
   public static OpeningDay createOpeningDay(List<OpeningHour> openingHour,
-    LocalDate date, boolean allDay, boolean open, ZoneOffset zone) {
+    LocalDate date, boolean allDay, boolean open, ZoneId zone) {
 
     return new OpeningDay(openingHour, date, allDay, open, zone);
   }
 
   public OpeningDay(List<OpeningHour> openingHour, LocalDate date,
-    boolean allDay, boolean open, ZoneOffset zone) {
+    boolean allDay, boolean open, ZoneId zone) {
 
     this.openingHour = openingHour;
     this.allDay = allDay;
@@ -101,7 +102,7 @@ public class OpeningDay {
     return openingHour;
   }
 
-  public ZoneOffset getZone() {
+  public ZoneId getZone() {
     return zone;
   }
 

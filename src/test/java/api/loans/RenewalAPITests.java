@@ -66,6 +66,7 @@ import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.http.server.ValidationError;
+import org.folio.circulation.support.utils.DateTimeUtil;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.Is;
 import org.junit.After;
@@ -92,6 +93,7 @@ import api.support.fixtures.TemplateContextMatchers;
 import api.support.http.IndividualResource;
 import api.support.http.ItemResource;
 import api.support.http.OkapiHeaders;
+import api.support.http.UserResource;
 import api.support.matchers.OverdueFineMatcher;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -872,8 +874,8 @@ public abstract class RenewalAPITests extends APITests {
 
   @Test
   public void cannotRenewWhenLoaneeCannotBeFound() {
-    val smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
-    val steve = usersFixture.steve();
+    ItemResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
+    UserResource steve = usersFixture.steve();
 
     checkOutFixture.checkOutByBarcode(smallAngryPlanet, steve);
 
@@ -956,7 +958,7 @@ public abstract class RenewalAPITests extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, END_OF_A_DAY, UTC);
-    assertThat("due date should be " + expectedDate,
+    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
   }
 
@@ -997,7 +999,7 @@ public abstract class RenewalAPITests extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY, END_OF_A_DAY, UTC);
-    assertThat("due date should be " + expectedDate,
+    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
   }
 
@@ -1036,7 +1038,7 @@ public abstract class RenewalAPITests extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY, START_TIME_FIRST_PERIOD, UTC);
-    assertThat("due date should be " + expectedDate,
+    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
   }
 
@@ -1082,7 +1084,7 @@ public abstract class RenewalAPITests extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(WEDNESDAY_DATE,
       END_TIME_SECOND_PERIOD, UTC);
-    assertThat("due date should be " + expectedDate,
+    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
 
     ClockManager.setDefaultClock();
@@ -1134,7 +1136,7 @@ public abstract class RenewalAPITests extends APITests {
 
     assertThat(response.getBody(), containsString(expectedTimeZone));
 
-    assertThat("due date should be " + expectedDate,
+    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
   }
 

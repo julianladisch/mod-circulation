@@ -8,7 +8,7 @@ import static org.folio.circulation.support.utils.DateTimeUtil.compareToMillis;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.results.Result;
@@ -19,7 +19,7 @@ public class EndOfCurrentHoursStrategy extends ShortTermLoansBaseStrategy {
 
   private final ZonedDateTime currentTime;
 
-  public EndOfCurrentHoursStrategy(ZonedDateTime currentTime, ZoneOffset zone) {
+  public EndOfCurrentHoursStrategy(ZonedDateTime currentTime, ZoneId zone) {
     super(zone);
     this.currentTime = currentTime;
   }

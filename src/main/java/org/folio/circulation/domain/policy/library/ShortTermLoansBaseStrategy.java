@@ -4,7 +4,7 @@ import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyU
 import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
 
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -13,9 +13,9 @@ import org.folio.circulation.support.results.Result;
 
 public abstract class ShortTermLoansBaseStrategy implements ClosedLibraryStrategy {
 
-  protected final ZoneOffset zone;
+  protected final ZoneId zone;
 
-  protected ShortTermLoansBaseStrategy(ZoneOffset zone) {
+  protected ShortTermLoansBaseStrategy(ZoneId zone) {
     this.zone = zone;
   }
 

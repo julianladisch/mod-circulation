@@ -6,7 +6,7 @@ import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -16,9 +16,9 @@ import org.folio.circulation.support.results.Result;
 
 public class EndOfPreviousDayStrategy implements ClosedLibraryStrategy {
 
-  private final ZoneOffset zone;
+  private final ZoneId zone;
 
-  public EndOfPreviousDayStrategy(ZoneOffset zone) {
+  public EndOfPreviousDayStrategy(ZoneId zone) {
     this.zone = zone;
   }
 

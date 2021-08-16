@@ -3,7 +3,7 @@ package org.folio.circulation.infrastructure.storage;
 import static org.folio.circulation.domain.MultipleRecords.from;
 import static org.folio.circulation.support.http.client.CqlQuery.exactMatch;
 
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -73,7 +73,7 @@ public class ConfigurationRepository {
     return LoanAnonymizationConfiguration.from(period);
   }
 
-  public CompletableFuture<Result<ZoneOffset>> findTimeZoneConfiguration() {
+  public CompletableFuture<Result<ZoneId>> findTimeZoneConfiguration() {
     Result<CqlQuery> cqlQueryResult = defineModuleNameAndConfigNameFilter(
       "ORG", "localeSettings");
 
@@ -100,7 +100,7 @@ public class ConfigurationRepository {
     return moduleQuery.combine(configNameQuery, CqlQuery::and);
   }
 
-  private Function<MultipleRecords<Configuration>, ZoneOffset> applySearchDateTimeZone() {
+  private Function<MultipleRecords<Configuration>, ZoneId> applySearchDateTimeZone() {
     return configurations -> new ConfigurationService()
       .findDateTimeZone(configurations.getRecords());
   }

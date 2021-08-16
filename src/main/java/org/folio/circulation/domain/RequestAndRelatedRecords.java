@@ -1,5 +1,6 @@
 package org.folio.circulation.domain;
 
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import org.folio.circulation.domain.policy.RequestPolicy;
@@ -9,7 +10,7 @@ public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedR
   private final Request originalRequest;
   private final RequestQueue requestQueue;
   private final RequestPolicy requestPolicy;
-  private final ZoneOffset timeZone;
+  private final ZoneId timeZone;
 
   private final MoveRequestRecord moveRequestRecord;
 
@@ -18,7 +19,7 @@ public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedR
     RequestQueue requestQueue,
     RequestPolicy requestPolicy,
     MoveRequestRecord moveRequestRecord,
-    ZoneOffset timeZone) {
+    ZoneId timeZone) {
 
     this.request = request;
     this.originalRequest = request.copy();
@@ -92,7 +93,7 @@ public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedR
     );
   }
 
-  RequestAndRelatedRecords withTimeZone(ZoneOffset newTimeZone) {
+  RequestAndRelatedRecords withTimeZone(ZoneId newTimeZone) {
     return new RequestAndRelatedRecords(request, requestQueue, requestPolicy,
       moveRequestRecord, newTimeZone);
   }
@@ -139,7 +140,7 @@ public class RequestAndRelatedRecords implements UserRelatedRecord, ItemRelatedR
     return request.getItemId();
   }
 
-  ZoneOffset getTimeZone() {
+  ZoneId getTimeZone() {
     return timeZone;
   }
 

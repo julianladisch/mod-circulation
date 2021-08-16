@@ -1,7 +1,7 @@
 package org.folio.circulation.domain.policy.library;
 
 import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +20,7 @@ public class LibraryTimetableConverter {
   }
 
   public static LibraryTimetable convertToLibraryTimetable(
-    AdjacentOpeningDays adjacentOpeningDays, ZoneOffset zone) {
+    AdjacentOpeningDays adjacentOpeningDays, ZoneId zone) {
     if (adjacentOpeningDays == null) {
       return new LibraryTimetable();
     }
@@ -80,7 +80,7 @@ public class LibraryTimetableConverter {
     return new Interval(first.getStart(), second.getEnd());
   }
 
-  private static List<Interval> getOpenIntervalsForDay(OpeningDay day, ZoneOffset zone) {
+  private static List<Interval> getOpenIntervalsForDay(OpeningDay day, ZoneId zone) {
     if (!day.getOpen()) {
       return Collections.emptyList();
     }
@@ -94,7 +94,7 @@ public class LibraryTimetableConverter {
   }
 
   private static Interval buildAllDayOpenInterval(
-    OpeningDay day, ZoneOffset zone) {
+    OpeningDay day, ZoneId zone) {
 
     ZonedDateTime startDateTime =
       ZonedDateTime.of(day.getDate(), LocalTime.MIDNIGHT, zone);
@@ -104,7 +104,7 @@ public class LibraryTimetableConverter {
   }
 
   private static Interval buildIntervalFromOpeningHour(
-    OpeningDay day, OpeningHour hour, ZoneOffset zone) {
+    OpeningDay day, OpeningHour hour, ZoneId zone) {
 
     ZonedDateTime startDateTime =
       ZonedDateTime.of(day.getDate(), hour.getStartTime(), zone);

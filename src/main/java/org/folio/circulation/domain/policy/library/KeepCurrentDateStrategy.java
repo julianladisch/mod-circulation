@@ -3,16 +3,16 @@ package org.folio.circulation.domain.policy.library;
 import static org.folio.circulation.domain.policy.library.ClosedLibraryStrategyUtils.END_OF_A_DAY;
 import static org.folio.circulation.support.results.Result.succeeded;
 
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.AdjacentOpeningDays;
 import org.folio.circulation.support.results.Result;
 
 public class KeepCurrentDateStrategy implements ClosedLibraryStrategy {
-  private final ZoneOffset zone;
+  private final ZoneId zone;
 
-  public KeepCurrentDateStrategy(ZoneOffset zone) {
+  public KeepCurrentDateStrategy(ZoneId zone) {
     this.zone = zone;
   }
 

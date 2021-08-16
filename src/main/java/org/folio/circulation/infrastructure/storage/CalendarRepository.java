@@ -7,7 +7,7 @@ import static org.folio.circulation.support.ValidationErrorFailure.failedValidat
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDate;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,7 +67,7 @@ public class CalendarRepository {
   }
 
   private Result<Collection<OpeningDay>> getOpeningDaysFromOpeningPeriods(
-    Response periodsResponse, ZoneOffset zone) {
+    Response periodsResponse, ZoneId zone) {
 
     return MultipleRecords.from(periodsResponse, openingPeriod ->
         getOpeningDayFromOpeningPeriod(openingPeriod, zone), OPENING_PERIODS)
@@ -75,7 +75,7 @@ public class CalendarRepository {
   }
 
   private OpeningDay getOpeningDayFromOpeningPeriod(
-    JsonObject openingPeriod, ZoneOffset zone) {
+    JsonObject openingPeriod, ZoneId zone) {
 
     return OpeningDay.fromOpeningPeriodJson(openingPeriod, zone);
   }

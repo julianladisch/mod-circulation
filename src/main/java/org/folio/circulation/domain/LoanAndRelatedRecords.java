@@ -1,5 +1,6 @@
 package org.folio.circulation.domain;
 
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import io.vertx.core.json.JsonObject;
@@ -9,10 +10,10 @@ public class LoanAndRelatedRecords implements UserRelatedRecord {
 
   private final Loan loan;
   private final RequestQueue requestQueue;
-  private final ZoneOffset timeZone;
+  private final ZoneId timeZone;
   private final JsonObject logContextProperties;
 
-  private LoanAndRelatedRecords(Loan loan, RequestQueue requestQueue, ZoneOffset timeZone, JsonObject logContextProperties) {
+  private LoanAndRelatedRecords(Loan loan, RequestQueue requestQueue, ZoneId timeZone, JsonObject logContextProperties) {
     this.loan = loan;
     this.requestQueue = requestQueue;
     this.timeZone = timeZone;
@@ -23,7 +24,7 @@ public class LoanAndRelatedRecords implements UserRelatedRecord {
     this(loan, ZoneOffset.UTC);
   }
 
-  public LoanAndRelatedRecords(Loan loan, ZoneOffset timeZone) {
+  public LoanAndRelatedRecords(Loan loan, ZoneId timeZone) {
     this(loan, null, timeZone, new JsonObject());
   }
 
@@ -57,7 +58,7 @@ public class LoanAndRelatedRecords implements UserRelatedRecord {
     return withLoan(loan.changeItemEffectiveLocationIdAtCheckOut(getItem().getLocationId()));
   }
 
-  public LoanAndRelatedRecords withTimeZone(ZoneOffset newTimeZone) {
+  public LoanAndRelatedRecords withTimeZone(ZoneId newTimeZone) {
     return new LoanAndRelatedRecords(loan, requestQueue, newTimeZone, logContextProperties);
   }
 
@@ -77,7 +78,7 @@ public class LoanAndRelatedRecords implements UserRelatedRecord {
     return loan.getProxy();
   }
 
-  public ZoneOffset getTimeZone() {
+  public ZoneId getTimeZone() {
     return timeZone;
   }
 

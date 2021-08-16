@@ -3,11 +3,11 @@ package org.folio.circulation.domain;
 import static org.folio.circulation.domain.MultipleRecords.from;
 
 import java.lang.invoke.MethodHandles;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
-import org.folio.circulation.support.utils.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,15 +24,15 @@ public class ConfigurationService {
   private static final String CHECKOUT_TIMEOUT_DURATION_KEY = "checkoutTimeoutDuration";
   private static final String CHECKOUT_TIMEOUT_KEY = "checkoutTimeout";
 
-  ZoneOffset findDateTimeZone(JsonObject representation) {
+  ZoneId findDateTimeZone(JsonObject representation) {
     return from(representation, Configuration::new, RECORDS_NAME)
       .map(MultipleRecords::getRecords)
       .map(this::findDateTimeZone)
       .orElse(DEFAULT_DATE_TIME_ZONE);
   }
 
-  public ZoneOffset findDateTimeZone(Collection<Configuration> configurations) {
-    final ZoneOffset chosenTimeZone = configurations.stream()
+  public ZoneId findDateTimeZone(Collection<Configuration> configurations) {
+    final ZoneId chosenTimeZone = configurations.stream()
       .map(this::applyTimeZone)
       .findFirst()
       .orElse(DEFAULT_DATE_TIME_ZONE);
@@ -95,17 +95,17 @@ public class ConfigurationService {
       : DEFAULT_SCHEDULED_NOTICES_PROCESSING_LIMIT;
   }
 
-  private ZoneOffset applyTimeZone(Configuration config) {
+  private ZoneId applyTimeZone(Configuration config) {
     String value = config.getValue();
     return StringUtils.isBlank(value)
       ? DEFAULT_DATE_TIME_ZONE
       : parseDateTimeZone(value);
   }
 
-  private ZoneOffset parseDateTimeZone(String value) {
+  private ZoneId parseDateTimeZone(String value) {
     String timezone = new JsonObject(value).getString(TIMEZONE_KEY);
     return StringUtils.isBlank(timezone)
       ? DEFAULT_DATE_TIME_ZONE
-      : DateTimeUtil.toZoneOffset(timezone);
+      : ZoneId.of(timezone);
   }
 }

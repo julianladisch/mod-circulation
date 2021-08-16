@@ -5,7 +5,7 @@ import static org.folio.circulation.support.results.Result.failed;
 import static org.folio.circulation.support.results.Result.succeeded;
 
 import java.time.Duration;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.policy.LoanPolicyPeriod;
@@ -16,7 +16,7 @@ public class BeginningOfNextOpenHoursStrategy extends ShortTermLoansBaseStrategy
   private final Duration duration;
 
   public BeginningOfNextOpenHoursStrategy(
-    LoanPolicyPeriod offsetInterval, int offsetDuration, ZoneOffset zone) {
+    LoanPolicyPeriod offsetInterval, int offsetDuration, ZoneId zone) {
     super(zone);
     this.duration = LoanPolicyPeriod.calculateDuration(offsetInterval, offsetDuration);
   }

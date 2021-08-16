@@ -3,7 +3,7 @@ package org.folio.circulation.resources;
 import static java.lang.Math.max;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -56,7 +56,7 @@ public class DueDateNotRealTimeScheduledNoticeProcessingResource extends Schedul
         pageLimit, timeLimit)));
   }
 
-  private ZonedDateTime startOfTodayInTimeZone(ZoneOffset zone) {
+  private ZonedDateTime startOfTodayInTimeZone(ZoneId zone) {
     return ClockManager.getZonedDateTime().toLocalDate()
       .atStartOfDay(zone);
   }

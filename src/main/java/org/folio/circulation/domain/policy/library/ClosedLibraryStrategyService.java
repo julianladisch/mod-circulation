@@ -5,7 +5,7 @@ import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.mapResult;
 
 import java.time.LocalDate;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.Optional;
@@ -60,7 +60,7 @@ public class ClosedLibraryStrategyService {
   }
 
   private CompletableFuture<Result<ZonedDateTime>> applyClosedLibraryDueDateManagement(
-    Loan loan, LoanPolicy loanPolicy, ZoneOffset zone) {
+    Loan loan, LoanPolicy loanPolicy, ZoneId zone) {
 
     LocalDate requestedDate = loan.getDueDate().withZoneSameInstant(zone).toLocalDate();
     return calendarRepository.lookupOpeningDays(requestedDate, loan.getCheckoutServicePointId())
@@ -68,7 +68,7 @@ public class ClosedLibraryStrategyService {
   }
 
   private Result<ZonedDateTime> applyStrategy(
-    Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays, ZoneOffset zone) {
+    Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays, ZoneId zone) {
     ZonedDateTime initialDueDate = loan.getDueDate();
 
     ClosedLibraryStrategy strategy = determineClosedLibraryStrategy(loanPolicy, currentDateTime, zone);
@@ -79,7 +79,7 @@ public class ClosedLibraryStrategyService {
 
   private Result<ZonedDateTime> applyFixedDueDateLimit(
     ZonedDateTime dueDate, Loan loan, LoanPolicy loanPolicy, AdjacentOpeningDays openingDays,
-    ZoneOffset zone) {
+    ZoneId zone) {
 
     Optional<ZonedDateTime> optionalDueDateLimit =
       loanPolicy.getScheduleLimit(loan.getLoanDate(), isRenewal, currentDateTime);
