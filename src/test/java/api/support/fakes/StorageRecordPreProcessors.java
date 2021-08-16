@@ -9,7 +9,7 @@ import static org.folio.circulation.domain.representations.ItemProperties.HOLDIN
 import static org.folio.circulation.domain.representations.ItemProperties.PERMANENT_LOCATION_ID;
 import static org.folio.circulation.domain.representations.ItemProperties.TEMPORARY_LOCATION_ID;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +60,7 @@ public final class StorageRecordPreProcessors {
         if (!Objects.equals(oldItemStatus.getString("name"),
           newItemStatus.getString("name"))) {
           write(newItemStatus, "date",
-            formatDateTime(ClockManager.getZonedDateTime())
+            formatDateTimeOptional(ClockManager.getZonedDateTime())
           );
         }
       }

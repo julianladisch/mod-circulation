@@ -5,12 +5,12 @@ import static org.folio.circulation.domain.representations.LoanProperties.CHECKO
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getObjectProperty;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
 
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.override.BlockOverrides;
 import org.folio.circulation.support.ClockManager;
+import org.folio.circulation.support.utils.DateTimeUtil;
 
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
@@ -49,8 +49,7 @@ public class CheckOutByBarcodeRequest {
   private static String defaultLoanDate(String loanDate) {
     return isNotBlank(loanDate)
       ? loanDate
-      : ClockManager.getZonedDateTime()
-        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+      : DateTimeUtil.formatDateTime(ClockManager.getZonedDateTime());
   }
 
   public Loan toLoan() {

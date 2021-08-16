@@ -1,7 +1,7 @@
 package api.support.builders;
 
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -31,11 +31,11 @@ public class RequestByInstanceIdRequestBuilder implements Builder {
     JsonObject requestBody = new JsonObject();
 
     write(requestBody, "instanceId", instanceId);
-    write(requestBody, "requestDate", formatDateTime(requestDate));
+    write(requestBody, "requestDate", formatDateTimeOptional(requestDate));
     write(requestBody, "requesterId", requesterId);
     write(requestBody, "pickupServicePointId", pickupServicePointId);
     write(requestBody, "fulfilmentPreference", "Hold Shelf");
-    write(requestBody, "requestExpirationDate", formatDateTime(requestExpirationDate));
+    write(requestBody, "requestExpirationDate", formatDateTimeOptional(requestExpirationDate));
     write(requestBody, "patronComments", patronComments);
 
     return requestBody;

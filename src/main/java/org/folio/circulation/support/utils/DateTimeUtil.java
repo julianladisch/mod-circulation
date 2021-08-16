@@ -32,10 +32,10 @@ import org.folio.circulation.support.ClockManager;
  * Be careful with the differences of withZoneSameInstant() vs
  * withZoneSameLocal().
  * <p>
- * The "SameInstant" version changes the timezone so that the representation
+ * The "SameInstant" version changes the time zone so that the representation
  * changes but the actual date does not.
  * <p>
- * The "SameLocal" version changes the actual time and preserves the timezone.
+ * The "SameLocal" version changes the actual time and preserves the time zone.
  */
 public class DateTimeUtil {
   private DateTimeUtil() {
@@ -455,19 +455,6 @@ public class DateTimeUtil {
   /**
    * Format the dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
    * <p>
-   * This will normalize the dateTime.
-   *
-   * @param dateTime The dateTime to convert to a string.
-   * @return The converted dateTime string.
-   */
-  public static String formatDateTime(ZonedDateTime dateTime) {
-    return normalizeDateTime(dateTime).withZoneSameInstant(UTC)
-      .format(DATE_TIME);
-  }
-
-  /**
-   * Format the dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
-   * <p>
    * This will not normalize the dateTime and will instead return NULL if
    * dateTime is NULL.
    *
@@ -479,6 +466,54 @@ public class DateTimeUtil {
       return null;
     }
 
+    return formatDateTime(dateTime);
+  }
+
+  /**
+   * Format the offset dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
+   * <p>
+   * This will not normalize the dateTime and will instead return NULL if
+   * dateTime is NULL.
+   *
+   * @param dateTime The dateTime to convert to a string.
+   * @return The converted dateTime string.
+   */
+  public static String formatDateTimeOptional(OffsetDateTime dateTime) {
+    if (dateTime == null) {
+      return null;
+    }
+
+    return formatDateTime(dateTime);
+  }
+
+  /**
+   * Format the date as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
+   * <p>
+   * This will not normalize the dateTime and will instead return NULL if
+   * dateTime is NULL.
+   * <p>
+   * This will normalize the date.
+   *
+   * @param date The date to convert to a string.
+   * @return The converted date string.
+   */
+  public static String formatDateTimeOptional(LocalDate dateTime) {
+    if (dateTime == null) {
+      return null;
+    }
+
+    return formatDateTime(dateTime);
+  }
+
+  /**
+   * Format the dateTime as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
+   * <p>
+   * This will normalize the dateTime.
+   *
+   * @param dateTime The dateTime to convert to a string.
+   * @return The converted dateTime string.
+   */
+  public static String formatDateTime(ZonedDateTime dateTime) {
     return normalizeDateTime(dateTime).withZoneSameInstant(UTC)
       .format(DATE_TIME);
   }
@@ -499,8 +534,7 @@ public class DateTimeUtil {
   /**
    * Format the date as a string using format "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", in UTC.
    * <p>
-   * The time is set to Midnight for the system clock's timezone and not
-   * midnight of UTC.
+   * The time is set to Midnight for the ClockManager's time zone.
    * <p>
    * This will normalize the date.
    *
@@ -515,7 +549,7 @@ public class DateTimeUtil {
   /**
    * Get the last second of the day.
    * <p>
-   * This operates in the timezone specified by dateTime.
+   * This operates in the time zone specified by dateTime.
    *
    * @param dateTime The dateTime to convert.
    * @return The converted dateTime.
@@ -592,7 +626,7 @@ public class DateTimeUtil {
   }
 
   /**
-   * Get the start of the day in the timezone of the current Clock.
+   * Get the start of the day in the time zone of the current Clock.
    *
    * @param localDate The local date to convert from.
    * @return The converted dateTime.

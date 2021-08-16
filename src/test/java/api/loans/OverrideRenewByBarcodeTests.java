@@ -23,7 +23,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.awaitility.Awaitility.waitAtMost;
 import static org.folio.circulation.domain.ItemStatus.CHECKED_OUT;
 import static org.folio.circulation.domain.representations.logs.LogEventType.NOTICE;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -217,7 +217,7 @@ public class OverrideRenewByBarcodeTests extends APITests {
 
     JsonObject renewedLoan =
       loansFixture.overrideRenewalByBarcode(smallAngryPlanet, jessica,
-        OVERRIDE_COMMENT, formatDateTime(newDueDate)).getJson();
+        OVERRIDE_COMMENT, formatDateTimeOptional(newDueDate)).getJson();
 
     verifyRenewedLoan(smallAngryPlanet, jessica, renewedLoan);
 
@@ -298,7 +298,7 @@ public class OverrideRenewByBarcodeTests extends APITests {
     final ZonedDateTime newDueDate = ClockManager.getZonedDateTime().plusWeeks(1);
     final JsonObject renewedLoan =
       loansFixture.overrideRenewalByBarcode(smallAngryPlanet, jessica,
-        OVERRIDE_COMMENT, formatDateTime(newDueDate)).getJson();
+        OVERRIDE_COMMENT, formatDateTimeOptional(newDueDate)).getJson();
 
     assertThat(renewedLoan.getString("id"), is(loanId.toString()));
 
@@ -359,7 +359,7 @@ public class OverrideRenewByBarcodeTests extends APITests {
     final ZonedDateTime newDueDate = loanDueDate.plusWeeks(3).plusMonths(2);
 
     final JsonObject renewedLoan = loansFixture.overrideRenewalByBarcode(
-      smallAngryPlanet, jessica, OVERRIDE_COMMENT, formatDateTime(newDueDate))
+      smallAngryPlanet, jessica, OVERRIDE_COMMENT, formatDateTimeOptional(newDueDate))
       .getJson();
 
     assertThat(renewedLoan.getString("id"), is(loanId.toString()));
@@ -524,7 +524,7 @@ public class OverrideRenewByBarcodeTests extends APITests {
 
     JsonObject loanAfterOverride =
       loansFixture.overrideRenewalByBarcode(smallAngryPlanet, jessica,
-        OVERRIDE_COMMENT, formatDateTime(newDueDate)).getJson();
+        OVERRIDE_COMMENT, formatDateTimeOptional(newDueDate)).getJson();
     assertLoanHasActionComment(loanAfterOverride, OVERRIDE_COMMENT);
 
     LoanPolicyBuilder renewablePolicy = new LoanPolicyBuilder()
@@ -557,7 +557,7 @@ public class OverrideRenewByBarcodeTests extends APITests {
 
     JsonObject loanAfterOverride =
       loansFixture.overrideRenewalByBarcode(smallAngryPlanet, jessica,
-        OVERRIDE_COMMENT, formatDateTime(newDueDate)).getJson();
+        OVERRIDE_COMMENT, formatDateTimeOptional(newDueDate)).getJson();
     assertLoanHasActionComment(loanAfterOverride, OVERRIDE_COMMENT);
 
     JsonObject loanAfterCheckIn = checkInFixture.checkInByBarcode(smallAngryPlanet).getLoan();
@@ -614,7 +614,7 @@ public class OverrideRenewByBarcodeTests extends APITests {
 
     JsonObject renewedLoan =
       loansFixture.overrideRenewalByBarcode(smallAngryPlanet, jessica,
-        OVERRIDE_COMMENT, formatDateTime(newDueDate)).getJson();
+        OVERRIDE_COMMENT, formatDateTimeOptional(newDueDate)).getJson();
 
     assertThat("action should be renewed",
       renewedLoan.getString("action"), is(RENEWED_THROUGH_OVERRIDE));
@@ -644,7 +644,7 @@ public class OverrideRenewByBarcodeTests extends APITests {
     final ZonedDateTime newDueDate = ClockManager.getZonedDateTime().plusDays(3);
 
     Response response = loansFixture.attemptOverride(smallAngryPlanet, jessica,
-        OVERRIDE_COMMENT, formatDateTime(newDueDate));
+        OVERRIDE_COMMENT, formatDateTimeOptional(newDueDate));
 
     assertThat(response.getJson(), hasErrorWith(hasRenewalWouldNotChangeDueDateMessage()));
   }
@@ -694,7 +694,7 @@ public class OverrideRenewByBarcodeTests extends APITests {
 
     IndividualResource loanAfterRenewal =
       loansFixture.overrideRenewalByBarcode(smallAngryPlanet, steve,
-        OVERRIDE_COMMENT, formatDateTime(loanDate.plusDays(4)));
+        OVERRIDE_COMMENT, formatDateTimeOptional(loanDate.plusDays(4)));
 
     final var sentNotices = waitAtMost(1, SECONDS)
       .until(patronNoticesClient::getAll, hasSize(1));

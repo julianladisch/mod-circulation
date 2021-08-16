@@ -6,7 +6,7 @@ import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasParameter;
 import static api.support.matchers.ValidationErrorMatchers.isErrorWith;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -63,7 +63,7 @@ public class JsonSchemaValidationTest {
 
     write(storageLoanRequest, "itemId", UUID.randomUUID());
     write(storageLoanRequest, "userId", UUID.randomUUID());
-    write(storageLoanRequest, "loanDate", formatDateTime(ClockManager.getZonedDateTime()));
+    write(storageLoanRequest, "loanDate", formatDateTimeOptional(ClockManager.getZonedDateTime()));
     write(storageLoanRequest, "action", "checkedout");
 
     assertThat(validator.validate(storageLoanRequest.encode()), succeeded());

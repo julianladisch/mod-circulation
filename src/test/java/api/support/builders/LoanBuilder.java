@@ -1,7 +1,7 @@
 package api.support.builders;
 
 import static java.time.ZoneOffset.UTC;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.Period;
 import java.time.ZonedDateTime;
@@ -71,20 +71,20 @@ public class LoanBuilder extends JsonBuilder implements Builder {
 
     put(loanRequest, "userId", userId);
     put(loanRequest, "itemId", itemId);
-    put(loanRequest, "loanDate", formatDateTime(loanDate));
+    put(loanRequest, "loanDate", formatDateTimeOptional(loanDate));
 
     put(loanRequest, "status", status, new JsonObject().put("name", status));
 
     put(loanRequest, "proxyUserId", proxyUserId);
     put(loanRequest, "action", action);
-    put(loanRequest, "dueDate", formatDateTime(dueDate));
+    put(loanRequest, "dueDate", formatDateTimeOptional(dueDate));
     put(loanRequest, "checkoutServicePointId", checkoutServicePointId);
     put(loanRequest, "checkinServicePointId", checkinServicePointId);
     put(loanRequest, "dueDateChangedByRecall", dueDateChangedByRecall);
 
     if (Objects.equals(status, CLOSED_LOAN_STATUS)) {
-      put(loanRequest, "returnDate", formatDateTime(returnDate));
-      put(loanRequest, "systemReturnDate", formatDateTime(systemReturnDate));
+      put(loanRequest, "returnDate", formatDateTimeOptional(returnDate));
+      put(loanRequest, "systemReturnDate", formatDateTimeOptional(systemReturnDate));
     }
 
     return loanRequest;

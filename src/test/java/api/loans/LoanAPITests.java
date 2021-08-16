@@ -1074,7 +1074,7 @@ public class LoanAPITests extends APITests {
 
     loanToRenew
       .put("action", "renewed")
-      .put("dueDate", DateTimeUtil.formatDateTime(newDueDate))
+      .put("dueDate", DateTimeUtil.formatDateTimeOptional(newDueDate))
       .put("renewalCount", 1);
 
     loansFixture.replaceLoan(loan.getId(), loanToRenew);

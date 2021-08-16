@@ -7,7 +7,7 @@ import static api.support.matchers.ScheduledNoticeMatchers.hasScheduledLoanNotic
 import static java.util.Comparator.comparing;
 import static org.folio.circulation.domain.representations.logs.LogEventType.NOTICE;
 import static org.folio.circulation.support.json.JsonPropertyFetcher.getDateTimeProperty;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -537,7 +537,7 @@ public class DueDateScheduledNoticesProcessingTests extends APITests {
       .put("id", UUID.randomUUID().toString())
       .put("loanId", loan.getId().toString())
       .put(NEXT_RUN_TIME,
-        formatDateTime(nextRunTime.withZoneSameInstant(ZoneOffset.UTC)))
+        formatDateTimeOptional(nextRunTime.withZoneSameInstant(ZoneOffset.UTC)))
       .put("triggeringEvent", "Due date")
       .put("noticeConfig",
         new JsonObject()

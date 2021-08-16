@@ -1,7 +1,7 @@
 package api.support.matchers;
 
 import static java.time.ZoneOffset.UTC;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
@@ -28,7 +28,7 @@ public class TextDateTimeMatcher {
       @Override
       public void describeTo(Description description) {
         description.appendText(String.format(
-          "a date time matching: %s", formatDateTime(expected)));
+          "a date time matching: %s", formatDateTimeOptional(expected)));
       }
 
       @Override
@@ -86,7 +86,7 @@ public class TextDateTimeMatcher {
       public void describeTo(Description description) {
         description.appendText(String.format(
           "a date time within %s seconds after %s",
-          seconds, formatDateTime(after)));
+          seconds, formatDateTimeOptional(after)));
       }
 
       @Override
@@ -110,7 +110,7 @@ public class TextDateTimeMatcher {
       public void describeTo(Description description) {
         description.appendText(String.format(
           "a date time within %s seconds before %s",
-          seconds, formatDateTime(before)));
+          seconds, formatDateTimeOptional(before)));
       }
 
       @Override

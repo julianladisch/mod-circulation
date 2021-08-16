@@ -104,7 +104,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date should not be the original due date",
         storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime());
     assertThat("due date should be the current system date",
         storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -141,7 +141,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date should not be the original date",
         storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusMonths(2));
     assertThat("due date should be in 2 months",
         storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -181,7 +181,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date should not be the original due date",
         storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       loanDate.plusWeeks(2));
     assertThat("due date should be in 2 weeks (minumum guaranteed loan period)",
         storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -220,7 +220,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date should not be the original due date",
         storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusWeeks(1));
     assertThat("due date should be in 1 week (recall return interval)",
         storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -259,7 +259,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date sholud not be the original due date",
         storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       loanDate.plusWeeks(2));
     assertThat("due date should be in 2 weeks (minimum guaranteed loan period)",
         storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -310,7 +310,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date should not be the original due date",
         storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(ZonedDateTime.of(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(ZonedDateTime.of(
       CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY, END_OF_A_DAY, UTC));
 
     assertThat("due date should be moved to Monday",
@@ -403,7 +403,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
 
     final JsonObject storedLoan = loansStorageClient.getById(loan.getId()).getJson();
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ZonedDateTime.of(ClockManager.getZonedDateTime().plusMonths(2)
       .toLocalDate(), LocalTime.MIDNIGHT.minusSeconds(1), UTC));
 
@@ -486,7 +486,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
       .getZonedDateTime());
 
     // Recalled is applied when loaned, so the due date should be 2 weeks, not 3 weeks
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusWeeks(2));
 
     JsonObject storedLoan = loansStorageClient.getById(loan.getId()).getJson();
@@ -535,7 +535,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
       .getZonedDateTime());
 
     // Recalled is applied when loaned, so the due date should be 2 weeks, not 3 weeks
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusWeeks(2));
 
     JsonObject storedLoan = loansStorageClient.getById(loan.getId()).getJson();
@@ -589,7 +589,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date after recall should not be the original date",
         recalledDueDate, not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusWeeks(2));
     assertThat("due date after recall should be in 2 weeks",
         storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -638,7 +638,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date after recall should not be the original date",
         recalledDueDate, not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusWeeks(2));
     assertThat("due date after recall should be in 2 weeks",
         storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -686,7 +686,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date after recall should not be  the original date",
         recalledDueDate, not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusMonths(2));
     assertThat("due date after recall should be in 2 months",
         storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -734,7 +734,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     assertThat("due date after recall should not be the original date",
         recalledDueDate, not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusMonths(2));
     assertThat("due date after recall should be in 2 months",
         storedLoan.getString("dueDate"), is(expectedDueDate));

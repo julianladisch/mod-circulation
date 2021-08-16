@@ -1,7 +1,7 @@
 package api.support.builders;
 
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDate;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -45,7 +45,7 @@ public class JsonBuilder {
 
   protected void put(JsonObject representation, String property, ZonedDateTime value) {
     if(value != null) {
-      representation.put(property, formatDateTime(value));
+      representation.put(property, formatDateTimeOptional(value));
     }
   }
 

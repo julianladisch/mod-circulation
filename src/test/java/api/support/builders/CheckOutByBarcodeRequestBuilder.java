@@ -1,6 +1,6 @@
 package api.support.builders;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -43,7 +43,7 @@ public class CheckOutByBarcodeRequestBuilder extends JsonBuilder implements Buil
     put(request, "itemBarcode", this.itemBarcode);
     put(request, "userBarcode", this.userBarcode);
     put(request, "proxyUserBarcode", this.proxyBarcode);
-    put(request, "loanDate", formatDateTime(this.loanDate));
+    put(request, "loanDate", formatDateTimeOptional(this.loanDate));
     put(request, "servicePointId", this.servicePointId);
     put(request, "overrideBlocks", this.overrideBlocks);
 

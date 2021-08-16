@@ -12,7 +12,7 @@ import static org.folio.circulation.domain.ItemStatus.CHECKED_OUT;
 import static org.folio.circulation.domain.policy.Period.weeks;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -342,7 +342,7 @@ public class OverrideRenewalStrategyTest {
     final JsonObject json = new JsonObject();
 
     write(json, "comment", "A comment");
-    write(json, "dueDate", formatDateTime(dueDate));
+    write(json, "dueDate", formatDateTimeOptional(dueDate));
 
     return json;
   }
@@ -382,7 +382,7 @@ public class OverrideRenewalStrategyTest {
 
   private void assertDueDateWithinOneSecondAfter(ZonedDateTime after, Result<Loan> actual) {
     assertThat(actual, succeeded());
-    assertThat(formatDateTime(actual.value().getDueDate()),
+    assertThat(formatDateTimeOptional(actual.value().getDueDate()),
       withinSecondsAfter(1, after));
   }
 }

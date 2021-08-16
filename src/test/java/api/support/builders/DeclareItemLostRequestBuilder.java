@@ -1,7 +1,7 @@
 package api.support.builders;
 
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -45,7 +45,7 @@ public class DeclareItemLostRequestBuilder extends JsonBuilder implements Builde
   public JsonObject create() {
     final JsonObject request = new JsonObject();
 
-    write(request, "declaredLostDateTime", formatDateTime(this.dateTime));
+    write(request, "declaredLostDateTime", formatDateTimeOptional(this.dateTime));
     write(request, "comment", this.comment);
     write(request, "servicePointId", this.servicePointId);
 

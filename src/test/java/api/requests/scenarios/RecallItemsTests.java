@@ -2,7 +2,7 @@ package api.requests.scenarios;
 import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
 import static api.support.matchers.JsonObjectMatcher.hasNoJsonPath;
 import static api.support.matchers.LoanHistoryMatcher.hasLoanHistoryRecord;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
@@ -27,7 +27,7 @@ public class RecallItemsTests extends APITests {
       .rolling(Period.weeks(3)).notRenewable().renewFromSystemDate());
 
     val overrideRenewComment = "Override renew";
-    final String newDueDate = formatDateTime(ClockManager.getZonedDateTime().plusMonths(3));
+    final String newDueDate = formatDateTimeOptional(ClockManager.getZonedDateTime().plusMonths(3));
 
     val item = itemsFixture.basedUponNod();
     val user = usersFixture.james();

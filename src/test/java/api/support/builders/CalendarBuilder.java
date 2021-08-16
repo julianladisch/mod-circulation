@@ -1,6 +1,6 @@
 package api.support.builders;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -18,8 +18,8 @@ public class CalendarBuilder extends JsonBuilder implements Builder {
   private static final ZonedDateTime NOW = ClockManager.getZonedDateTime();
 
   private static final String CALENDAR_NAME = "Calendar Name";
-  private static final String START_DATE = formatDateTime(NOW.minusMonths(1));
-  private static final String END_DATE = formatDateTime(NOW.plusMonths(6));
+  private static final String START_DATE = formatDateTimeOptional(NOW.minusMonths(1));
+  private static final String END_DATE = formatDateTimeOptional(NOW.plusMonths(6));
 
   private static final String ID_KEY = "id";
   private static final String SERVICE_POINT_ID_KEY = "servicePointId";
@@ -55,8 +55,8 @@ public class CalendarBuilder extends JsonBuilder implements Builder {
       .put(ID_KEY, UUID.randomUUID().toString())
       .put(SERVICE_POINT_ID_KEY, servicePointId)
       .put(NAME_KEY, "CASE_CLOSED_LIBRARY")
-      .put(START_DATE_KEY, formatDateTime(startDate))
-      .put(END_DATE_KEY, formatDateTime(endDate))
+      .put(START_DATE_KEY, formatDateTimeOptional(startDate))
+      .put(END_DATE_KEY, formatDateTimeOptional(endDate))
       .put(OPENING_DAYS_KEY, new JsonArray());
   }
 

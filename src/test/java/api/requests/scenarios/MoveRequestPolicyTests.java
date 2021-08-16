@@ -202,7 +202,7 @@ public class MoveRequestPolicyTests extends APITests {
     assertThat("due date is the original date",
       storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime());
     assertThat("due date is not the current date",
       storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -236,7 +236,7 @@ public class MoveRequestPolicyTests extends APITests {
     assertThat("due date is the original date",
       storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime());
     assertThat("due date is not the current date",
       storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -340,7 +340,7 @@ public class MoveRequestPolicyTests extends APITests {
     assertThat("due date is the original date",
       storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusMonths(2));
     assertThat("due date is not the recall due date (2 months)",
       storedLoan.getString("dueDate"), is(expectedDueDate));
@@ -390,7 +390,7 @@ public class MoveRequestPolicyTests extends APITests {
     assertThat("due date is the original date",
       storedLoan.getString("dueDate"), not(originalDueDate));
 
-    final String expectedDueDate = DateTimeUtil.formatDateTime(
+    final String expectedDueDate = DateTimeUtil.formatDateTimeOptional(
       ClockManager.getZonedDateTime().plusMonths(2));
     assertThat("due date is not the recall due date (2 months)",
       storedLoan.getString("dueDate"), is(expectedDueDate));

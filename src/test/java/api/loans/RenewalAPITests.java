@@ -958,7 +958,7 @@ public abstract class RenewalAPITests extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_SERVICE_POINT_PREV_DAY, END_OF_A_DAY, UTC);
-    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
+    assertThat("due date should be " + DateTimeUtil.formatDateTimeOptional(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
   }
 
@@ -999,7 +999,7 @@ public abstract class RenewalAPITests extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY, END_OF_A_DAY, UTC);
-    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
+    assertThat("due date should be " + DateTimeUtil.formatDateTimeOptional(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
   }
 
@@ -1038,7 +1038,7 @@ public abstract class RenewalAPITests extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(
       CASE_FRI_SAT_MON_SERVICE_POINT_NEXT_DAY, START_TIME_FIRST_PERIOD, UTC);
-    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
+    assertThat("due date should be " + DateTimeUtil.formatDateTimeOptional(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
   }
 
@@ -1084,7 +1084,7 @@ public abstract class RenewalAPITests extends APITests {
 
     ZonedDateTime expectedDate = ZonedDateTime.of(WEDNESDAY_DATE,
       END_TIME_SECOND_PERIOD, UTC);
-    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
+    assertThat("due date should be " + DateTimeUtil.formatDateTimeOptional(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
 
     ClockManager.setDefaultClock();
@@ -1136,7 +1136,7 @@ public abstract class RenewalAPITests extends APITests {
 
     assertThat(response.getBody(), containsString(expectedTimeZone));
 
-    assertThat("due date should be " + DateTimeUtil.formatDateTime(expectedDate),
+    assertThat("due date should be " + DateTimeUtil.formatDateTimeOptional(expectedDate),
       renewedLoan.getString("dueDate"), isEquivalentTo(expectedDate));
   }
 

@@ -40,7 +40,7 @@ import static org.folio.circulation.domain.policy.DueDateManagement.KEEP_THE_CUR
 import static org.folio.circulation.domain.policy.Period.months;
 import static org.folio.circulation.domain.representations.ItemProperties.CALL_NUMBER_COMPONENTS;
 import static org.folio.circulation.domain.representations.logs.LogEventType.CHECK_OUT;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -52,6 +52,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -256,7 +257,7 @@ public class CheckOutByBarcodeTests extends APITests {
       .withHour(11)
       .withMinute(43)
       .withSecond(54)
-      .withNano(0);
+      .truncatedTo(ChronoUnit.SECONDS);
 
     final IndividualResource response = checkOutFixture.checkOutByBarcode(
       new CheckOutByBarcodeRequestBuilder()
@@ -1366,7 +1367,7 @@ public class CheckOutByBarcodeTests extends APITests {
     final IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final UserResource steve = usersFixture.steve();
 
-    IndividualResource loanPolicy = loanPoliciesFixture.create(new LoanPolicyBuilder()
+    loanPoliciesFixture.create(new LoanPolicyBuilder()
       .withId(UUID.randomUUID())
       .withName("Example loan policy")
       .withLoanable(true)
@@ -1438,7 +1439,7 @@ public class CheckOutByBarcodeTests extends APITests {
 
     assertThat(response.getJson(), hasErrorWith(allOf(
       hasMessage("Due date should be later than loan date"),
-      hasParameter("dueDate", formatDateTime(invalidDueDate)))));
+      hasParameter("dueDate", formatDateTimeOptional(invalidDueDate)))));
   }
 
   @Test
@@ -1463,7 +1464,7 @@ public class CheckOutByBarcodeTests extends APITests {
 
     assertThat(response.getJson(), hasErrorWith(allOf(
       hasMessage("Due date should be later than loan date"),
-      hasParameter("dueDate", formatDateTime(TEST_LOAN_DATE)))));
+      hasParameter("dueDate", formatDateTimeOptional(TEST_LOAN_DATE)))));
   }
 
   @Test

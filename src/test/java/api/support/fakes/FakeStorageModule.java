@@ -194,9 +194,9 @@ public class FakeStorageModule extends AbstractVerticle {
     if (includeChangeMetadata) {
       final String fakeUserId = APITestContext.getUserId();
       body.put(changeMetadataPropertyName, new JsonObject()
-        .put("createdDate", DateTimeUtil.formatDateTime(now))
+        .put("createdDate", DateTimeUtil.formatDateTimeOptional(now))
         .put("createdByUserId", fakeUserId)
-        .put("updatedDate", DateTimeUtil.formatDateTime(now))
+        .put("updatedDate", DateTimeUtil.formatDateTimeOptional(now))
         .put("updatedByUserId", fakeUserId));
     }
 
@@ -255,7 +255,7 @@ public class FakeStorageModule extends AbstractVerticle {
           .getJsonObject(changeMetadataPropertyName);
 
         final JsonObject updatedChangeMetadata = existingChangeMetadata.copy()
-          .put("updatedDate", DateTimeUtil.formatDateTime(now))
+          .put("updatedDate", DateTimeUtil.formatDateTimeOptional(now))
           .put("updatedByUserId", fakeUserId);
 
         body.put(changeMetadataPropertyName, updatedChangeMetadata);
@@ -278,9 +278,9 @@ public class FakeStorageModule extends AbstractVerticle {
       if (includeChangeMetadata) {
         final String fakeUserId = APITestContext.getUserId();
         body.put(changeMetadataPropertyName, new JsonObject()
-          .put("createdDate", DateTimeUtil.formatDateTime(now))
+          .put("createdDate", DateTimeUtil.formatDateTimeOptional(now))
           .put("createdByUserId", fakeUserId)
-          .put("updatedDate", DateTimeUtil.formatDateTime(now))
+          .put("updatedDate", DateTimeUtil.formatDateTimeOptional(now))
           .put("updatedByUserId", fakeUserId));
       }
 
