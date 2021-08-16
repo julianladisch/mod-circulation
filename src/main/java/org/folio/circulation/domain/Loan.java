@@ -50,6 +50,7 @@ import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.utils.CommonUtils.executeIfNotNull;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
@@ -113,7 +114,7 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public Loan changeDueDate(ZonedDateTime newDueDate) {
-    write(representation, DUE_DATE, formatDateTimeOptional(newDueDate));
+    write(representation, DUE_DATE, formatDateTime(newDueDate));
 
     return this;
   }

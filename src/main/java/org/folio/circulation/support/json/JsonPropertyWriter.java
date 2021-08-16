@@ -1,7 +1,9 @@
 package org.folio.circulation.support.json;
 
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -73,7 +75,7 @@ public class JsonPropertyWriter {
 
   public static void write(JsonObject to, String propertyName, ZonedDateTime value) {
     if (value != null) {
-      write(to, propertyName, formatDateTimeOptional(value));
+      write(to, propertyName, formatDateTime(value.withZoneSameInstant(ZoneOffset.UTC)));
     }
   }
 
@@ -109,7 +111,7 @@ public class JsonPropertyWriter {
   }
 
   public static void writeByPath(JsonObject to, ZonedDateTime value, String... paths) {
-    writeByPath(to, JsonPropertyWriter::write, formatDateTimeOptional(value), paths);
+    writeByPath(to, JsonPropertyWriter::write, value, paths);
   }
 
   public static void writeByPath(JsonObject to, boolean value, String... paths) {

@@ -3,6 +3,7 @@ package org.folio.circulation.domain.notice;
 import static java.lang.Math.max;
 import static java.util.stream.Collectors.joining;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.util.Optional;
@@ -78,7 +79,7 @@ public class TemplateContextUtil {
     JsonObject itemContext = staffSlipContext.getJsonObject(ITEM);
 
     if (ObjectUtils.allNotNull(item, itemContext)) {
-      write(itemContext, "lastCheckedInDateTime", formatDateTimeOptional(ClockManager.getZonedDateTime()));
+      write(itemContext, "lastCheckedInDateTime", formatDateTime(ClockManager.getZonedDateTime()));
       if (item.getInTransitDestinationServicePoint() != null) {
         itemContext.put("fromServicePoint", context.getCheckInServicePoint().getName());
         itemContext.put("toServicePoint", item.getInTransitDestinationServicePoint().getName());

@@ -1,6 +1,6 @@
 package api.support.builders;
 
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 
 import java.time.ZonedDateTime;
@@ -59,14 +59,11 @@ public class UserManualBlockBuilder extends JsonBuilder implements Builder {
     write(jsonObject, "desc",  desc);
     write(jsonObject, "staffInformation", staffInformation);
     write(jsonObject, "patronMessage", patronMessage);
+    write(jsonObject, "expirationDate", formatDateTimeOptional(this.expirationDate));
     write(jsonObject, "borrowing", borrowing);
     write(jsonObject, "renewals", renewals);
     write(jsonObject, "requests", requests);
     write(jsonObject, "userId", userId);
-
-    if (this.expirationDate != null) {
-      write(jsonObject, "expirationDate", formatDateTime(this.expirationDate));
-    }
 
     return jsonObject;
   }
