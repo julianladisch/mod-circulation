@@ -4,10 +4,10 @@ import static java.util.Comparator.comparingInt;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.folio.circulation.support.results.Result.ofAsync;
 import static org.folio.circulation.support.results.Result.succeeded;
+import static org.folio.circulation.support.utils.DateTimeUtil.atEndOfTheDay;
 
 import java.lang.invoke.MethodHandles;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,7 +21,6 @@ import org.folio.circulation.resources.context.ReorderRequestContext;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
-import org.folio.circulation.support.utils.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,9 +155,7 @@ public class UpdateRequestQueue {
     ZonedDateTime holdShelfExpirationDate =
       calculateHoldShelfExpirationDate(holdShelfExpiryPeriod, tenantTimeZone);
 
-    request.changeHoldShelfExpirationDate(ZonedDateTime.ofInstant(
-      holdShelfExpirationDate.toInstant(), ZoneOffset.UTC
-    ));
+    request.changeHoldShelfExpirationDate(holdShelfExpirationDate);
 
     return succeeded(request);
   }
@@ -285,13 +282,14 @@ public class UpdateRequestQueue {
   }
 
   private ZonedDateTime calculateHoldShelfExpirationDate(
-    TimePeriod holdShelfExpiryPeriod, ZoneId tenantTimeZone) {
+    TimePeriod holdShelfExpiryPeriod, ZoneId zone) {
 
     ZonedDateTime holdShelfExpirationDate = holdShelfExpiryPeriod.getInterval()
-      .addTo(ClockManager.getZonedDateTime(), holdShelfExpiryPeriod.getDuration());
+      .addTo(ClockManager.getZonedDateTime().withZoneSameInstant(zone),
+        holdShelfExpiryPeriod.getDuration());
 
     if (holdShelfExpiryPeriod.isLongTermPeriod()) {
-      holdShelfExpirationDate = DateTimeUtil.atEndOfTheDay(holdShelfExpirationDate);
+      holdShelfExpirationDate = atEndOfTheDay(holdShelfExpirationDate);
     }
 
     return holdShelfExpirationDate;
