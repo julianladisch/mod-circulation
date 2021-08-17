@@ -74,15 +74,13 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       .getResponse();
     assertThat(response.getBody(), containsString(expectedTimeZone));
 
-    final ZoneId zone = ZoneId.of(expectedTimeZone).getRules().getOffset(ClockManager.getInstant());
+    final ZoneId zone = ZoneId.of(expectedTimeZone);
 
     ZonedDateTime loanDate = ZonedDateTime.of(
-      CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE, TEST_TIME_MORNING,
-      ZoneOffset.of(zone.getId()));
+      CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE, TEST_TIME_MORNING, zone);
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(
-      CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE.atStartOfDay(),
-      ZoneOffset.of(zone.getId())).plusDays(1);
+      CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE.atStartOfDay(), zone).plusDays(1);
 
     checkOffsetTime(loanDate, expectedDueDate, CASE_FRI_SAT_MON_DAY_ALL_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
   }
