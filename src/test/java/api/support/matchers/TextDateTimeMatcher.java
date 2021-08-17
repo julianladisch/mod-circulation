@@ -5,10 +5,9 @@ import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOpt
 import static org.folio.circulation.support.utils.DateTimeUtil.isAfterMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
-import static org.folio.circulation.support.utils.DateTimeUtil.parseDateTime;
+import static org.folio.circulation.support.utils.DateTimeUtil.parseDateTimeOptional;
 
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.ClockManager;
@@ -19,11 +18,6 @@ import org.hamcrest.TypeSafeMatcher;
 public class TextDateTimeMatcher {
 
   public static Matcher<String> isEquivalentTo(ZonedDateTime expected) {
-    return isEquivalentTo(
-      expected == null ? null : expected.toOffsetDateTime());
-  }
-
-  public static Matcher<String> isEquivalentTo(OffsetDateTime expected) {
     return new TypeSafeMatcher<>() {
       @Override
       public void describeTo(Description description) {
@@ -34,13 +28,13 @@ public class TextDateTimeMatcher {
       @Override
       protected boolean matchesSafely(String textRepresentation) {
         //response representation might vary from request representation
-        final ZonedDateTime parsed = parseDateTime(textRepresentation);
+        final ZonedDateTime parsed = parseDateTimeOptional(textRepresentation);
 
         if (parsed == null) {
           return expected == null;
         }
 
-        return isSameMillis(expected.toZonedDateTime(), parsed);
+        return isSameMillis(expected, parsed);
       }
     };
   }
@@ -64,7 +58,7 @@ public class TextDateTimeMatcher {
       @Override
       protected boolean matchesSafely(String textRepresentation) {
         //response representation might vary from request representation
-        final ZonedDateTime actual = parseDateTime(textRepresentation);
+        final ZonedDateTime actual = parseDateTimeOptional(textRepresentation);
 
         if (actual == null) {
           return expected == null;
@@ -92,7 +86,7 @@ public class TextDateTimeMatcher {
       @Override
       protected boolean matchesSafely(String textRepresentation) {
         //response representation might vary from request representation
-        final ZonedDateTime actual = parseDateTime(textRepresentation);
+        final ZonedDateTime actual = parseDateTimeOptional(textRepresentation);
 
         if (actual == null) {
           return false;
@@ -115,7 +109,7 @@ public class TextDateTimeMatcher {
 
       @Override
       protected boolean matchesSafely(String textRepresentation) {
-        final ZonedDateTime actual = parseDateTime(textRepresentation);
+        final ZonedDateTime actual = parseDateTimeOptional(textRepresentation);
 
         if (actual == null) {
           return false;

@@ -218,7 +218,7 @@ public class DateTimeUtil {
   }
 
   /**
-   * Parse the given value, returning a dateTime using system time zone.
+   * Parse the string, returning a dateTime using the ClockManager's time zone.
    * <p>
    * For compatibility with JodaTime, when value is null, then a now() call
    * via ClockManager is used.
@@ -247,21 +247,40 @@ public class DateTimeUtil {
       return normalizeDateTime((ZonedDateTime) null).withZoneSameInstant(zone);
     }
 
-    List<DateTimeFormatter> formatters = getDateTimeFormatters();
+    return parseDateTimeString(value, zone);
+  }
 
-    for (int i = 0; i < formatters.size(); i++) {
-      try {
-        DateTimeFormatter formatter = formatters.get(i)
-          .withZone(normalizeZone(zone));
-        return ZonedDateTime.parse(value, formatter);
-      } catch (DateTimeParseException e1) {
-        if (i == formatters.size() - 1) {
-          throw e1;
-        }
-      }
+  /**
+   * Parse the string, returning a dateTime using the ClockManager's time zone.
+   * <p>
+   * This will not normalize the dateTime and will instead return NULL if
+   * dateTime is NULL.
+   *
+   * @param value The value to parse into a LocalDate.
+   * @return A dateTime parsed from the value.
+   */
+  public static ZonedDateTime parseDateTimeOptional(String value) {
+    return parseDateTimeOptional(value, null);
+  }
+
+  /**
+   * Parse the given value, returning a dateTime.
+   * <p>
+   * This will not normalize the dateTime and will instead return NULL if
+   * dateTime is NULL.
+   * For compatibility with JodaTime, when zone is null, then use the zone from
+   * the ClockManager.
+   *
+   * @param value The value to parse into a LocalDate.
+   * @param zone The time zone to use when parsing.
+   * @return A dateTime parsed from the value.
+   */
+  public static ZonedDateTime parseDateTimeOptional(String value, ZoneId zone) {
+    if (value == null) {
+      return null;
     }
 
-    return ZonedDateTime.parse(value);
+    return parseDateTimeString(value, zone);
   }
 
   /**
@@ -550,12 +569,15 @@ public class DateTimeUtil {
    * Get the last second of the day.
    * <p>
    * This operates in the time zone specified by dateTime.
+   * <p>
+   * This will truncate to seconds.
    *
    * @param dateTime The dateTime to convert.
    * @return The converted dateTime.
    */
   public static ZonedDateTime atEndOfTheDay(ZonedDateTime dateTime) {
-    return dateTime.withHour(23).withMinute(59).withSecond(59);
+    return dateTime.withHour(23).withMinute(59).withSecond(59)
+      .truncatedTo(ChronoUnit.SECONDS);
   }
 
   /**
@@ -959,6 +981,31 @@ public class DateTimeUtil {
     }
 
     return 0L;
+  }
+
+  /**
+   * Parse the given value, returning a dateTime.
+   *
+   * @param value The value to parse into a LocalDate.
+   * @param zone The time zone to use when parsing.
+   * @return A dateTime parsed from the value.
+   */
+  private static ZonedDateTime parseDateTimeString(String value, ZoneId zone) {
+    List<DateTimeFormatter> formatters = getDateTimeFormatters();
+
+    for (int i = 0; i < formatters.size(); i++) {
+      try {
+        DateTimeFormatter formatter = formatters.get(i)
+          .withZone(normalizeZone(zone));
+        return ZonedDateTime.parse(value, formatter);
+      } catch (DateTimeParseException e1) {
+        if (i == formatters.size() - 1) {
+          throw e1;
+        }
+      }
+    }
+
+    return ZonedDateTime.parse(value);
   }
 
 }
