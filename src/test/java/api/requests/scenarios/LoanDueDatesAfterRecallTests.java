@@ -27,6 +27,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import org.folio.circulation.domain.policy.DueDateManagement;
@@ -820,8 +821,9 @@ public class LoanDueDatesAfterRecallTests extends APITests {
       .withRecallsRecallReturnInterval(Period.months(2)));
 
     final ZonedDateTime loanCreateDate = loanPeriod.minusDate(ClockManager.getZonedDateTime())
-      .minusMinutes(1);
-    final ZonedDateTime expectedLoanDueDate = loanPeriod.plusDate(loanCreateDate);
+      .minusMinutes(1).truncatedTo(ChronoUnit.MILLIS);
+    final ZonedDateTime expectedLoanDueDate = loanPeriod
+      .plusDate(loanCreateDate).truncatedTo(ChronoUnit.MILLIS);
 
     final IndividualResource loan = checkOutFixture.checkOutByBarcode(
       smallAngryPlanet, usersFixture.steve(), loanCreateDate);
