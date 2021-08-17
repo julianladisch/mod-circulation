@@ -821,7 +821,7 @@ public class LoanDueDatesAfterRecallTests extends APITests {
       .withRecallsRecallReturnInterval(Period.months(2)));
 
     final ZonedDateTime loanCreateDate = loanPeriod.minusDate(ClockManager.getZonedDateTime())
-      .minusMinutes(1).truncatedTo(ChronoUnit.MILLIS);
+      .minusMinutes(1);
     final ZonedDateTime expectedLoanDueDate = loanPeriod
       .plusDate(loanCreateDate).truncatedTo(ChronoUnit.MILLIS);
 

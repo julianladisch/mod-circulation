@@ -997,7 +997,8 @@ public class DateTimeUtil {
       try {
         DateTimeFormatter formatter = formatters.get(i)
           .withZone(normalizeZone(zone));
-        return ZonedDateTime.parse(value, formatter);
+        return ZonedDateTime.parse(value, formatter)
+          .truncatedTo(ChronoUnit.MILLIS);
       } catch (DateTimeParseException e1) {
         if (i == formatters.size() - 1) {
           throw e1;
@@ -1005,7 +1006,7 @@ public class DateTimeUtil {
       }
     }
 
-    return ZonedDateTime.parse(value);
+    return ZonedDateTime.parse(value).truncatedTo(ChronoUnit.MILLIS);
   }
 
 }

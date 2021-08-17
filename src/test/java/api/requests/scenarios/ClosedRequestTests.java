@@ -9,6 +9,7 @@ import static api.support.matchers.ValidationErrorMatchers.hasErrorWith;
 import static api.support.matchers.ValidationErrorMatchers.hasMessage;
 import static api.support.matchers.ValidationErrorMatchers.hasUUIDParameter;
 import static java.time.ZoneOffset.UTC;
+import static org.folio.circulation.support.ClockManager.getZonedDateTime;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -132,7 +133,7 @@ public class ClosedRequestTests extends APITests {
       .page()
       .fulfilToHoldShelf()
       .withItemId(smallAngryPlanet.getId())
-      .withRequestDate(ZonedDateTime.now(UTC).minusHours(4))
+      .withRequestDate(getZonedDateTime().minusHours(4))
       .withRequesterId(jessica.getId())
       .withPickupServicePointId(servicePointsFixture.cd1().getId()));
 
@@ -147,7 +148,7 @@ public class ClosedRequestTests extends APITests {
           .cancelled()
           .withCancellationReasonId(courseReservesCancellationReason.getId())
           .withCancelledByUserId(jessica.getId())
-          .withCancelledDate(ZonedDateTime.now(UTC).minusHours(3)));
+          .withCancelledDate(getZonedDateTime().minusHours(3)));
 
     smallAngryPlanet = itemsClient.get(smallAngryPlanet);
     assertThat(smallAngryPlanet, hasItemStatus(AVAILABLE));

@@ -7,9 +7,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-
+import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.junit.MatcherAssert;
 import org.junit.Test;
@@ -43,7 +41,7 @@ public class ServicePointCheckOutTests extends APITests {
     checkOutFixture.checkOutByBarcode(nod, james);
 
     final IndividualResource request = requestsFixture.placeHoldShelfRequest(nod, jessica,
-        ZonedDateTime.now(ZoneOffset.UTC), requestServicePoint.getId());
+        ClockManager.getZonedDateTime(), requestServicePoint.getId());
 
     final CheckInByBarcodeResponse checkInResponse = checkInFixture.checkInByBarcode(
         new CheckInByBarcodeRequestBuilder()
