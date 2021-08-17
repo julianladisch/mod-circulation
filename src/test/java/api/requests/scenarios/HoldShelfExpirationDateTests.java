@@ -271,12 +271,9 @@ public class HoldShelfExpirationDateTests extends APITests {
     assertThat("request status snapshot in storage is " + OPEN_AWAITING_PICKUP,
         storedSecondCheckInRequest.getString("status"), is(OPEN_AWAITING_PICKUP));
 
-    final ZonedDateTime expectedExpirationDateAfterUpdate = atEndOfTheDay(
-      getZonedDateTime().plusDays(30));
-
     assertThat("request hold shelf expiration date is 30 days in the future and has not been updated",
       storedRequest.getString("holdShelfExpirationDate"),
-      isEquivalentTo(expectedExpirationDateAfterUpdate));
+      isEquivalentTo(expectedExpirationDate));
   }
 
   @Test
