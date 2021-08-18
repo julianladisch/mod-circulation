@@ -21,20 +21,17 @@ import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.results.Result;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import io.vertx.core.json.JsonObject;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 
-@RunWith(JUnitParamsRunner.class)
 public class ChangeDueDateValidatorTest {
   private ChangeDueDateValidator changeDueDateValidator;
 
-  @Before
+  @BeforeEach
   public void mockRepository() {
     final LoanRepository loanRepository = mock(LoanRepository.class);
 
@@ -44,8 +41,8 @@ public class ChangeDueDateValidatorTest {
     changeDueDateValidator = new ChangeDueDateValidator(loanRepository);
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @ValueSource(strings = {
     "Declared lost",
     "Claimed returned",
     "Aged to lost"
@@ -59,8 +56,8 @@ public class ChangeDueDateValidatorTest {
     assertThat(validationResult.cause(), instanceOf(ValidationErrorFailure.class));
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @ValueSource(strings = {
     "Declared lost",
     "Claimed returned",
     "Aged to lost"

@@ -3,11 +3,12 @@ package org.folio.circulation.domain;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.UserBuilder;
 
 public class UserTests {
+
   @Test
   public void personalNameComesFromPersonalDetails() {
     final User activeUser = new User(new UserBuilder()

@@ -40,8 +40,8 @@ import org.folio.circulation.domain.Account;
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.ClaimItemReturnedRequestBuilder;
@@ -76,7 +76,7 @@ public class AgedToLostScheduledNoticesProcessingTests extends APITests {
   public static final double LOST_ITEM_FEE_PAYMENT_AMOUNT = LOST_ITEM_FEE_AMOUNT / 2;
   public static final double PROCESSING_FEE_PAYMENT_AMOUNT = PROCESSING_FEE_AMOUNT / 2;
 
-  @Before
+  @BeforeEach
   public void beforeEach() throws InterruptedException {
     super.beforeEach();
 

@@ -43,7 +43,7 @@ import org.awaitility.Awaitility;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.json.JsonObjectArrayPropertyFetcher;
 import org.folio.circulation.support.utils.DateTimeUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.MultipleJsonRecords;
@@ -60,6 +60,7 @@ import io.vertx.core.json.JsonObject;
 import lombok.val;
 
 public class LoanAPITests extends APITests {
+
   @Test
   public void canCreateALoan() {
     UUID id = UUID.randomUUID();

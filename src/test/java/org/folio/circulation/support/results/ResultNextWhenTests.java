@@ -4,14 +4,16 @@ import static api.support.matchers.FailureMatcher.isErrorFailureContaining;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultExamples.alreadyFailed;
 import static org.folio.circulation.support.results.ResultExamples.conditionFailed;
-import static org.folio.circulation.support.results.ResultExamples.throwOnExecution;
 import static org.folio.circulation.support.results.ResultExamples.somethingWentWrong;
+import static org.folio.circulation.support.results.ResultExamples.throwOnExecution;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 public class ResultNextWhenTests {
+
   @Test
   public void shouldApplyWhenTrueActionWhenConditionIsTrue() {
     final Result<Integer> result = succeeded(10)

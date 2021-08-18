@@ -15,7 +15,7 @@ import java.util.UUID;
 
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.utils.DateTimeUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.LoanBuilder;
@@ -23,6 +23,7 @@ import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 
 public class CheckInByReplacingLoanTests extends APITests {
+
   @Test
   public void canCompleteALoanByReturningTheItem() {
 

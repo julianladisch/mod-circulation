@@ -2,17 +2,18 @@ package org.folio.circulation.domain;
 
 import static api.support.matchers.JsonObjectMatcher.hasJsonPath;
 import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.folio.circulation.support.ClockManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.LoanBuilder;
 
 public class LoanLostDateTest {
+
   @Test
   public void declaredLostDateReturnedWhenSet() {
     final var declaredLostDate = ClockManager.getZonedDateTime();

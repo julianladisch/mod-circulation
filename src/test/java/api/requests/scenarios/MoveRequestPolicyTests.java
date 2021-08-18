@@ -24,10 +24,10 @@ import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.utils.DateTimeUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.MultipleJsonRecords;
@@ -49,19 +49,19 @@ public class MoveRequestPolicyTests extends APITests {
 
   private NoticePolicyBuilder noticePolicy;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpBeforeClass() {
     clock = Clock.fixed(ClockManager.getInstant(), ZoneOffset.UTC);
     ClockManager.setClock(clock);
     FakePubSub.clearPublishedEvents();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ClockManager.setClock(clock);
   }
 
-  @Before
+  @BeforeEach
   public void setUpNoticePolicy() {
     UUID recallToLoaneeTemplateId = UUID.randomUUID();
     JsonObject recallToLoaneeConfiguration = new NoticeConfigurationBuilder()
@@ -81,7 +81,7 @@ public class MoveRequestPolicyTests extends APITests {
       lostItemFeePoliciesFixture.facultyStandard().getId());
   }
 
-  @After
+  @AfterEach
   public void after() {
     ClockManager.setDefaultClock();
   }

@@ -22,7 +22,8 @@ import java.util.UUID;
 import org.folio.circulation.domain.ItemStatus;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.json.JsonPropertyFetcher;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.CheckInByBarcodeRequestBuilder;
@@ -68,6 +69,7 @@ public class ItemsInTransitReportTests extends APITests {
   private static final String EFFECTIVE_CALL_NUMBER_COMPONENTS = "effectiveCallNumberComponents";
 
   @Override
+  @AfterEach
   public void afterEach() {
     super.afterEach();
 

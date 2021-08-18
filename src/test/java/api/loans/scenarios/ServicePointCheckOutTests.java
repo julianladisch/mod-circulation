@@ -9,8 +9,8 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
-import org.hamcrest.junit.MatcherAssert;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.CheckInByBarcodeResponse;
@@ -20,6 +20,7 @@ import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 
 public class ServicePointCheckOutTests extends APITests {
+
   @Test
   public void isInTransitWhenCheckedOutAtNonPickupServicePoint() {
     final IndividualResource checkInServicePoint = servicePointsFixture.cd1();

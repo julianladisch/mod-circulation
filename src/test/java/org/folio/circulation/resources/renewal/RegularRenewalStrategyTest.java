@@ -27,18 +27,17 @@ import org.folio.circulation.domain.RequestQueue;
 import org.folio.circulation.domain.policy.LoanPolicy;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import api.support.builders.LoanBuilder;
 import api.support.builders.LoanPolicyBuilder;
 import api.support.builders.RequestBuilder;
 import io.vertx.core.json.JsonObject;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 
-@RunWith(JUnitParamsRunner.class)
 public class RegularRenewalStrategyTest {
+
   @Test
   public void canRenewLoan() {
     final var rollingPeriod = days(10);
@@ -152,8 +151,8 @@ public class RegularRenewalStrategyTest {
       hasMessage("Item's loan policy has fixed profile but renewal period is specified")));
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @ValueSource(strings = {
     "Declared lost",
     "Aged to lost",
     "Claimed returned",

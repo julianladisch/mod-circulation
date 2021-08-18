@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import org.folio.circulation.domain.MultipleRecords;
 import org.folio.circulation.support.http.client.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.http.IndividualResource;
@@ -21,6 +21,7 @@ import io.vertx.core.json.JsonObject;
 
 //TODO: Maybe move these tests to scenarios which better describe the situation
 public class RequestQueueTests extends APITests {
+
   @Test
   public void fulfilledRequestShouldBeRemovedFromQueue() {
 

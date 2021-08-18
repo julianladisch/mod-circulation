@@ -20,9 +20,10 @@ import org.folio.circulation.support.CqlSortBy;
 import org.folio.circulation.support.CqlSortClause;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CqlQueryTests {
+
   @Test
   public void queryIsUrlEncoded() {
     final Result<CqlQuery> query = exactMatch("barcode", "  12345  ")

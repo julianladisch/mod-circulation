@@ -69,9 +69,9 @@ import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.utils.DateTimeUtil;
 import org.hamcrest.Matcher;
 import org.hamcrest.core.Is;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
@@ -118,12 +118,12 @@ public abstract class RenewalAPITests extends APITests {
 
   abstract Matcher<ValidationError> hasItemNotFoundMessage(IndividualResource item);
 
-  @Before
+  @BeforeEach
   public void setup() {
     ClockManager.setDefaultClock();
   }
 
-  @After
+  @AfterEach
   public void after() {
     ClockManager.setDefaultClock();
   }

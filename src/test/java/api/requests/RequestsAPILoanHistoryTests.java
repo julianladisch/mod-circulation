@@ -6,15 +6,16 @@ import static org.hamcrest.Matchers.not;
 
 import java.util.UUID;
 
-import api.support.http.IndividualResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.RequestBuilder;
+import api.support.http.IndividualResource;
 import api.support.http.ItemResource;
 import io.vertx.core.json.JsonObject;
 
 public class RequestsAPILoanHistoryTests extends APITests {
+
   @Test
   public void creatingRecallRequestChangesTheOpenLoanForTheSameItem() {
 

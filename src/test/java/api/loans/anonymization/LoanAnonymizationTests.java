@@ -10,6 +10,8 @@ import java.util.UUID;
 
 import org.folio.circulation.domain.representations.anonymization.LoanAnonymizationAPIResponse;
 import org.folio.circulation.support.http.client.Response;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import api.support.APITests;
 import api.support.builders.AccountBuilder;
@@ -28,6 +30,7 @@ abstract class LoanAnonymizationTests extends APITests {
   protected IndividualResource servicePoint;
 
   @Override
+  @BeforeEach
   public void beforeEach() throws InterruptedException {
     super.beforeEach();
 
@@ -37,6 +40,7 @@ abstract class LoanAnonymizationTests extends APITests {
   }
 
   @Override
+  @AfterEach
   public void afterEach() {
     super.afterEach();
 

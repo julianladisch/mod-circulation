@@ -1,7 +1,6 @@
 package org.folio.circulation.support.json;
 
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTime;
-import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;

@@ -3,6 +3,7 @@ package org.folio.circulation.domain.policy.lostitem;
 import static java.time.ZoneOffset.UTC;
 import static org.folio.circulation.domain.policy.Period.from;
 import static org.folio.circulation.domain.policy.Period.minutes;
+import static org.folio.circulation.support.ClockManager.getZonedDateTime;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
@@ -13,25 +14,22 @@ import java.time.ZonedDateTime;
 
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import api.support.builders.LostItemFeePolicyBuilder;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import junitparams.converters.Nullable;
 
-@RunWith(JUnitParamsRunner.class)
 public class LostItemPolicyTest {
 
-  @After
+  @AfterEach
   public void after() {
     ClockManager.setDefaultClock();
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 78",
     "Hours, 9",
     "Days, 66",
@@ -42,11 +40,11 @@ public class LostItemPolicyTest {
     final Period period = from(duration, interval);
     final LostItemPolicy lostItemPolicy = lostItemPolicyWithAgePeriod(period);
 
-    assertFalse(lostItemPolicy.canAgeLoanToLost(false, ClockManager.getZonedDateTime().plusMinutes(1)));
+    assertFalse(lostItemPolicy.canAgeLoanToLost(false, getZonedDateTime().plusMinutes(1)));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 43",
     "Hours, 12",
     "Days, 29",
@@ -59,13 +57,13 @@ public class LostItemPolicyTest {
     final Period period = from(duration, interval);
     final LostItemPolicy lostItemPolicy = lostItemPolicyWithAgePeriod(period);
 
-    final ZonedDateTime loanDueDate = period.minusDate(ClockManager.getZonedDateTime()).minusSeconds(1);
+    final ZonedDateTime loanDueDate = period.minusDate(getZonedDateTime()).minusSeconds(1);
 
     assertTrue(lostItemPolicy.canAgeLoanToLost(false, loanDueDate));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 43",
     "Hours, 12",
     "Days, 29",
@@ -78,13 +76,13 @@ public class LostItemPolicyTest {
     final Period period = from(duration, interval);
     final LostItemPolicy lostItemPolicy = lostItemPolicyWithRecallAgePeriod(period);
 
-    final ZonedDateTime loanDueDate = period.minusDate(ClockManager.getZonedDateTime()).minusSeconds(1);
+    final ZonedDateTime loanDueDate = period.minusDate(getZonedDateTime()).minusSeconds(1);
 
     assertTrue(lostItemPolicy.canAgeLoanToLost(true, loanDueDate));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 123",
     "Hours, 99",
     "Days, 64",
@@ -97,7 +95,7 @@ public class LostItemPolicyTest {
     final Period period = from(duration, interval);
     final LostItemPolicy lostItemPolicy = lostItemPolicyWithAgePeriod(period);
 
-    final ZonedDateTime loanDueDate = period.minusDate(ClockManager.getZonedDateTime());
+    final ZonedDateTime loanDueDate = period.minusDate(getZonedDateTime());
 
     assertTrue(lostItemPolicy.canAgeLoanToLost(false, loanDueDate));
   }
@@ -106,11 +104,11 @@ public class LostItemPolicyTest {
   public void shouldNotAgeItemToLostIfPeriodIsMissingInPolicy() {
     final LostItemPolicy lostItemPolicy = lostItemPolicyWithAgePeriod(null);
 
-    assertFalse(lostItemPolicy.canAgeLoanToLost(false, ClockManager.getZonedDateTime()));
+    assertFalse(lostItemPolicy.canAgeLoanToLost(false, getZonedDateTime()));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 123",
     "Hours, 99",
     "Days, 64",
@@ -124,12 +122,12 @@ public class LostItemPolicyTest {
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(builder.create());
 
-    final ZonedDateTime lostDateTime = from(duration / 2, interval).minusDate(ClockManager.getZonedDateTime());
+    final ZonedDateTime lostDateTime = from(duration / 2, interval).minusDate(getZonedDateTime());
     assertTrue(lostItemPolicy.shouldRefundFees(lostDateTime));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 656",
     "Hours, 6",
     "Days, 98",
@@ -143,15 +141,15 @@ public class LostItemPolicyTest {
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(builder.create());
 
-    final ZonedDateTime now = ClockManager.getZonedDateTime();
+    final ZonedDateTime now = getZonedDateTime();
     ClockManager.setClock(Clock.fixed(now.toInstant(), UTC));
 
     final ZonedDateTime lostDateTime = period.minusDate(now);
     assertTrue(lostItemPolicy.shouldRefundFees(lostDateTime));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 656",
     "Hours, 6",
     "Days, 98",
@@ -165,7 +163,7 @@ public class LostItemPolicyTest {
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(builder.create());
 
-    final ZonedDateTime lostDateTime = period.minusDate(ClockManager.getZonedDateTime()).minusSeconds(1);
+    final ZonedDateTime lostDateTime = period.minusDate(getZonedDateTime()).minusSeconds(1);
     assertFalse(lostItemPolicy.shouldRefundFees(lostDateTime));
   }
 
@@ -177,25 +175,25 @@ public class LostItemPolicyTest {
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(builder.create());
 
-    assertFalse(lostItemPolicy.canAgeLoanToLost(false, ClockManager.getZonedDateTime()));
+    assertFalse(lostItemPolicy.canAgeLoanToLost(false, getZonedDateTime()));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 0",
     "Hours, 0",
     "Days, 0",
     "Weeks, 0",
     "Months, 0",
-    "null, null"
-  })
+    "null, null",
+  }, nullValues = {"null"})
   public void canCalculateBillingDateWhenPatronIsBilledImmediatelyForNotRecalledItem(
-    @Nullable String interval, @Nullable Integer duration) {
+    String interval, Integer duration) {
 
     final Period billPatronInterval = duration == null && interval == null
       ? null : Period.from(duration, interval);
 
-    final ZonedDateTime agedToLostDate = ClockManager.getZonedDateTime();
+    final ZonedDateTime agedToLostDate = getZonedDateTime();
 
     final LostItemPolicy lostItemPolicy = LostItemPolicy.from(
       new LostItemFeePolicyBuilder()
@@ -213,7 +211,7 @@ public class LostItemPolicyTest {
   @Test
   public void canCalculateBillingDateWhenPatronBillingIsDelayedForNotRecalledItem() {
     final Period billPatronAfterPeriod = Period.weeks(1);
-    final ZonedDateTime ageToLostDate = ClockManager.getZonedDateTime();
+    final ZonedDateTime ageToLostDate = getZonedDateTime();
     final ZonedDateTime expectedBillingDate = billPatronAfterPeriod
       .plusDate(ageToLostDate);
 
@@ -233,7 +231,7 @@ public class LostItemPolicyTest {
   @Test
   public void shouldUseRecallIntervalForBillingDateWhenItemRecalled() {
     final Period billPatronAfterPeriod = Period.weeks(2);
-    final ZonedDateTime ageToLostDate = ClockManager.getZonedDateTime();
+    final ZonedDateTime ageToLostDate = getZonedDateTime();
     final ZonedDateTime expectedBillingDate = billPatronAfterPeriod
       .plusDate(ageToLostDate);
 
@@ -254,7 +252,7 @@ public class LostItemPolicyTest {
   public void shouldNotUseRecallIntervalForNotRecalledItem() {
     final Period ageToLostBillingPeriod = Period.weeks(1);
     final Period recallBillingPeriod = Period.weeks(2);
-    final ZonedDateTime ageToLostDate = ClockManager.getZonedDateTime();
+    final ZonedDateTime ageToLostDate = getZonedDateTime();
     final ZonedDateTime expectedBillingDate = ageToLostBillingPeriod
       .plusDate(ageToLostDate);
 

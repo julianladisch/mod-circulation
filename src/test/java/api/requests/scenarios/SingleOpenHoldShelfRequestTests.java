@@ -29,7 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.support.http.client.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.CheckInByBarcodeRequestBuilder;
@@ -44,6 +44,7 @@ import io.vertx.core.json.JsonObject;
 import lombok.val;
 
 public class SingleOpenHoldShelfRequestTests extends APITests {
+
   @Test
   public void statusChangesToAwaitingPickupWhenItemCheckedIn() {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();

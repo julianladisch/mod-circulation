@@ -9,9 +9,11 @@ import static org.folio.circulation.support.results.ResultExamples.somethingWent
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 public class ResultFailWhenTests {
+
   @Test
   public void shouldPassThroughResultWhenConditionIsFalse() {
     final Result<Integer> result = succeeded(10)

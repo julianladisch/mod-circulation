@@ -11,11 +11,12 @@ import java.time.ZonedDateTime;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.vertx.core.json.JsonObject;
 
 public class RenewalValidatorTest {
+
   @Test
   public void shouldDisallowRenewalWhenDueDateIsEarlierOrSame() {
     ZonedDateTime dueDate = ClockManager.getZonedDateTime();

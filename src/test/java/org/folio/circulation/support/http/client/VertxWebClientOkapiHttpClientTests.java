@@ -51,6 +51,7 @@ public class VertxWebClientOkapiHttpClientTests {
 
   @Rule
   public WireMockRule fakeWebServer = new WireMockRule();
+
   private final URL okapiUrl = new URL("http://okapi.com");
   private final String tenantId = "test-tenant";
   private final String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkaWt1X2FkbWluIiwidXNlcl9pZCI6ImFhMjZjYjg4LTc2YjEtNTQ1OS1hMjM1LWZjYTRmZDI3MGMyMyIsImlhdCI6MTU3NjAxMzY3MiwidGVuYW50IjoiZGlrdSJ9.oGCb0gDIdkXGlCiECvJHgQMXD3QKKW2vTh7PPCrpds8";

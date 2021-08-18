@@ -12,13 +12,14 @@ import org.folio.circulation.domain.RequestQueue;
 import org.folio.circulation.resources.renewal.RegularRenewalStrategy;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.LoanBuilder;
 import api.support.builders.LoanPolicyBuilder;
 import io.vertx.core.json.JsonObject;
 
 public class InvalidLoanPolicyTests {
+
   @Test
   public void shouldFailCheckOutCalculationWhenNoLoanPolicyProvided() {
     final JsonObject representation = new LoanPolicyBuilder()

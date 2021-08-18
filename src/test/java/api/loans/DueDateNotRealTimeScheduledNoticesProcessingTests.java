@@ -29,8 +29,8 @@ import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.NoticeConfigurationBuilder;
@@ -45,7 +45,7 @@ import lombok.val;
 public class DueDateNotRealTimeScheduledNoticesProcessingTests extends APITests {
   private final static UUID TEMPLATE_ID = UUID.randomUUID();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     templateFixture.createDummyNoticeTemplate(TEMPLATE_ID);
   }

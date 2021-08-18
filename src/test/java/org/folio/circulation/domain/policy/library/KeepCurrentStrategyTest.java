@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 import java.util.stream.IntStream;
 
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class KeepCurrentStrategyTest {
 

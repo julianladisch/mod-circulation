@@ -19,7 +19,7 @@ import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DeferFailureErrorHandlerTest {
   private static final HttpFailure SERVER_ERROR = new ServerErrorFailure("server error");

@@ -35,11 +35,12 @@ import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.utils.DateTimeUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import api.support.APITests;
 import api.support.MultipleJsonRecords;
@@ -49,10 +50,6 @@ import api.support.builders.RequestBuilder;
 import api.support.builders.ServicePointBuilder;
 import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-import junitparams.converters.Nullable;
-import junitparams.naming.TestCaseName;
 
 /**
  * Notes:<br>
@@ -61,7 +58,6 @@ import junitparams.naming.TestCaseName;
  *
  * @see <a href="https://issues.folio.org/browse/CIRC-203">CIRC-203</a>
  */
-@RunWith(JUnitParamsRunner.class)
 public class LoanDueDatesAfterRecallTests extends APITests {
   private static Clock clock;
 
@@ -69,18 +65,18 @@ public class LoanDueDatesAfterRecallTests extends APITests {
     super(true, true);
   }
 
-  @BeforeClass
+  @BeforeAll
   public static void setupBeforeClass() {
     clock = Clock.fixed(ClockManager.getInstant(), ZoneOffset.UTC);
     ClockManager.setClock(clock);
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     ClockManager.setClock(clock);
   }
 
-  @After
+  @AfterEach
   public void after() {
     ClockManager.setDefaultClock();
   }
@@ -318,22 +314,21 @@ public class LoanDueDatesAfterRecallTests extends APITests {
         storedLoan.getString("dueDate"), is(expectedDueDate));
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest(name = "{index}: {0} {1} {2} {3} {4}")
+  @CsvSource(value = {
     // MGD duration|MGD interval|RD duration|RD interval|expected string
-    "null|null|1|Months|the \"minimumGuaranteedLoanPeriod\" in the loan policy is not recognized",
-    "1|Months|null|null|the \"recallReturnInterval\" in the loan policy is not recognized",
-    "1|Years|1|Months|the interval \"Years\" in \"minimumGuaranteedLoanPeriod\" is not recognized",
-    "1|Months|1|Years|the interval \"Years\" in \"recallReturnInterval\" is not recognized",
-    "-100|Months|1|Months|the duration \"-100\" in \"minimumGuaranteedLoanPeriod\" is invalid",
-    "1|Months|-100|Months|the duration \"-100\" in \"recallReturnInterval\" is invalid"
-  })
-  @TestCaseName("{method}: {params}")
+    "null,null,1,Months,the \"minimumGuaranteedLoanPeriod\" in the loan policy is not recognized",
+    "1,Months,null,null,the \"recallReturnInterval\" in the loan policy is not recognized",
+    "1,Years,1,Months,the interval \"Years\" in \"minimumGuaranteedLoanPeriod\" is not recognized",
+    "1,Months,1,Years,the interval \"Years\" in \"recallReturnInterval\" is not recognized",
+    "-100,Months,1,Months,the duration \"-100\" in \"minimumGuaranteedLoanPeriod\" is invalid",
+    "1,Months,-100,Months,the duration \"-100\" in \"recallReturnInterval\" is invalid"
+  }, nullValues={"null"})
   public void loanPolicyWithInvalidMGDOrRDPeriodValuesReturnsErrorOnRecallCreation(
-      @Nullable Integer mgdDuration,
-      @Nullable String mgdInterval,
-      @Nullable Integer rdDuration,
-      @Nullable String rdInterval,
+      Integer mgdDuration,
+      String mgdInterval,
+      Integer rdDuration,
+      String rdInterval,
       String expectedMessage) {
     final IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
     final IndividualResource requestServicePoint = servicePointsFixture.cd1();

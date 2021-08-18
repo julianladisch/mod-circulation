@@ -13,13 +13,14 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import org.folio.circulation.support.http.client.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.RequestBuilder;
 import api.support.http.IndividualResource;
 
 public class SingleClosedRequestTests extends APITests {
+
   @Test
   public void closedRequestDoesNotStopCheckOutToRequester() {
 

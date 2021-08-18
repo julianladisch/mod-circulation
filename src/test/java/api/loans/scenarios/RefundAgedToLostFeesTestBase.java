@@ -20,8 +20,8 @@ import static org.hamcrest.Matchers.allOf;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.ClockManager;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.fixtures.AgeToLostFixture;
 import api.support.http.IndividualResource;
@@ -40,7 +40,7 @@ public abstract class RefundAgedToLostFeesTestBase extends SpringApiTest {
     this.cancellationReason = cancellationReason;
   }
 
-  @Before
+  @BeforeEach
   public void createOwnerAndFeeTypes() {
     feeFineOwnerFixture.cd1Owner();
     feeFineTypeFixture.lostItemProcessingFee();

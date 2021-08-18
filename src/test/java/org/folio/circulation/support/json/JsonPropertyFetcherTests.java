@@ -8,11 +8,12 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.time.ZonedDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import io.vertx.core.json.JsonObject;
 
 public class JsonPropertyFetcherTests {
+
   @Test
   public void shouldReturnDateTimePropertyByPath() {
     final String[] paths = {"1", "2", "3", "4", "5"};

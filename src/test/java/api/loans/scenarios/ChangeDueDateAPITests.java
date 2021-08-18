@@ -37,8 +37,8 @@ import java.util.UUID;
 import org.awaitility.Awaitility;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.ChangeDueDateRequestBuilder;
@@ -60,7 +60,7 @@ public class ChangeDueDateAPITests extends APITests {
   private IndividualResource loan;
   private ZonedDateTime dueDate;
 
-  @Before
+  @BeforeEach
   public void setUpItemAndLoan() {
     chargeFeesForLostItemToKeepLoanOpen();
 

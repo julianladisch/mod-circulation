@@ -13,9 +13,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.awaitility.Awaitility;
 import org.folio.circulation.support.HttpFailure;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ResultApplySideEffectTests {
+
   @Test
   public void shouldApplySuccessConsumerWhenSuccessful() {
     final AtomicInteger appliedSuccess = new AtomicInteger();

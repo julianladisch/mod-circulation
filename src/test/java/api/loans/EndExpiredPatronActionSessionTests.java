@@ -21,8 +21,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.folio.circulation.domain.notice.session.PatronActionType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.EndSessionBuilder;
@@ -41,7 +41,7 @@ public class EndExpiredPatronActionSessionTests extends APITests {
   private static final UUID CHECK_OUT_TEMPLATE_ID = UUID.randomUUID();
   private static final UUID CHECK_IN_TEMPLATE_ID = UUID.randomUUID();
 
-  @Before
+  @BeforeEach
   public void before() {
     JsonObject checkOutNoticeConfig = new NoticeConfigurationBuilder()
       .withTemplateId(CHECK_OUT_TEMPLATE_ID)

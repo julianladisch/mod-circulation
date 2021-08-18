@@ -18,13 +18,14 @@ import static org.hamcrest.Matchers.is;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.http.client.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.RequestBuilder;
 import api.support.http.IndividualResource;
 
 public class PageRequestWorkflowTests extends APITests {
+
   @Test
   public void canBeFulfilledWithoutPriorCheckIn() {
 

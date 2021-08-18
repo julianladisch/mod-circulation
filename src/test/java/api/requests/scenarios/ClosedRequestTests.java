@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.http.client.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.RequestBuilder;
@@ -26,6 +26,7 @@ import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 
 public class ClosedRequestTests extends APITests {
+
   @Test
   public void canCancelARequest() {
 

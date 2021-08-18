@@ -1,17 +1,18 @@
 package org.folio.circulation;
 
-import io.vertx.core.json.JsonObject;
-import api.support.fakes.FakeCQLToJSONInterpreter;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.hamcrest.core.Is.is;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.jupiter.api.Test;
+
+import api.support.fakes.FakeCQLToJSONInterpreter;
+import io.vertx.core.json.JsonObject;
 
 public class FakeCQLToJSONInterpreterSortingTests {
 

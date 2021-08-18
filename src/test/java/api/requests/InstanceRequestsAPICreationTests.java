@@ -23,7 +23,7 @@ import org.folio.circulation.domain.ItemStatus;
 import org.folio.circulation.domain.RequestType;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.RequestBuilder;
@@ -32,6 +32,7 @@ import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 
 public class InstanceRequestsAPICreationTests extends APITests {
+
   @Test
   public void canCreateATitleLevelRequestForMultipleAvailableItemsAndAMatchingPickupLocationId() {
     UUID pickupServicePointId = servicePointsFixture.cd1().getId();

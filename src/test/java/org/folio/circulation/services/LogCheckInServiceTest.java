@@ -18,23 +18,24 @@ import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.CollectionResourceClient;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.results.Result;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import io.vertx.core.json.JsonObject;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LogCheckInServiceTest {
+
   @Mock
   private Clients clients;
   @Mock
   private CollectionResourceClient checkInStorageClient;
   private LogCheckInService logCheckInService;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     when(clients.checkInStorageClient())
       .thenReturn(checkInStorageClient);

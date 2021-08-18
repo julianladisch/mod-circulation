@@ -21,7 +21,7 @@ import java.util.Map;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.CheckInByBarcodeResponse;
@@ -34,6 +34,7 @@ import api.support.matchers.TextDateTimeMatcher;
 import io.vertx.core.json.JsonObject;
 
 public class ServicePointCheckInTests extends APITests {
+
   @Test
   public void isPlacedAwaitingPickupWhenCheckedInAtPickupServicePoint() {
     final IndividualResource checkInServicePoint = servicePointsFixture.cd1();

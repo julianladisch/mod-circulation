@@ -15,7 +15,9 @@ import java.util.UUID;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.folio.circulation.support.json.JsonPropertyFetcher;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITestContext;
 import api.support.APITests;
@@ -29,12 +31,14 @@ public class ItemLastCheckInTests extends APITests {
   private static final ZonedDateTime fixedCheckInDateTime = ZonedDateTime.of(2019, 4, 3, 2, 10, 0, 0, UTC);
 
   @Override
+  @BeforeEach
   public void beforeEach() throws InterruptedException {
     super.beforeEach();
     clockToFixedDateTime(fixedCheckInDateTime);
   }
 
   @Override
+  @AfterEach
   public void afterEach() {
     super.afterEach();
     clockToDefaultDateTime();

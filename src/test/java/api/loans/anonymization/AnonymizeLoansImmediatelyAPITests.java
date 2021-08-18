@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.not;
 import java.util.UUID;
 
 import org.folio.circulation.support.ClockManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
 import api.support.builders.LoanHistoryConfigurationBuilder;

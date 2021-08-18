@@ -9,7 +9,7 @@ import org.folio.circulation.domain.Location;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LocationRepositoryTest {
 

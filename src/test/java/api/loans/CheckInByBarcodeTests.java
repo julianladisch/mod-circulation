@@ -54,7 +54,7 @@ import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.CheckInByBarcodeResponse;
@@ -77,6 +77,7 @@ import io.vertx.core.json.JsonObject;
 import lombok.val;
 
 public class CheckInByBarcodeTests extends APITests {
+
   @Test
   public void canCloseAnOpenLoanByCheckingInTheItem() {
     final IndividualResource james = usersFixture.james();

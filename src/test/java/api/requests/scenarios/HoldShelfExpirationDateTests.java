@@ -11,12 +11,11 @@ import static api.support.matchers.ItemStatusCodeMatcher.hasItemStatus;
 import static api.support.matchers.ResponseStatusCodeMatcher.hasStatus;
 import static api.support.matchers.TextDateTimeMatcher.isEquivalentTo;
 import static org.folio.HttpStatus.HTTP_OK;
+import static org.folio.circulation.support.ClockManager.getZonedDateTime;
 import static org.folio.circulation.support.utils.DateTimeUtil.atEndOfTheDay;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyOrNullString;
-
-import static org.folio.circulation.support.ClockManager.getZonedDateTime;
 
 import java.lang.reflect.Method;
 import java.time.Clock;
@@ -28,45 +27,43 @@ import java.time.temporal.ChronoUnit;
 
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import api.support.APITests;
 import api.support.builders.CheckInByBarcodeRequestBuilder;
 import api.support.fixtures.ConfigurationExample;
 import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 
-@RunWith(JUnitParamsRunner.class)
 public class HoldShelfExpirationDateTests extends APITests {
   private static Clock clock;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpBeforeClass() {
     clock = Clock.fixed(ClockManager.getInstant(), ZoneOffset.UTC);
     ClockManager.setClock(clock);
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     // reset the clock before each test (just in case)
     ClockManager.setClock(clock);
   }
 
-  @After
+  @AfterEach
   public void after() {
     ClockManager.setDefaultClock();
   }
 
-  @Test
-  @Parameters({
-    "cd5|MINUTES|42",
-    "cd6|HOURS|9"
+  @ParameterizedTest
+  @CsvSource(value = {
+    "cd5,MINUTES,42",
+    "cd6,HOURS,9"
   })
   public void requestWithShelfExpirationDateForSpExpiryInHoursAndMinutes(
     String servicePoint, ChronoUnit interval, int amount) {
@@ -104,11 +101,11 @@ public class HoldShelfExpirationDateTests extends APITests {
       isEquivalentTo(interval.addTo(getZonedDateTime(), amount)));
   }
 
-  @Test
-  @Parameters({
-    "cd1|DAYS|30",
-    "cd2|MONTHS|6",
-    "cd4|WEEKS|2"
+  @ParameterizedTest
+  @CsvSource(value = {
+    "cd1,DAYS,30",
+    "cd2,MONTHS,6",
+    "cd4,WEEKS,2"
   })
   public void requestWithShelfExpirationDateForSpExpiryInDaysWeeksMonths(
     String servicePoint, ChronoUnit interval, int amount) {

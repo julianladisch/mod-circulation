@@ -9,17 +9,14 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.Address;
 import api.support.builders.RequestBuilder;
 import api.support.builders.ServicePointBuilder;
 import api.support.builders.UserBuilder;
 import io.vertx.core.json.JsonObject;
-import junitparams.JUnitParamsRunner;
 
-@RunWith(JUnitParamsRunner.class)
 public class RequestRepresentationTests {
   private static final UUID REQUEST_ID = UUID.randomUUID();
   private static final UUID ITEM_ID = UUID.randomUUID();

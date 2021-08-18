@@ -1,13 +1,15 @@
 package org.folio.circulation.support.logging;
 
-import org.junit.Test;
 
 import static org.folio.circulation.support.logging.LogMessageSanitizer.sanitizeLogParameter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import org.junit.jupiter.api.Test;
+
 public class LogMessageSanitizerTests {
+
   @Test
   public void shouldRemoveNewLineCharactersFromLogMessageParameters() {
     final String unsanitizedParameter = "Some \n multiple \r line string";

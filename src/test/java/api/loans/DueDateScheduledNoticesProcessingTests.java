@@ -32,8 +32,8 @@ import org.awaitility.Awaitility;
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.CheckOutByBarcodeRequestBuilder;
@@ -74,7 +74,7 @@ public class DueDateScheduledNoticesProcessingTests extends APITests {
   private IndividualResource loan;
   private ZonedDateTime dueDate;
 
-  @Before
+  @BeforeEach
   public void beforeEach() {
     FakePubSub.clearPublishedEvents();
     setUpNoticePolicy();

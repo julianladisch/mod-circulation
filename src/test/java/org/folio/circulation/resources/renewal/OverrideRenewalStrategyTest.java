@@ -13,9 +13,9 @@ import static org.folio.circulation.domain.policy.Period.weeks;
 import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
 import static org.folio.circulation.support.utils.DateTimeUtil.formatDateTimeOptional;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.time.ZonedDateTime;
 
@@ -28,7 +28,7 @@ import org.folio.circulation.resources.context.RenewalContext;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.LoanPolicyBuilder;
 import io.vertx.core.json.JsonObject;

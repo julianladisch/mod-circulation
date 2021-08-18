@@ -24,7 +24,7 @@ import org.folio.circulation.domain.RequestType;
 import org.folio.circulation.resources.renewal.RegularRenewalStrategy;
 import org.folio.circulation.support.http.server.ValidationError;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.FixedDueDateSchedule;
 import api.support.builders.FixedDueDateSchedulesBuilder;
@@ -106,8 +106,6 @@ public class FixedLoanPolicyRenewalDueDateCalculationTests {
     Loan loan = existingLoan(loanPolicy);
 
     ZonedDateTime renewalDate = ZonedDateTime.of(2019, 1, 1, 8, 10, 45, 0, UTC);
-
-    String requestId = UUID.randomUUID().toString();
     RequestQueue requestQueue =  new RequestQueue(Collections.emptyList());
 
 

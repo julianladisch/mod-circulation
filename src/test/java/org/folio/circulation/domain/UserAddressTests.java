@@ -11,13 +11,14 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.Address;
 import api.support.builders.UserBuilder;
 import io.vertx.core.json.JsonObject;
 
 public class UserAddressTests {
+
   @Test
   public void noAddressFoundWhenNoAddresses() {
     final User user = new User(new UserBuilder()

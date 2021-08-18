@@ -73,8 +73,11 @@ import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import api.support.APITests;
 import api.support.builders.Address;
@@ -101,12 +104,8 @@ import api.support.http.ResourceClient;
 import api.support.http.UserResource;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 
-@RunWith(JUnitParamsRunner.class)
-public class
-RequestsAPICreationTests extends APITests {
+public class RequestsAPICreationTests extends APITests {
   private static final String PAGING_REQUEST_EVENT = "Paging request";
   private static final String HOLD_REQUEST_EVENT = "Hold request";
   private static final String RECALL_REQUEST_EVENT = "Recall request";
@@ -123,6 +122,7 @@ RequestsAPICreationTests extends APITests {
   public static final String PATRON_BLOCK_NAME = "patronBlock";
 
   @Override
+  @AfterEach
   public void afterEach() {
     super.afterEach();
     clockToDefaultDateTime();
@@ -434,8 +434,8 @@ RequestsAPICreationTests extends APITests {
       hasUUIDParameter("userId", rebecca.getId()))));
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @ValueSource(strings = {
     "Open - Not yet filled",
     "Open - Awaiting pickup",
     "Open - In transit",
@@ -466,10 +466,10 @@ RequestsAPICreationTests extends APITests {
   }
 
   //TODO: Replace with validation error message
-  @Test
-  @Parameters({
-    "Non-existent status",
-    ""
+  @ParameterizedTest
+  @EmptySource
+  @ValueSource(strings = {
+    "Non-existent status"
   })
   public void cannotCreateARequestWithInvalidStatus(String status) {
     final IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
@@ -496,10 +496,10 @@ RequestsAPICreationTests extends APITests {
   }
 
   //TODO: Replace with validation error message
-  @Test
-  @Parameters({
-    "Non-existent status",
-    ""
+  @ParameterizedTest
+  @EmptySource
+  @ValueSource(strings = {
+    "Non-existent status"
   })
   public void cannotCreateARequestAtASpecificLocationWithInvalidStatus(String status) {
     final IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();

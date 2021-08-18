@@ -8,8 +8,8 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.ConfigRecordBuilder;
 import api.support.builders.ConfigurationBuilder;
@@ -23,7 +23,7 @@ public class ConfigurationServiceTest {
 
   private static ConfigurationService service;
 
-  @BeforeClass
+  @BeforeAll
   public static void before() {
     service = new ConfigurationService();
   }
@@ -75,7 +75,7 @@ public class ConfigurationServiceTest {
 
     Integer actualSessionTimeout = service.findSessionTimeout(records);
 
-    assertEquals(actualSessionTimeout, new Integer(1));
+    assertEquals(actualSessionTimeout, Integer.valueOf(1));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class ConfigurationServiceTest {
 
     Integer actualSessionTimeout = service.findSessionTimeout(records);
 
-    assertEquals(actualSessionTimeout, new Integer(1));
+    assertEquals(actualSessionTimeout, Integer.valueOf(1));
   }
 
   @Test

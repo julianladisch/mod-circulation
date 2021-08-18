@@ -8,9 +8,11 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.util.stream.Stream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 public class StreamToListMappingTests {
+
   @Test
   public void listShouldContainSameContentsAsStream() {
     Stream<?> stream = Stream.of("Foo", "Bar", "Lorem", "Ipsum");

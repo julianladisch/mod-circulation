@@ -8,14 +8,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.ClockManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonObject;
 
 public class ItemStatusApiTests extends APITests {
-
   private static final String ITEM_STATUS = "status";
   private static final String ITEM_STATUS_DATE = "date";
 

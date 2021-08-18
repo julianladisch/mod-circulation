@@ -18,10 +18,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.folio.circulation.support.ClockManager;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import api.support.fakes.FakePubSub;
 import api.support.fixtures.AddressTypesFixture;
@@ -273,7 +273,7 @@ public abstract class APITests {
     setLoanHistoryEnabled(enableLoanHistory);
   }
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeAll() throws InterruptedException, ExecutionException,
     TimeoutException {
 
@@ -292,7 +292,7 @@ public abstract class APITests {
     okapiAlreadyDeployed = true;
   }
 
-  @Before
+  @BeforeEach
   public void beforeEach() throws InterruptedException {
     if (initialiseCirculationRules) {
       useDefaultRollingPolicyCirculationRules();
@@ -305,7 +305,7 @@ public abstract class APITests {
     FakePubSub.setFailPublishingWithBadRequestError(false);
   }
 
-  @After
+  @AfterEach
   public void afterEach() {
     forTenantStorage().deleteAll();
 

@@ -10,13 +10,14 @@ import java.util.List;
 
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.MultipleRecords;
-import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.ServerErrorFailure;
-import org.junit.Test;
+import org.folio.circulation.support.results.Result;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.LoanBuilder;
 
 public class MoreThanOneLoanValidatorTests {
+
   @Test
   public void allowSingleLoan() {
     final MoreThanOneLoanValidator validator = new MoreThanOneLoanValidator(

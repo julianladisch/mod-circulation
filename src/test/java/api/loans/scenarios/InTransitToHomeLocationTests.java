@@ -13,7 +13,7 @@ import java.util.Map;
 
 import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.CheckInByBarcodeResponse;
@@ -24,6 +24,7 @@ import api.support.matchers.JsonObjectMatcher;
 import io.vertx.core.json.JsonObject;
 
 public class InTransitToHomeLocationTests extends APITests {
+
   @Test
   public void isPlacedInTransitWhenCheckedInToReturnItemAtServicePointNotServingHomeLocation() {
 

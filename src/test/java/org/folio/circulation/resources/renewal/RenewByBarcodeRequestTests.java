@@ -1,14 +1,16 @@
 package org.folio.circulation.resources.renewal;
 
-import io.vertx.core.json.JsonObject;
-import org.folio.circulation.support.results.Result;
-import org.junit.Test;
-
 import static api.support.matchers.FailureMatchers.errorResultFor;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.folio.circulation.support.results.Result;
+import org.junit.jupiter.api.Test;
+
+import io.vertx.core.json.JsonObject;
+
 public class RenewByBarcodeRequestTests {
+
   @Test
   public void propertiesAreReadFromJson() {
     final Result<RenewByBarcodeRequest> request = RenewByBarcodeRequest.renewalRequestFrom(

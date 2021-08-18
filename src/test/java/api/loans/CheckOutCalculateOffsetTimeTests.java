@@ -35,7 +35,7 @@ import java.util.concurrent.TimeoutException;
 import org.folio.circulation.domain.OpeningDay;
 import org.folio.circulation.domain.policy.DueDateManagement;
 import org.folio.circulation.domain.policy.Period;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.OpeningDayPeriod;

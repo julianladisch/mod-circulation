@@ -13,9 +13,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 public class SafelyInitialiseAsynchronousResultTests {
+
   @Test
   public void shouldSucceedWhenSupplierSucceeds() throws ExecutionException,
     InterruptedException, TimeoutException {

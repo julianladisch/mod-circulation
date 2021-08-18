@@ -11,9 +11,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.UUID;
 
 import org.folio.circulation.support.ClockManager;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.ItemBuilder;
@@ -26,7 +26,7 @@ public class CloseAgedToLostLoanWhenLostItemFeesAreClosedApiTests extends APITes
   private IndividualResource loan;
   private IndividualResource item;
 
-  @Before
+  @BeforeEach
   public void createLoanAndAgeToLost() {
     feeFineOwnerFixture.cd1Owner();
     feeFineTypeFixture.lostItemFee();
@@ -44,7 +44,7 @@ public class CloseAgedToLostLoanWhenLostItemFeesAreClosedApiTests extends APITes
     loan = result.getLoan();
   }
 
-  @After
+  @AfterEach
   public void after() {
     ClockManager.setDefaultClock();
   }

@@ -40,8 +40,8 @@ import org.folio.circulation.domain.RequestType;
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.LoanPolicyBuilder;
@@ -60,7 +60,7 @@ import lombok.val;
  */
 public class MoveRequestTests extends APITests {
 
-  @After
+  @AfterEach
   public void after() {
     ClockManager.setDefaultClock();
   }

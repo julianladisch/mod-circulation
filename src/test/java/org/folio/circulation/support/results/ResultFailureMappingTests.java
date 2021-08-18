@@ -8,9 +8,11 @@ import static org.folio.circulation.support.results.ResultExamples.somethingWent
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 public class ResultFailureMappingTests {
+
   @Test
   public void shouldSucceedWhenAlreadySuccessful() {
     final Result<Integer> mappedResult = succeeded(10)

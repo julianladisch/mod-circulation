@@ -20,9 +20,11 @@ import java.util.stream.Collectors;
 import org.awaitility.Awaitility;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import api.support.APITests;
 import api.support.builders.ReorderQueueBuilder;
@@ -31,10 +33,7 @@ import api.support.fakes.FakePubSub;
 import api.support.http.IndividualResource;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 
-@RunWith(JUnitParamsRunner.class)
 public class RequestQueueResourceTest extends APITests {
   private IndividualResource item;
   private IndividualResource jessica;
@@ -43,7 +42,7 @@ public class RequestQueueResourceTest extends APITests {
   private IndividualResource rebecca;
   private IndividualResource charlotte;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     item = itemsFixture.basedUponSmallAngryPlanet();
 
@@ -138,8 +137,8 @@ public class RequestQueueResourceTest extends APITests {
       is("There is inconsistency between provided reordered queue and item queue."));
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @CsvSource(value = {
     "1, 2, 5, 4",
     "0, 2, 3, 4",
     "6, 2, 3, 1",
@@ -188,8 +187,8 @@ public class RequestQueueResourceTest extends APITests {
     verifyValidationFailure(response, is("Positions must have sequential order."));
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @CsvSource(value = {
     "1, 2, 3, 4",
     "1, 2, 4, 3",
     "2, 1, 3, 4",
@@ -270,8 +269,8 @@ public class RequestQueueResourceTest extends APITests {
     });
   }
 
-  @Test
-  @Parameters(source = ReorderQueueTestDataSource.class)
+  @ParameterizedTest
+  @ArgumentsSource(ReorderQueueTestDataSource.class)
   public void canReorderQueueTwice(Integer[] initialState, Integer[] targetState) {
     checkOutFixture.checkOutByBarcode(item, rebecca);
 

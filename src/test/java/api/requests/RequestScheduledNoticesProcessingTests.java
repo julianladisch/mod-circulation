@@ -27,9 +27,9 @@ import java.util.UUID;
 import org.folio.circulation.domain.policy.Period;
 import org.folio.circulation.support.ClockManager;
 import org.hamcrest.Matcher;
-import org.junit.Before;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runners.MethodSorters;
 
 import api.support.APITests;
@@ -53,7 +53,7 @@ public class RequestScheduledNoticesProcessingTests extends APITests {
   private IndividualResource requester;
   private IndividualResource pickupServicePoint;
 
-  @Before
+  @BeforeEach
   public void beforeEach() {
     FakePubSub.clearPublishedEvents();
 

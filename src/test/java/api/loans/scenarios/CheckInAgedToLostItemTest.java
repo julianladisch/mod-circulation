@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.time.ZonedDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.CheckInByBarcodeRequestBuilder;
 import api.support.fixtures.AgeToLostFixture;

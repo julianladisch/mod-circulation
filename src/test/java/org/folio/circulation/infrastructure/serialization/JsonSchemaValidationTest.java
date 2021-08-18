@@ -18,13 +18,14 @@ import java.util.UUID;
 import org.folio.circulation.support.BadRequestFailure;
 import org.folio.circulation.support.ClockManager;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.builders.CheckInByBarcodeRequestBuilder;
 import api.support.builders.RequestBuilder;
 import io.vertx.core.json.JsonObject;
 
 public class JsonSchemaValidationTest {
+
   @Test
   public void validationSucceedWithCompleteExample() throws IOException {
     final JsonSchemaValidator validator = JsonSchemaValidator

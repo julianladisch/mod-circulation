@@ -7,9 +7,11 @@ import static org.folio.circulation.support.results.ResultExamples.somethingWent
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 public class ResultMappingTests {
+
   @Test
   public void shouldSucceedWhenMapIsApplied() {
     final Result<Integer> mappedResult = succeeded(10)

@@ -30,7 +30,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.circulation.support.http.client.Response;
 import org.hamcrest.Matcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.ClaimItemReturnedRequestBuilder;
@@ -47,6 +47,7 @@ import api.support.http.ItemResource;
 import io.vertx.core.json.JsonObject;
 
 public class ChangeDueDateByReplacingLoanTests extends APITests {
+
   @Test
   public void canManuallyChangeTheDueDateOfLoan() {
     final ItemResource item = itemsFixture.basedUponNod();

@@ -16,17 +16,16 @@ import static org.hamcrest.Matchers.is;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.http.client.Response;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import api.support.APITests;
 import api.support.http.IndividualResource;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import lombok.val;
 
-@RunWith(JUnitParamsRunner.class)
 public class MultipleHoldShelfRequestsTests extends APITests {
+
   @Test
   public void statusOfOldestRequestChangesToAwaitingPickupWhenItemCheckedIn() {
     IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
@@ -57,10 +56,10 @@ public class MultipleHoldShelfRequestsTests extends APITests {
     assertThat(smallAngryPlanet, hasItemStatus(AWAITING_PICKUP));
   }
 
-  @Test
-  @Parameters({
-    "Hold|Checked out",
-    "Recall|Checked out"
+  @ParameterizedTest
+  @CsvSource(value = {
+    "Hold,Checked out",
+    "Recall,Checked out"
   })
   public void statusOfOldestHoldAndRecallRequestsChangeToFulfilledWhenItemCheckedOutToRequester(
     String requestType, String itemStatus) {

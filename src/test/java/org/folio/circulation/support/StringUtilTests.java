@@ -7,9 +7,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.nio.charset.StandardCharsets;
 
 import org.folio.rest.testing.UtilityClassTester;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class StringUtilTests {
+
   @Test
   public void isUtilityClass() {
     UtilityClassTester.assertUtilityClass(StringUtil.class);

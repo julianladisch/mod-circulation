@@ -7,22 +7,19 @@ import static org.junit.Assert.assertTrue;
 import java.time.ZonedDateTime;
 
 import org.folio.circulation.support.ClockManager;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
-
-@RunWith(JUnitParamsRunner.class)
 public class PeriodTest {
 
-  @Test
-  @Parameters( {
-    "Minutes | 6  | 6",
-    "Hours   | 5  | 300",
-    "Days    | 4  | 5760",
-    "Weeks   | 3  | 30240",
-    "Months  | 2  | 89280"
+  @ParameterizedTest
+  @CsvSource(value = {
+    "Minutes, 6, 6",
+    "Hours, 5, 300",
+    "Days, 4, 5760",
+    "Weeks, 3, 30240",
+    "Months, 2, 89280"
   })
   public void toMinutes(String interval, Integer duration, int expectedResult) {
     assertEquals(expectedResult, Period.from(duration, interval).toMinutes());
@@ -46,8 +43,8 @@ public class PeriodTest {
     assertEquals(0, period.toMinutes());
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 5",
     "Hours, 23",
     "Days, 14",
@@ -62,8 +59,8 @@ public class PeriodTest {
     assertFalse(period.hasNotPassedSinceDateTillNow(startDate));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 55",
     "Hours, 32",
     "Days, 65",
@@ -78,8 +75,8 @@ public class PeriodTest {
     assertFalse(period.hasNotPassedSinceDateTillNow(startDate));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 33",
     "Hours, 65",
     "Days, 9",
@@ -94,8 +91,8 @@ public class PeriodTest {
     assertTrue(period.hasNotPassedSinceDateTillNow(startDate));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 12",
     "Hours, 87",
     "Days, 98",
@@ -110,8 +107,8 @@ public class PeriodTest {
     assertFalse(period.hasPassedSinceDateTillNow(startDate));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 4",
     "Hours, 7",
     "Days, 8",
@@ -126,8 +123,8 @@ public class PeriodTest {
     assertTrue(period.hasPassedSinceDateTillNow(startDate));
   }
 
-  @Test
-  @Parameters( {
+  @ParameterizedTest
+  @CsvSource(value = {
     "Minutes, 43",
     "Hours, 65",
     "Days, 87",

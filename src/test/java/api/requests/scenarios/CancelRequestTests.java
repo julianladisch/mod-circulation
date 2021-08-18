@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import org.folio.circulation.domain.MultipleRecords;
 import org.folio.circulation.support.ClockManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.MultipleJsonRecords;
@@ -21,6 +21,7 @@ import api.support.http.ItemResource;
 import io.vertx.core.json.JsonObject;
 
 public class CancelRequestTests extends APITests {
+
   @Test
   public void canCancelRequest() {
 

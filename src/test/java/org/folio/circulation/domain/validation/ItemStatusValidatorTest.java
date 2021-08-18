@@ -12,18 +12,15 @@ import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.LoanAndRelatedRecords;
 import org.folio.circulation.support.ValidationErrorFailure;
 import org.folio.circulation.support.results.Result;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import io.vertx.core.json.JsonObject;
-import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 
-@RunWith(JUnitParamsRunner.class)
 public class ItemStatusValidatorTest {
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @ValueSource(strings = {
     "Long missing",
     "In process (non-requestable)",
     "Restricted",
@@ -40,8 +37,8 @@ public class ItemStatusValidatorTest {
     assertThat(validationResult.value(), notNullValue());
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @ValueSource(strings = {
     "Declared lost",
     "Claimed returned",
     "Aged to lost",
@@ -57,8 +54,8 @@ public class ItemStatusValidatorTest {
     assertThat(validationResult.cause(), instanceOf(ValidationErrorFailure.class));
   }
 
-  @Test
-  @Parameters({
+  @ParameterizedTest
+  @ValueSource(strings = {
     "Declared lost",
     "Claimed returned",
     "Aged to lost"

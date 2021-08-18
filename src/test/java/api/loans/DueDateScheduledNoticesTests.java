@@ -25,7 +25,7 @@ import org.folio.circulation.support.json.JsonPropertyWriter;
 import org.folio.circulation.support.utils.DateTimeUtil;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import api.support.APITests;
 import api.support.builders.ChangeDueDateRequestBuilder;
