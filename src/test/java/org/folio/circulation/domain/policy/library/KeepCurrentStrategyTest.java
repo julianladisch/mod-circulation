@@ -43,18 +43,22 @@ public class KeepCurrentStrategyTest {
     final int month = 11;
     final int dayOfMonth = 17;
 
-    final ZonedDateTime now = ZonedDateTime.of(year, month, dayOfMonth, 9, 47, 0, 0, UTC);
+    final ZonedDateTime date = ZonedDateTime.of(year, month, dayOfMonth, 9, 47, 0, 0, UTC);
 
     IntStream.rangeClosed(-12, 12)
       .forEach(zoneOffset -> {
         final ZoneOffset timeZone = ZoneOffset.ofHours(zoneOffset);
         final KeepCurrentDateStrategy strategy = new KeepCurrentDateStrategy(timeZone);
 
-        final ZonedDateTime newDueDate = strategy.calculateDueDate(now, null).value();
+        final ZonedDateTime newDueDate = strategy.calculateDueDate(date, null)
+          .value();
 
-        assertEquals(year, newDueDate.getYear());
-        assertEquals(month, newDueDate.getMonth());
-        assertEquals(dayOfMonth, newDueDate.getDayOfMonth());
+        // Must compare using local time and not between UTC and local time.
+        final ZonedDateTime localDate = date.withZoneSameInstant(timeZone);
+
+        assertEquals(localDate.getYear(), newDueDate.getYear());
+        assertEquals(localDate.getMonthValue(), newDueDate.getMonthValue());
+        assertEquals(localDate.getDayOfMonth(), newDueDate.getDayOfMonth());
 
         assertEquals(23, newDueDate.getHour());
         assertEquals(59, newDueDate.getMinute());
