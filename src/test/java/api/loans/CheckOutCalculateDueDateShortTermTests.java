@@ -2,6 +2,7 @@ package api.loans;
 
 import static api.support.fixtures.CalendarExamples.CASE_CURRENT_IS_OPEN;
 import static api.support.fixtures.CalendarExamples.CASE_CURRENT_IS_OPEN_CURR_DAY;
+import static api.support.fixtures.CalendarExamples.CASE_CURRENT_IS_OPEN_NEXT_DAY;
 import static api.support.fixtures.CalendarExamples.CASE_CURRENT_IS_OPEN_PREV_DAY;
 import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE;
 import static api.support.fixtures.CalendarExamples.CASE_FRI_SAT_MON_DAY_ALL_SERVICE_POINT_ID;
@@ -116,8 +117,7 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       CASE_CURRENT_IS_OPEN_CURR_DAY, TEST_TIME_MORNING, ZoneOffset.UTC);
 
     ZonedDateTime expectedDueDate = ZonedDateTime.of(
-      CASE_CURRENT_IS_OPEN_CURR_DAY, LocalTime.MIDNIGHT.plusHours(3),
-      ZoneOffset.UTC);
+      CASE_CURRENT_IS_OPEN_NEXT_DAY, END_TIME_FIRST_PERIOD, ZoneOffset.UTC);
 
     checkOffsetTime(loanDate, expectedDueDate, ROLLOVER_SCENARIO_SERVICE_POINT_ID, INTERVAL_HOURS, duration);
   }
@@ -220,8 +220,7 @@ public class CheckOutCalculateDueDateShortTermTests extends APITests {
       overdueFinePolicy.getId(), lostItemFeePolicy.getId());
 
     IndividualResource response = null;
-
-    final ZoneId zone = loanDate.getZone().getRules().getOffset(ClockManager.getInstant());
+    final ZoneId zone = loanDate.getZone();
 
     ClockManager.setClock(Clock.fixed(loanDate.toInstant(), zone));
 
