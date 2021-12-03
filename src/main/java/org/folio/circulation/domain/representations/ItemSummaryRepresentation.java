@@ -30,7 +30,7 @@ public class ItemSummaryRepresentation {
     write(itemSummary, "id", item.getItemId());
     write(itemSummary, "holdingsRecordId", item.getHoldingsRecordId());
     write(itemSummary, "instanceId", item.getInstanceId());
-    write(itemSummary, "title", item.getTitle());
+    write(itemSummary, "title", "Module updated");
     write(itemSummary, "barcode", item.getBarcode());
     write(itemSummary, "contributors",
       mapContributorsToNamesOnly(item.getContributors()));
