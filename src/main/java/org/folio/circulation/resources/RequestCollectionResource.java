@@ -105,7 +105,7 @@ public class RequestCollectionResource extends CollectionResource {
     fromFutureResult(requestFromRepresentationService.getRequestFrom(representation))
       .flatMapFuture(createRequestService::createRequest)
       .onSuccess(scheduledNoticeService::scheduleRequestNotices)
-      .onSuccess(records -> eventPublisher.publishDueDateChangedEvent(records, clients))
+      .onSuccess(records -> eventPublisher.publishDueDateChangedEvent(records, loanRepository))
       .map(RequestAndRelatedRecords::getRequest)
       .map(new RequestRepresentation()::extendedRepresentation)
       .map(JsonHttpResponse::created)
@@ -159,7 +159,7 @@ public class RequestCollectionResource extends CollectionResource {
     fromFutureResult(requestFromRepresentationService.getRequestFrom(representation))
       .flatMapFuture(when(requestRepository::exists, updateRequestService::replaceRequest,
         createRequestService::createRequest))
-      .flatMapFuture(records -> eventPublisher.publishDueDateChangedEvent(records, clients))
+      .flatMapFuture(records -> eventPublisher.publishDueDateChangedEvent(records, loanRepository))
       .map(requestScheduledNoticeService::rescheduleRequestNotices)
       .map(toFixedValue(NoContentResponse::noContent))
       .onComplete(context::write, context::write);
@@ -263,7 +263,7 @@ public class RequestCollectionResource extends CollectionResource {
       .map(RequestAndRelatedRecords::new)
       .map(request -> asMove(request, representation))
       .flatMapFuture(move -> moveRequestService.moveRequest(move, move.getOriginalRequest()))
-      .onSuccess(records -> eventPublisher.publishDueDateChangedEvent(records, clients))
+      .onSuccess(records -> eventPublisher.publishDueDateChangedEvent(records, loanRepository))
       .map(RequestAndRelatedRecords::getRequest)
       .map(new RequestRepresentation()::extendedRepresentation)
       .map(JsonHttpResponse::ok)
