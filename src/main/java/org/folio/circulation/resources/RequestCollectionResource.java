@@ -89,7 +89,8 @@ public class RequestCollectionResource extends CollectionResource {
       blockOverrides, okapiPermissions, clients);
 
     final var createRequestService = new CreateRequestService(
-      new CreateRequestRepositories(RequestRepository.using(clients),
+      new CreateRequestRepositories(RequestRepository.using(clients,
+        itemRepository, userRepository, loanRepository),
         new RequestPolicyRepository(clients), configurationRepository),
       updateUponRequest, new RequestLoanValidator(loanRepository),
       requestNoticeSender, requestBlocksValidators, eventPublisher, errorHandler);
@@ -122,9 +123,11 @@ public class RequestCollectionResource extends CollectionResource {
     write(representation, "id", getRequestId(routingContext));
 
     final var itemRepository = new ItemRepository(clients);
-    final var requestRepository = RequestRepository.using(clients);
+    final var userRepository = new UserRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+    final var requestRepository = RequestRepository.using(clients,
+      itemRepository, userRepository, loanRepository);
     final var updateRequestQueue = UpdateRequestQueue.using(clients);
-    final var loanRepository = new LoanRepository(clients, itemRepository, new UserRepository(clients));
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var eventPublisher = new EventPublisher(routingContext);
     final var requestNoticeSender = RequestNoticeSender.using(clients);
@@ -170,7 +173,11 @@ public class RequestCollectionResource extends CollectionResource {
     final var context = new WebContext(routingContext);
     final var clients = Clients.create(context, client);
 
-    final var requestRepository = RequestRepository.using(clients);
+    final var itemRepository = new ItemRepository(clients);
+    final var userRepository = new UserRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+    final var requestRepository = RequestRepository.using(clients,
+      itemRepository, userRepository, loanRepository);
 
     final var id = getRequestId(routingContext);
 
@@ -187,7 +194,11 @@ public class RequestCollectionResource extends CollectionResource {
 
     final var id = getRequestId(routingContext);
 
-    final var requestRepository = RequestRepository.using(clients);
+    final var itemRepository = new ItemRepository(clients);
+    final var userRepository = new UserRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+    final var requestRepository = RequestRepository.using(clients,
+      itemRepository, userRepository, loanRepository);
 
     final var updateRequestQueue = new UpdateRequestQueue(RequestQueueRepository.using(clients),
       requestRepository, new ServicePointRepository(clients), new ConfigurationRepository(clients));
@@ -204,7 +215,11 @@ public class RequestCollectionResource extends CollectionResource {
     final var context = new WebContext(routingContext);
     final var clients = Clients.create(context, client);
 
-    final var requestRepository = RequestRepository.using(clients);
+    final var itemRepository = new ItemRepository(clients);
+    final var userRepository = new UserRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+    final var requestRepository = RequestRepository.using(clients,
+      itemRepository, userRepository, loanRepository);
 
     fromFutureResult(requestRepository.findBy(routingContext.request().query()))
       .map(this::mapToJson)
@@ -236,12 +251,13 @@ public class RequestCollectionResource extends CollectionResource {
 
     final var id = getRequestId(routingContext);
 
-    final var requestRepository = RequestRepository.using(clients);
-    final var requestQueueRepository = RequestQueueRepository.using(clients);
-
     final var itemRepository = new ItemRepository(clients);
     final var userRepository = new UserRepository(clients);
     final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+    final var requestRepository = RequestRepository.using(clients,
+      itemRepository, userRepository, loanRepository);
+    final var requestQueueRepository = RequestQueueRepository.using(clients);
+
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var configurationRepository = new ConfigurationRepository(clients);
 
