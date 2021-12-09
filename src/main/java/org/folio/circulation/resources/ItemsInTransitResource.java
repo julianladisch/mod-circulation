@@ -71,7 +71,7 @@ public class ItemsInTransitResource extends Resource {
 
     final GetManyRecordsClient loansStorageClient = clients.loansStorage();
     final GetManyRecordsClient requestsStorageClient = clients.requestsStorage();
-    final ItemRepository itemRepository = new ItemRepository(clients, true, true, true);
+    final ItemRepository itemRepository = new ItemRepository(clients);
     final ServicePointRepository servicePointRepository = new ServicePointRepository(clients);
     final ItemReportRepository itemReportRepository = new ItemReportRepository(clients);
     final UserRepository userRepository = new UserRepository(clients);

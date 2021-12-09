@@ -60,7 +60,7 @@ public class RequestNoticeSender {
   }
 
   public static RequestNoticeSender using(Clients clients) {
-    final var itemRepository = new ItemRepository(clients, true, true, true);
+    final var itemRepository = new ItemRepository(clients);
     final var userRepository = new UserRepository(clients);
 
     return new RequestNoticeSender(
