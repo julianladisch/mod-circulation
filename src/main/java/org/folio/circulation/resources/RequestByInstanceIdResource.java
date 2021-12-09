@@ -219,12 +219,13 @@ public class RequestByInstanceIdResource extends Resource {
     List<JsonObject> itemRequestRepresentations, Clients clients, EventPublisher eventPublisher) {
 
     final RequestNoticeSender requestNoticeSender = RequestNoticeSender.using(clients);
+    final var itemRepository = new ItemRepository(clients, false, false, false);
     final LoanRepository loanRepository = new LoanRepository(clients);
     final LoanPolicyRepository loanPolicyRepository = new LoanPolicyRepository(clients);
     final ConfigurationRepository configurationRepository = new ConfigurationRepository(clients);
 
     final UpdateUponRequest updateUponRequest = new UpdateUponRequest(
-        new UpdateItem(clients),
+        new UpdateItem(itemRepository),
         new UpdateLoan(clients, loanRepository, loanPolicyRepository),
         UpdateRequestQueue.using(clients));
 

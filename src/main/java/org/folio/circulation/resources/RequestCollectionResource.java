@@ -71,13 +71,14 @@ public class RequestCollectionResource extends CollectionResource {
 
     final var eventPublisher = new EventPublisher(routingContext);
 
+    final var itemRepository = new ItemRepository(clients, false, false, false);
     final var userRepository = new UserRepository(clients);
     final var loanRepository = new LoanRepository(clients);
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var requestNoticeSender = RequestNoticeSender.using(clients);
     final var configurationRepository = new ConfigurationRepository(clients);
 
-    final var updateUponRequest = new UpdateUponRequest(new UpdateItem(clients),
+    final var updateUponRequest = new UpdateUponRequest(new UpdateItem(itemRepository),
       new UpdateLoan(clients, loanRepository, loanPolicyRepository),
       UpdateRequestQueue.using(clients));
 
@@ -121,6 +122,7 @@ public class RequestCollectionResource extends CollectionResource {
 
     write(representation, "id", getRequestId(routingContext));
 
+    final var itemRepository = new ItemRepository(clients, false, false, false);
     final var requestRepository = RequestRepository.using(clients);
     final var updateRequestQueue = UpdateRequestQueue.using(clients);
     final var loanRepository = new LoanRepository(clients);
@@ -129,7 +131,7 @@ public class RequestCollectionResource extends CollectionResource {
     final var requestNoticeSender = RequestNoticeSender.using(clients);
     final var configurationRepository = new ConfigurationRepository(clients);
 
-    final var updateItem = new UpdateItem(clients);
+    final var updateItem = new UpdateItem(itemRepository);
 
     final var updateUponRequest = new UpdateUponRequest(updateItem,
       new UpdateLoan(clients, loanRepository, loanPolicyRepository), updateRequestQueue);
@@ -244,7 +246,7 @@ public class RequestCollectionResource extends CollectionResource {
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var configurationRepository = new ConfigurationRepository(clients);
 
-    final var updateUponRequest = new UpdateUponRequest(new UpdateItem(clients),
+    final var updateUponRequest = new UpdateUponRequest(new UpdateItem(itemRepository),
       new UpdateLoan(clients, loanRepository, loanPolicyRepository),
       UpdateRequestQueue.using(clients));
 
