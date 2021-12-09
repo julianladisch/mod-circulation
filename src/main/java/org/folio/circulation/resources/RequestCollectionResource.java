@@ -73,7 +73,7 @@ public class RequestCollectionResource extends CollectionResource {
 
     final var itemRepository = new ItemRepository(clients, false, false, false);
     final var userRepository = new UserRepository(clients);
-    final var loanRepository = new LoanRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var requestNoticeSender = RequestNoticeSender.using(clients);
     final var configurationRepository = new ConfigurationRepository(clients);
@@ -95,8 +95,7 @@ public class RequestCollectionResource extends CollectionResource {
       requestNoticeSender, requestBlocksValidators, eventPublisher, errorHandler);
 
     final var requestFromRepresentationService = new RequestFromRepresentationService(
-      new ItemRepository(clients, true, true, true),
-      RequestQueueRepository.using(clients), userRepository, loanRepository,
+      itemRepository, RequestQueueRepository.using(clients), userRepository, loanRepository,
       new ServicePointRepository(clients), configurationRepository,
       createProxyRelationshipValidator(representation, clients),
       new ServicePointPickupLocationValidator(), errorHandler);
@@ -122,10 +121,10 @@ public class RequestCollectionResource extends CollectionResource {
 
     write(representation, "id", getRequestId(routingContext));
 
-    final var itemRepository = new ItemRepository(clients, false, false, false);
+    final var itemRepository = new ItemRepository(clients, true, true, true);
     final var requestRepository = RequestRepository.using(clients);
     final var updateRequestQueue = UpdateRequestQueue.using(clients);
-    final var loanRepository = new LoanRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, new UserRepository(clients));
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var eventPublisher = new EventPublisher(routingContext);
     final var requestNoticeSender = RequestNoticeSender.using(clients);
@@ -150,8 +149,7 @@ public class RequestCollectionResource extends CollectionResource {
       requestNoticeSender, updateItem, eventPublisher);
 
     final var requestFromRepresentationService = new RequestFromRepresentationService(
-      new ItemRepository(clients, true, true, true),
-      RequestQueueRepository.using(clients), new UserRepository(clients),
+      itemRepository, RequestQueueRepository.using(clients), new UserRepository(clients),
       loanRepository, new ServicePointRepository(clients), configurationRepository,
       createProxyRelationshipValidator(representation, clients),
       new ServicePointPickupLocationValidator(), errorHandler);
@@ -242,7 +240,8 @@ public class RequestCollectionResource extends CollectionResource {
     final var requestQueueRepository = RequestQueueRepository.using(clients);
 
     final var itemRepository = new ItemRepository(clients, true, true, true);
-    final var loanRepository = new LoanRepository(clients);
+    final var userRepository = new UserRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var configurationRepository = new ConfigurationRepository(clients);
 
