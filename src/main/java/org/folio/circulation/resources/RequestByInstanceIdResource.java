@@ -179,7 +179,11 @@ public class RequestByInstanceIdResource extends Resource {
     Collection<Item> items,
     InstanceRequestRelatedRecords instanceRequestPackage, Clients clients) {
 
-    RequestQueueRepository queueRepository = RequestQueueRepository.using(clients);
+    final var itemRepository = new ItemRepository(clients);
+    final var userRepository = new UserRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+    var queueRepository = new RequestQueueRepository(RequestRepository.using(clients,
+        itemRepository, userRepository, loanRepository));
     Map<Item, CompletableFuture<Result<RequestQueue>>> itemRequestQueueMap = new HashMap<>();
 
     instanceRequestPackage.setAllUnsortedItems(items);
@@ -250,8 +254,6 @@ public class RequestByInstanceIdResource extends Resource {
     List<JsonObject> itemRequests, int startIndex, CreateRequestService createRequestService,
     Clients clients, LoanRepository loanRepository, List<String> errors) {
 
-    final UserRepository userRepository = new UserRepository(clients);
-
     log.debug("RequestByInstanceIdResource.placeRequest, startIndex={}, itemRequestSize={}",
       startIndex, itemRequests.size());
 
@@ -264,18 +266,19 @@ public class RequestByInstanceIdResource extends Resource {
 
     JsonObject currentItemRequest = itemRequests.get(startIndex);
 
+    final var itemRepository = new ItemRepository(clients);
+    final var userRepository = new UserRepository(clients);
+    final var requestRepository = RequestRepository.using(clients, itemRepository,
+      userRepository, loanRepository);
     final RequestFromRepresentationService requestFromRepresentationService =
-      new RequestFromRepresentationService(
-        new ItemRepository(clients),
-        RequestQueueRepository.using(clients),
-        userRepository,
-        loanRepository,
+      new RequestFromRepresentationService(itemRepository,
+        new RequestQueueRepository(requestRepository),
+        userRepository, loanRepository,
         new ServicePointRepository(clients),
         new ConfigurationRepository(clients),
         createProxyRelationshipValidator(currentItemRequest, clients),
         new ServicePointPickupLocationValidator(),
-        new FailFastErrorHandler()
-      );
+        new FailFastErrorHandler());
 
     return requestFromRepresentationService.getRequestFrom(currentItemRequest)
       .thenCompose(r -> r.after(createRequestService::createRequest))
