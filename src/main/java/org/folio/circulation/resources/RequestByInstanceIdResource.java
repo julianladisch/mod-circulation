@@ -145,7 +145,9 @@ public class RequestByInstanceIdResource extends Resource {
       return CompletableFuture.completedFuture(succeeded(null));
     }
 
-    LoanRepository loanRepository = new LoanRepository(clients);
+    final var itemRepository = new ItemRepository(clients, true, true, true);
+    final var userRepository = new UserRepository(clients);
+    LoanRepository loanRepository = new LoanRepository(clients, itemRepository, userRepository);
     Map<Item, CompletableFuture<Result<Loan>>> itemLoanFuturesMap = new HashMap<>();
 
     //Find request queues and loan items for each item
@@ -220,7 +222,8 @@ public class RequestByInstanceIdResource extends Resource {
 
     final RequestNoticeSender requestNoticeSender = RequestNoticeSender.using(clients);
     final var itemRepository = new ItemRepository(clients, false, false, false);
-    final LoanRepository loanRepository = new LoanRepository(clients);
+    final var userRepository = new UserRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
     final LoanPolicyRepository loanPolicyRepository = new LoanPolicyRepository(clients);
     final ConfigurationRepository configurationRepository = new ConfigurationRepository(clients);
 

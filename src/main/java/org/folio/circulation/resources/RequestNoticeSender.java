@@ -32,6 +32,7 @@ import org.folio.circulation.domain.notice.SingleImmediatePatronNoticeService;
 import org.folio.circulation.domain.notice.TemplateContextUtil;
 import org.folio.circulation.domain.representations.logs.NoticeLogContext;
 import org.folio.circulation.infrastructure.storage.ServicePointRepository;
+import org.folio.circulation.infrastructure.storage.inventory.ItemRepository;
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
 import org.folio.circulation.infrastructure.storage.requests.RequestRepository;
 import org.folio.circulation.infrastructure.storage.users.UserRepository;
@@ -59,14 +60,16 @@ public class RequestNoticeSender {
   }
 
   public static RequestNoticeSender using(Clients clients) {
+    final var itemRepository = new ItemRepository(clients, true, true, true);
+    final var userRepository = new UserRepository(clients);
+
     return new RequestNoticeSender(
       new SingleImmediatePatronNoticeService(clients),
       RequestRepository.using(clients),
-      new LoanRepository(clients),
-      new UserRepository(clients),
+      new LoanRepository(clients, itemRepository, userRepository),
+      userRepository,
       new ServicePointRepository(clients),
-      new EventPublisher(clients.pubSubPublishingService())
-    );
+      new EventPublisher(clients.pubSubPublishingService()));
   }
 
   private final ImmediatePatronNoticeService patronNoticeService;
