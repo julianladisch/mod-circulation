@@ -55,7 +55,11 @@ public class RequestQueueResource extends Resource {
     WebContext context = new WebContext(routingContext);
     Clients clients = Clients.create(context, client);
 
-    final RequestQueueRepository requestQueueRepository = RequestQueueRepository.using(clients);
+    final var itemRepository = new ItemRepository(clients);
+    final var userRepository = new UserRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+    final var requestQueueRepository = new RequestQueueRepository(
+      RequestRepository.using(clients, itemRepository, userRepository, loanRepository));
     final RequestRepresentation requestRepresentation = new RequestRepresentation();
 
     String itemId = routingContext.request().getParam("itemId");
@@ -78,12 +82,12 @@ public class RequestQueueResource extends Resource {
 
     final WebContext context = new WebContext(routingContext);
     final Clients clients = Clients.create(context, client);
-    final ItemRepository itemRepository = new ItemRepository(clients);
-    final UserRepository userRepository = new UserRepository(clients);
+    final var itemRepository = new ItemRepository(clients);
+    final var userRepository = new UserRepository(clients);
     final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
-    final RequestRepository requestRepository = RequestRepository.using(clients,
+    final var requestRepository = RequestRepository.using(clients,
       itemRepository, userRepository, loanRepository);
-    final RequestQueueRepository requestQueueRepository = RequestQueueRepository.using(clients);
+    final var requestQueueRepository = new RequestQueueRepository(requestRepository);
 
     final UpdateRequestQueue updateRequestQueue = new UpdateRequestQueue(
       requestQueueRepository, requestRepository, new ServicePointRepository(clients),

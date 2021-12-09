@@ -16,34 +16,21 @@ import org.folio.circulation.domain.MultipleRecords;
 import org.folio.circulation.domain.Request;
 import org.folio.circulation.domain.RequestQueue;
 import org.folio.circulation.domain.RequestStatus;
-import org.folio.circulation.infrastructure.storage.inventory.ItemRepository;
-import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
-import org.folio.circulation.infrastructure.storage.users.UserRepository;
 import org.folio.circulation.resources.context.RenewalContext;
-import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.results.Result;
 import org.folio.circulation.support.http.client.CqlQuery;
 import org.folio.circulation.support.http.client.PageLimit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class RequestQueueRepository {
   private static final Logger LOG = LogManager.getLogger(RequestQueueRepository.class);
 
   private static final PageLimit MAXIMUM_SUPPORTED_REQUEST_QUEUE_SIZE = oneThousand();
   private final RequestRepository requestRepository;
-
-  private RequestQueueRepository(RequestRepository requestRepository) {
-    this.requestRepository = requestRepository;
-  }
-
-  public static RequestQueueRepository using(Clients clients) {
-    final ItemRepository itemRepository = new ItemRepository(clients);
-    final UserRepository userRepository = new UserRepository(clients);
-    return new RequestQueueRepository(RequestRepository.using(clients,
-      itemRepository, userRepository, new LoanRepository(clients,
-        itemRepository, userRepository)));
-  }
 
   public CompletableFuture<Result<LoanAndRelatedRecords>> get(
     LoanAndRelatedRecords loanAndRelatedRecords) {
