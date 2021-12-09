@@ -62,12 +62,12 @@ public class RequestNoticeSender {
   public static RequestNoticeSender using(Clients clients) {
     final var itemRepository = new ItemRepository(clients);
     final var userRepository = new UserRepository(clients);
-
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
     return new RequestNoticeSender(
       new SingleImmediatePatronNoticeService(clients),
-      RequestRepository.using(clients),
-      new LoanRepository(clients, itemRepository, userRepository),
-      userRepository,
+      RequestRepository.using(clients, itemRepository,
+        userRepository, loanRepository),
+      loanRepository, userRepository,
       new ServicePointRepository(clients),
       new EventPublisher(clients.pubSubPublishingService()));
   }

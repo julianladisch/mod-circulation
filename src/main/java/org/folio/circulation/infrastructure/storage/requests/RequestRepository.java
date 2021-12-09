@@ -64,10 +64,10 @@ public class RequestRepository {
     this.patronGroupRepository = patronGroupRepository;
   }
 
-  public static RequestRepository using(org.folio.circulation.support.Clients clients) {
-    final var itemRepository = new ItemRepository(clients);
-    final var userRepository = new UserRepository(clients);
-    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+  public static RequestRepository using(
+    org.folio.circulation.support.Clients clients,
+    ItemRepository itemRepository, UserRepository userRepository,
+    LoanRepository loanRepository) {
 
     return new RequestRepository(
       new Clients(clients.requestsStorage(), clients.requestsBatchStorage(),
