@@ -79,10 +79,10 @@ public class RequestCollectionResource extends CollectionResource {
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var requestNoticeSender = RequestNoticeSender.using(clients);
     final var configurationRepository = new ConfigurationRepository(clients);
-
     final var updateUponRequest = new UpdateUponRequest(new UpdateItem(itemRepository),
       new UpdateLoan(clients, loanRepository, loanPolicyRepository),
-      UpdateRequestQueue.using(clients));
+      UpdateRequestQueue.using(clients, requestRepository,
+        new RequestQueueRepository(requestRepository)));
 
     final var okapiPermissions = OkapiPermissions.from(context.getHeaders());
     final var blockOverrides = BlockOverrides.fromRequest(representation);
@@ -129,7 +129,9 @@ public class RequestCollectionResource extends CollectionResource {
     final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
     final var requestRepository = RequestRepository.using(clients,
       itemRepository, userRepository, loanRepository);
-    final var updateRequestQueue = UpdateRequestQueue.using(clients);
+    final var requestQueueRepository = new RequestQueueRepository(requestRepository);
+    final var updateRequestQueue = UpdateRequestQueue.using(clients,
+      requestRepository, requestQueueRepository);
     final var loanPolicyRepository = new LoanPolicyRepository(clients);
     final var eventPublisher = new EventPublisher(routingContext);
     final var requestNoticeSender = RequestNoticeSender.using(clients);
@@ -155,7 +157,7 @@ public class RequestCollectionResource extends CollectionResource {
       requestNoticeSender, updateItem, eventPublisher);
 
     final var requestFromRepresentationService = new RequestFromRepresentationService(
-      itemRepository, new RequestQueueRepository(requestRepository), userRepository,
+      itemRepository, requestQueueRepository, userRepository,
       loanRepository, new ServicePointRepository(clients), configurationRepository,
       createProxyRelationshipValidator(representation, clients),
       new ServicePointPickupLocationValidator(), errorHandler);
@@ -267,7 +269,7 @@ public class RequestCollectionResource extends CollectionResource {
 
     final var updateUponRequest = new UpdateUponRequest(new UpdateItem(itemRepository),
       new UpdateLoan(clients, loanRepository, loanPolicyRepository),
-      UpdateRequestQueue.using(clients));
+      UpdateRequestQueue.using(clients, requestRepository, requestQueueRepository));
 
     final var moveRequestProcessAdapter = new MoveRequestProcessAdapter(itemRepository,
       loanRepository, requestRepository, requestQueueRepository);
