@@ -43,8 +43,7 @@ public class LoanScheduledNoticeProcessingResource extends ScheduledNoticeProces
     Clients clients, MultipleRecords<ScheduledNotice> noticesResult) {
 
     return new LoanScheduledNoticeHandler(clients, new ItemRepository(clients),
-      ClockUtil.getZonedDateTime()
-    )
+      ClockUtil.getZonedDateTime())
       .handleNotices(noticesResult.getRecords())
       .thenApply(mapResult(v -> noticesResult));
   }
