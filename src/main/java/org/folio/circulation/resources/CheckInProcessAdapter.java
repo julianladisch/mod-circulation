@@ -113,6 +113,7 @@ class CheckInProcessAdapter {
       new OverduePeriodCalculatorService(new CalendarRepository(clients),
         new LoanPolicyRepository(clients)),
       new FeeFineFacade(clients));
+
     return new CheckInProcessAdapter(itemFinder,
       singleOpenLoanFinder,
       new LoanCheckInService(),
@@ -127,7 +128,8 @@ class CheckInProcessAdapter {
       new LogCheckInService(clients),
       overdueFineService,
       FeeFineScheduledNoticeService.using(clients),
-      new LostItemFeeRefundService(clients),
+      new LostItemFeeRefundService(clients, itemRepository,
+        userRepository, loanRepository),
       new EventPublisher(clients.pubSubPublishingService()));
   }
 
