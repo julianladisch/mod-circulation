@@ -13,6 +13,8 @@ import org.folio.circulation.domain.representations.CheckInByBarcodeResponse;
 import org.folio.circulation.domain.validation.CheckInValidators;
 import org.folio.circulation.infrastructure.storage.inventory.ItemRepository;
 import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
+import org.folio.circulation.infrastructure.storage.requests.RequestQueueRepository;
+import org.folio.circulation.infrastructure.storage.requests.RequestRepository;
 import org.folio.circulation.infrastructure.storage.sessions.PatronActionSessionRepository;
 import org.folio.circulation.infrastructure.storage.users.UserRepository;
 import org.folio.circulation.services.EventPublisher;
@@ -54,7 +56,12 @@ public class CheckInByBarcodeResource extends Resource {
     final EventPublisher eventPublisher = new EventPublisher(routingContext);
 
     final var checkInValidators = new CheckInValidators(this::errorWhenInIncorrectStatus);
-    final CheckInProcessAdapter processAdapter = CheckInProcessAdapter.newInstance(clients);
+    final CheckInProcessAdapter processAdapter = CheckInProcessAdapter.newInstance(clients,
+      itemRepository, userRepository,
+      loanRepository, RequestRepository.using(clients,
+        itemRepository, userRepository, loanRepository), new RequestQueueRepository(
+        RequestRepository.using(clients,
+            itemRepository, userRepository, loanRepository)));
 
     final RequestScheduledNoticeService requestScheduledNoticeService =
       RequestScheduledNoticeService.using(clients);
