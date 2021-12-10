@@ -3,12 +3,18 @@ package org.folio.circulation.infrastructure.storage.inventory;
 import static java.util.Objects.isNull;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.function.Function.identity;
+import static org.folio.circulation.domain.representations.ItemProperties.IN_TRANSIT_DESTINATION_SERVICE_POINT_ID;
+import static org.folio.circulation.domain.representations.ItemProperties.LAST_CHECK_IN;
+import static org.folio.circulation.domain.representations.ItemProperties.STATUS_PROPERTY;
 import static org.folio.circulation.domain.representations.LoanProperties.ITEM_ID;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.fetching.MultipleCqlIndexValuesCriteria.byIndex;
 import static org.folio.circulation.support.fetching.RecordFetching.findWithMultipleCqlIndexValues;
 import static org.folio.circulation.support.http.CommonResponseInterpreters.noContentRecordInterpreter;
 import static org.folio.circulation.support.json.JsonKeys.byId;
+import static org.folio.circulation.support.json.JsonPropertyFetcher.getProperty;
+import static org.folio.circulation.support.json.JsonPropertyWriter.remove;
+import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.results.Result.ofAsync;
 import static org.folio.circulation.support.results.Result.succeeded;
 import static org.folio.circulation.support.results.ResultBinding.flatMapResult;
@@ -17,6 +23,7 @@ import static org.folio.circulation.support.utils.CollectionUtil.map;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +52,7 @@ import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.CollectionResourceClient;
 import org.folio.circulation.support.FindWithCqlQuery;
 import org.folio.circulation.support.FindWithMultipleCqlIndexValues;
+import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.SingleRecordFetcher;
 import org.folio.circulation.support.fetching.RecordFetching;
 import org.folio.circulation.support.http.client.CqlQuery;
@@ -67,6 +75,7 @@ public class ItemRepository {
   private final LocationRepository locationRepository;
   private final MaterialTypeRepository materialTypeRepository;
   private final ServicePointRepository servicePointRepository;
+  private final Map<String, JsonObject> identityMap = new HashMap<>();
 
   private static final String ITEMS_COLLECTION_PROPERTY_NAME = "items";
 
@@ -104,7 +113,30 @@ public class ItemRepository {
       return completedFuture(null);
     }
 
-    return itemsClient.put(item.getItemId(), item.getItem())
+    if (!identityMap.containsKey(item.getItemId())) {
+      return completedFuture(Result.failed(new ServerErrorFailure(
+        "Cannot update item when original representation is not available in identity map")));
+    }
+
+    final var updatedItemRepresentation = identityMap.get(item.getItemId());
+
+    write(updatedItemRepresentation, STATUS_PROPERTY,
+      new JsonObject().put("name", item.getStatus().getValue()));
+
+    remove(updatedItemRepresentation, IN_TRANSIT_DESTINATION_SERVICE_POINT_ID);
+    write(updatedItemRepresentation, IN_TRANSIT_DESTINATION_SERVICE_POINT_ID,
+      item.getInTransitDestinationServicePointId());
+
+    final var lastCheckIn = item.getLastCheckIn();
+
+    if (lastCheckIn == null) {
+      remove(updatedItemRepresentation, LAST_CHECK_IN);
+    }
+    else {
+      write(updatedItemRepresentation, LAST_CHECK_IN, lastCheckIn.toJson());
+    }
+
+    return itemsClient.put(item.getItemId(), updatedItemRepresentation)
       .thenApply(noContentRecordInterpreter(item)::flatMap)
       .thenCompose(x -> ofAsync(() -> item));
   }
@@ -258,12 +290,14 @@ public class ItemRepository {
         Item::from);
 
     return fetcher.findByIds(itemIds)
+      .thenApply(r -> r.map(this::addToIdentityMap))
       .thenApply(r -> r.map(MultipleRecords::getRecords));
   }
 
   private CompletableFuture<Result<Item>> fetchItem(String itemId) {
     return SingleRecordFetcher.jsonOrNull(itemsClient, "item")
       .fetch(itemId)
+      .thenApply(r -> r.map(this::addToIdentityMap))
       .thenApply(r -> r.map(Item::from));
   }
 
@@ -273,6 +307,7 @@ public class ItemRepository {
     return CqlQuery.exactMatch("barcode", barcode)
        .after(query -> itemsClient.getMany(query, PageLimit.one()))
       .thenApply(result -> result.next(this::mapMultipleToResult))
+      .thenApply(r -> r.map(this::addToIdentityMap))
       .thenApply(r -> r.map(Item::from))
       .exceptionally(CommonFailures::failedDueToServerError);
   }
@@ -397,5 +432,23 @@ public class ItemRepository {
       .thenComposeAsync(this::fetchLocation)
       .thenComposeAsync(this::fetchMaterialType)
       .thenComposeAsync(this::fetchLoanType);
+  }
+
+  private MultipleRecords<Item> addToIdentityMap(MultipleRecords<Item> items) {
+    if (items != null) {
+      items.getRecords().forEach(item -> addToIdentityMap(item.getItem()));
+    }
+
+    return items;
+  }
+
+  private JsonObject addToIdentityMap(JsonObject item) {
+      if (item != null) {
+        // Needs to be a copy because JsonObject is mutable
+        // and passed between instances of an item
+        identityMap.put(getProperty(item, "id"), item.copy());
+      }
+
+      return item;
   }
 }
