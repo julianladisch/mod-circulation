@@ -11,6 +11,9 @@ import org.folio.circulation.domain.notice.session.PatronActionSessionService;
 import org.folio.circulation.domain.representations.CheckInByBarcodeRequest;
 import org.folio.circulation.domain.representations.CheckInByBarcodeResponse;
 import org.folio.circulation.domain.validation.CheckInValidators;
+import org.folio.circulation.infrastructure.storage.inventory.ItemRepository;
+import org.folio.circulation.infrastructure.storage.loans.LoanRepository;
+import org.folio.circulation.infrastructure.storage.sessions.PatronActionSessionRepository;
 import org.folio.circulation.infrastructure.storage.users.UserRepository;
 import org.folio.circulation.services.EventPublisher;
 import org.folio.circulation.support.Clients;
@@ -41,6 +44,10 @@ public class CheckInByBarcodeResource extends Resource {
 
     final Clients clients = Clients.create(context, client);
 
+    final var userRepository = new UserRepository(clients);
+    final var itemRepository = new ItemRepository(clients);
+    final var loanRepository = new LoanRepository(clients, itemRepository, userRepository);
+
     final Result<CheckInByBarcodeRequest> checkInRequestResult
       = CheckInByBarcodeRequest.from(routingContext.getBodyAsJson());
 
@@ -53,9 +60,8 @@ public class CheckInByBarcodeResource extends Resource {
       RequestScheduledNoticeService.using(clients);
 
     final PatronActionSessionService patronActionSessionService =
-      PatronActionSessionService.using(clients);
-
-    final UserRepository userRepository = new UserRepository(clients);
+      PatronActionSessionService.using(clients,
+        PatronActionSessionRepository.using(clients, loanRepository, userRepository));
 
     final RequestNoticeSender requestNoticeSender = RequestNoticeSender.using(clients);
 
