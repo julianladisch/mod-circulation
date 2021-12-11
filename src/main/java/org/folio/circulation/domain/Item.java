@@ -279,23 +279,24 @@ public class Item {
   }
 
   public Item changeStatus(ItemStatus newStatus) {
-    if (isNotSameStatus(newStatus)) {
-      changed = true;
-    }
+    final var changedRepresentation = itemRepresentation.copy();
 
-    write(itemRepresentation, STATUS_PROPERTY,
+    write(changedRepresentation, STATUS_PROPERTY,
       new JsonObject().put("name", newStatus.getValue()));
+
+    final var changedItem = new Item(changedRepresentation, location, primaryServicePoint,
+      lastCheckIn, callNumberComponents, permanentLocation, inTransitDestinationServicePoint,
+      isNotSameStatus(newStatus), holdings, instance, materialType, loanType);
 
     //TODO: Remove this hack to remove destination service point
     // needs refactoring of how in transit for pickup is done
-    if(!isInTransit()) {
-      return removeDestination();
+    if (!isInTransit()) {
+      return changedItem.removeDestination();
     }
     else {
-      return this;
+      return changedItem;
     }
   }
-
 
   Item available() {
     return changeStatus(AVAILABLE)
