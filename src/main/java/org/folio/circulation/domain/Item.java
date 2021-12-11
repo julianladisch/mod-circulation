@@ -197,7 +197,7 @@ public class Item {
   }
 
   public String getStatusName() {
-    return status.name();
+    return status.getValue();
   }
 
   public Location getLocation() {
@@ -239,7 +239,7 @@ public class Item {
   }
 
   public ServicePoint getInTransitDestinationServicePoint() {
-    if(getInTransitDestinationServicePointId() == null) {
+    if (getInTransitDestinationServicePointId() == null) {
       return null;
     }
 
@@ -289,7 +289,7 @@ public class Item {
 
     //TODO: Remove this hack to remove destination service point
     // needs refactoring of how in transit for pickup is done
-    if (!isInTransit()) {
+    if (!changedItem.isInTransit()) {
       return changedItem.removeDestination();
     }
     else {
@@ -325,18 +325,24 @@ public class Item {
   }
 
   private Item changeDestination(UUID destinationServicePointId) {
-    write(itemRepresentation, IN_TRANSIT_DESTINATION_SERVICE_POINT_ID,
+    final var changedRepresentation = itemRepresentation.copy();
+
+    write(changedRepresentation, IN_TRANSIT_DESTINATION_SERVICE_POINT_ID,
       destinationServicePointId);
 
-    return this;
+    return new Item(changedRepresentation, location, primaryServicePoint, lastCheckIn,
+      callNumberComponents, permanentLocation, inTransitDestinationServicePoint, changed,
+      holdings, instance, materialType, loanType, status);
   }
 
   private Item removeDestination() {
-    remove(itemRepresentation, IN_TRANSIT_DESTINATION_SERVICE_POINT_ID);
+    final var changedRepresentation = itemRepresentation.copy();
 
-    this.inTransitDestinationServicePoint = null;
+    remove(changedRepresentation, IN_TRANSIT_DESTINATION_SERVICE_POINT_ID);
 
-    return this;
+    return new Item(changedRepresentation, location, primaryServicePoint, lastCheckIn,
+      callNumberComponents, permanentLocation, null, changed,
+      holdings, instance, materialType, loanType, status);
   }
 
   private Item changeInTransitDestinationServicePoint(ServicePoint inTransitDestinationServicePoint) {
