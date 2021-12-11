@@ -9,6 +9,7 @@ import static org.folio.circulation.domain.representations.ItemProperties.STATUS
 import static org.folio.circulation.domain.representations.LoanProperties.ITEM_ID;
 import static org.folio.circulation.support.ValidationErrorFailure.failedValidation;
 import static org.folio.circulation.support.fetching.MultipleCqlIndexValuesCriteria.byIndex;
+import static org.folio.circulation.support.fetching.RecordFetching.findWithCqlQuery;
 import static org.folio.circulation.support.fetching.RecordFetching.findWithMultipleCqlIndexValues;
 import static org.folio.circulation.support.http.CommonResponseInterpreters.noContentRecordInterpreter;
 import static org.folio.circulation.support.json.JsonKeys.byId;
@@ -50,11 +51,9 @@ import org.folio.circulation.storage.mappers.LoanTypeMapper;
 import org.folio.circulation.storage.mappers.MaterialTypeMapper;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.CollectionResourceClient;
-import org.folio.circulation.support.FindWithCqlQuery;
 import org.folio.circulation.support.FindWithMultipleCqlIndexValues;
 import org.folio.circulation.support.ServerErrorFailure;
 import org.folio.circulation.support.SingleRecordFetcher;
-import org.folio.circulation.support.fetching.RecordFetching;
 import org.folio.circulation.support.http.client.CqlQuery;
 import org.folio.circulation.support.http.client.PageLimit;
 import org.folio.circulation.support.http.client.Response;
@@ -282,15 +281,13 @@ public class ItemRepository {
       .findFirst();
   }
 
-  private CompletableFuture<Result<Collection<Item>>> fetchItems(
-    Collection<String> itemIds) {
-
-    final FindWithMultipleCqlIndexValues<Item> fetcher
-      = findWithMultipleCqlIndexValues(itemsClient, ITEMS_COLLECTION_PROPERTY_NAME,
-        Item::from);
+  private CompletableFuture<Result<Collection<Item>>> fetchItems(Collection<String> itemIds) {
+    final var fetcher = findWithMultipleCqlIndexValues(itemsClient,
+      ITEMS_COLLECTION_PROPERTY_NAME, identity());
 
     return fetcher.findByIds(itemIds)
-      .thenApply(r -> r.map(this::addToIdentityMap))
+      .thenApply(mapResult(this::addToIdentityMap))
+      .thenApply(mapResult(m -> m.mapRecords(Item::from)))
       .thenApply(r -> r.map(MultipleRecords::getRecords));
   }
 
@@ -369,9 +366,12 @@ public class ItemRepository {
   }
 
   public CompletableFuture<Result<Collection<Item>>> findByQuery(Result<CqlQuery> queryResult) {
-    FindWithCqlQuery<Item> fetcher = RecordFetching.findWithCqlQuery(itemsClient, ITEMS_COLLECTION_PROPERTY_NAME, Item::from);
+    final var fetcher = findWithCqlQuery(itemsClient,
+      ITEMS_COLLECTION_PROPERTY_NAME, identity());
 
     return fetcher.findByQuery(queryResult)
+      .thenApply(mapResult(this::addToIdentityMap))
+      .thenApply(mapResult(m -> m.mapRecords(Item::from)))
       .thenApply(mapResult(MultipleRecords::getRecords))
       .thenComposeAsync(this::fetchHoldingRecords)
       .thenComposeAsync(this::fetchInstances)
@@ -382,11 +382,13 @@ public class ItemRepository {
   public CompletableFuture<Result<Collection<Item>>> findByIndexNameAndQuery(
     Collection<String> ids, String indexName, Result<CqlQuery> query) {
 
-    FindWithMultipleCqlIndexValues<Item> fetcher
+    FindWithMultipleCqlIndexValues<JsonObject> fetcher
       = findWithMultipleCqlIndexValues(itemsClient,
-        ITEMS_COLLECTION_PROPERTY_NAME, Item::from);
+        ITEMS_COLLECTION_PROPERTY_NAME, identity());
 
     return fetcher.find(byIndex(indexName, ids).withQuery(query))
+      .thenApply(mapResult(this::addToIdentityMap))
+      .thenApply(mapResult(m -> m.mapRecords(Item::from)))
       .thenApply(mapResult(MultipleRecords::getRecords))
       .thenComposeAsync(this::fetchHoldingRecords)
       .thenComposeAsync(this::fetchInstances)
@@ -434,9 +436,9 @@ public class ItemRepository {
       .thenComposeAsync(this::fetchLoanType);
   }
 
-  private MultipleRecords<Item> addToIdentityMap(MultipleRecords<Item> items) {
+  private MultipleRecords<JsonObject> addToIdentityMap(MultipleRecords<JsonObject> items) {
     if (items != null) {
-      items.getRecords().forEach(item -> addToIdentityMap(item.getItem()));
+      items.getRecords().forEach(this::addToIdentityMap);
     }
 
     return items;
