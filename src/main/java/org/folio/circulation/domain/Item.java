@@ -47,6 +47,7 @@ public class Item {
   @NonNull private final Instance instance;
   @NonNull private final MaterialType materialType;
   @NonNull private final LoanType loanType;
+  @NonNull private final ItemStatus status;
 
   public Item(JsonObject itemRepresentation,
     Location location,
@@ -59,7 +60,8 @@ public class Item {
     @NonNull Holdings holdings,
     @NonNull Instance instance,
     @NonNull MaterialType materialType,
-    @NonNull LoanType loanType) {
+    @NonNull LoanType loanType,
+    @NonNull ItemStatus status) {
 
     this.itemRepresentation = itemRepresentation;
     this.location = location;
@@ -73,6 +75,7 @@ public class Item {
     this.instance = instance;
     this.materialType = materialType;
     this.loanType = loanType;
+    this.status = status;
   }
 
   public static Item from(JsonObject representation) {
@@ -87,7 +90,10 @@ public class Item {
       Holdings.unknown(),
       Instance.unknown(),
       MaterialType.unknown(),
-      LoanType.unknown());
+      LoanType.unknown(),
+      ItemStatus.from(
+        getNestedStringProperty(representation, STATUS_PROPERTY, "name"),
+        getNestedStringProperty(representation, STATUS_PROPERTY, "date")));
   }
 
   public boolean isCheckedOut() {
@@ -187,15 +193,11 @@ public class Item {
   }
 
   public ItemStatus getStatus() {
-    return ItemStatus.from(getStatusName(), getStatusDate());
+    return status;
   }
 
   public String getStatusName() {
-    return getNestedStringProperty(itemRepresentation, STATUS_PROPERTY, "name");
-  }
-
-  private String getStatusDate() {
-    return getNestedStringProperty(itemRepresentation, STATUS_PROPERTY, "date");
+    return status.name();
   }
 
   public Location getLocation() {
@@ -281,12 +283,9 @@ public class Item {
   public Item changeStatus(ItemStatus newStatus) {
     final var changedRepresentation = itemRepresentation.copy();
 
-    write(changedRepresentation, STATUS_PROPERTY,
-      new JsonObject().put("name", newStatus.getValue()));
-
     final var changedItem = new Item(changedRepresentation, location, primaryServicePoint,
       lastCheckIn, callNumberComponents, permanentLocation, inTransitDestinationServicePoint,
-      isNotSameStatus(newStatus), holdings, instance, materialType, loanType);
+      isNotSameStatus(newStatus), holdings, instance, materialType, loanType, newStatus);
 
     //TODO: Remove this hack to remove destination service point
     // needs refactoring of how in transit for pickup is done
@@ -373,7 +372,8 @@ public class Item {
       this.callNumberComponents,
       this.permanentLocation,
       this.inTransitDestinationServicePoint,
-      this.changed, holdings, this.instance, this.materialType, loanType);
+      this.changed, holdings, this.instance, this.materialType, loanType,
+      status);
   }
 
   public Item withMaterialType(MaterialType materialType) {
@@ -386,7 +386,7 @@ public class Item {
       this.permanentLocation,
       this.inTransitDestinationServicePoint,
       this.changed, holdings, this.instance,
-      materialType, loanType);
+      materialType, loanType, status);
   }
 
   public Item withHoldings(@NonNull Holdings holdings) {
@@ -399,7 +399,7 @@ public class Item {
       this.permanentLocation,
       this.inTransitDestinationServicePoint,
       this.changed,
-      holdings, this.instance, this.materialType, loanType);
+      holdings, this.instance, this.materialType, loanType, status);
   }
 
   public Item withInstance(@NonNull Instance instance) {
@@ -412,7 +412,7 @@ public class Item {
       this.permanentLocation,
       this.inTransitDestinationServicePoint,
       this.changed, holdings,
-      instance, this.materialType, loanType);
+      instance, this.materialType, loanType, status);
   }
 
   public Item withPrimaryServicePoint(ServicePoint servicePoint) {
@@ -424,7 +424,8 @@ public class Item {
       this.callNumberComponents,
       this.permanentLocation,
       this.inTransitDestinationServicePoint,
-      this.changed, holdings, this.instance, this.materialType, loanType);
+      this.changed, holdings, this.instance, this.materialType, loanType,
+      status);
   }
 
 
@@ -438,7 +439,7 @@ public class Item {
       this.permanentLocation,
       this.inTransitDestinationServicePoint,
       this.changed, holdings, this.instance, this.materialType,
-      loanType);
+      loanType, status);
   }
 
   public Item withLastCheckIn(LastCheckIn lastCheckIn) {
@@ -451,7 +452,8 @@ public class Item {
       this.callNumberComponents,
       this.permanentLocation,
       this.inTransitDestinationServicePoint,
-      this.changed, holdings, this.instance, this.materialType, loanType);
+      this.changed, holdings, this.instance, this.materialType, loanType,
+      status);
   }
 
   public Item withPermanentLocation(Location permanentLocation) {
@@ -463,6 +465,7 @@ public class Item {
       this.callNumberComponents,
       permanentLocation,
       this.inTransitDestinationServicePoint,
-      this.changed, holdings, this.instance, this.materialType, loanType);
+      this.changed, holdings, this.instance, this.materialType, loanType,
+      status);
   }
 }
