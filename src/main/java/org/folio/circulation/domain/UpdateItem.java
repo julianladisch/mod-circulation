@@ -148,13 +148,10 @@ public class UpdateItem {
   }
 
   private CompletableFuture<Result<Item>> updateItemWhenNotSameStatus(
-    ItemStatus prospectiveStatus,
-    Item item) {
+    ItemStatus prospectiveStatus, Item item) {
 
     if(item.isNotSameStatus(prospectiveStatus)) {
-      item.changeStatus(prospectiveStatus);
-
-      return storeItem(item);
+      return storeItem(item.changeStatus(prospectiveStatus));
     }
     else {
       return completedFuture(succeeded(item));

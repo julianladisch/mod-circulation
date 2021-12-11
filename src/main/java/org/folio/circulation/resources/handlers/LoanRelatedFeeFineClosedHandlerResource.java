@@ -108,8 +108,7 @@ public class LoanRelatedFeeFineClosedHandlerResource extends Resource {
     final var storeLoanAndItem = new StoreLoanAndItem(loanRepository, itemRepository);
     return loanResult.after(loan -> {
       if (allLostFeesClosed(loan)) {
-        loan.closeLoanAsLostAndPaid();
-        return storeLoanAndItem.updateLoanAndItemInStorage(loan);
+        return storeLoanAndItem.updateLoanAndItemInStorage(loan.closeLoanAsLostAndPaid());
       }
 
       return completedFuture(succeeded(loan));

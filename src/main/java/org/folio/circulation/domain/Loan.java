@@ -1,7 +1,7 @@
 package org.folio.circulation.domain;
 
-import static java.lang.Boolean.TRUE;
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
@@ -51,7 +51,6 @@ import static org.folio.circulation.support.json.JsonPropertyWriter.write;
 import static org.folio.circulation.support.json.JsonPropertyWriter.writeByPath;
 import static org.folio.circulation.support.results.CommonFailures.failedDueToServerError;
 import static org.folio.circulation.support.results.Result.succeeded;
-import static org.folio.circulation.support.utils.CommonUtils.executeIfNotNull;
 import static org.folio.circulation.support.utils.DateTimeUtil.isBeforeMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.isSameMillis;
 import static org.folio.circulation.support.utils.DateTimeUtil.mostRecentDate;
@@ -158,13 +157,22 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public Loan changeItemStatusForItemAndLoan(ItemStatus itemStatus) {
-    Item itemToChange = getItem();
+    final var currentItem = getItem();
 
-    executeIfNotNull(itemToChange, f -> f.changeStatus(itemStatus));
+    if (currentItem != null) {
+      final var changedItem = currentItem.changeStatus(itemStatus);
 
-    changeItemStatus(itemStatus.getValue());
+      final var changedLoan = withItem(changedItem);
 
-    return this;
+      changedLoan.changeItemStatus(itemStatus.getValue());
+
+      return changedLoan;
+    }
+    else {
+      changeItemStatus(itemStatus.getValue());
+
+      return this;
+    }
   }
 
   private void changeStatus(LoanStatus status) {
@@ -457,9 +465,8 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   public Loan declareItemLost(String comment, ZonedDateTime dateTime) {
     changeAction(DECLARED_LOST);
     changeActionComment(comment);
-    changeItemStatusForItemAndLoan(ItemStatus.DECLARED_LOST);
     changeDeclaredLostDateTime(dateTime);
-    return this;
+    return changeItemStatusForItemAndLoan(ItemStatus.DECLARED_LOST);
   }
 
   public boolean isDeclaredLost() {
@@ -571,10 +578,8 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
       changeActionComment(comment);
     }
 
-    changeItemStatusForItemAndLoan(ItemStatus.CLAIMED_RETURNED);
     changeClaimedReturnedDate(claimedReturnedDate);
-
-    return this;
+    return changeItemStatusForItemAndLoan(ItemStatus.CLAIMED_RETURNED);
   }
 
   private void changeClaimedReturnedDate(ZonedDateTime claimedReturnedDate) {
@@ -600,9 +605,8 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   }
 
   public Loan markItemMissing(String comment) {
-    changeItemStatusForItemAndLoan(ItemStatus.MISSING);
-
-    return closeLoan(MISSING, comment);
+    return changeItemStatusForItemAndLoan(ItemStatus.MISSING)
+      .closeLoan(MISSING, comment);
   }
 
   public FeeAmount getRemainingFeeFineAmount() {
@@ -617,9 +621,9 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
       .orElse(noFeeAmount());
   }
 
-  public void closeLoanAsLostAndPaid() {
+  public Loan closeLoanAsLostAndPaid() {
     closeLoan(CLOSED_LOAN);
-    changeItemStatusForItemAndLoan(ItemStatus.LOST_AND_PAID);
+    return changeItemStatusForItemAndLoan(ItemStatus.LOST_AND_PAID);
   }
 
   public Loan copy() {
@@ -631,10 +635,8 @@ public class Loan implements ItemRelatedRecord, UserRelatedRecord {
   public Loan ageOverdueItemToLost(ZonedDateTime ageToLostDate) {
     changeAction(ITEM_AGED_TO_LOST);
     removeActionComment();
-    changeItemStatusForItemAndLoan(ItemStatus.AGED_TO_LOST);
     setAgedToLostDate(ageToLostDate);
-
-    return this;
+    return changeItemStatusForItemAndLoan(ItemStatus.AGED_TO_LOST);
   }
 
   public void setAgedToLostDelayedBilling(boolean hasBeenBilled, ZonedDateTime whenToBill) {

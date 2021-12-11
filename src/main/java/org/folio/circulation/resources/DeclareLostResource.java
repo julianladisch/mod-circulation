@@ -1,6 +1,5 @@
 package org.folio.circulation.resources;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static org.folio.circulation.support.ValidationErrorFailure.singleValidationError;
 import static org.folio.circulation.support.results.MappingFunctions.toFixedValue;
@@ -111,9 +110,8 @@ public class DeclareLostResource extends Resource {
     final NoteCreator creator = new NoteCreator(notesRepository);
 
     return ofAsync(() -> declareItemLost(loan, request))
-      .thenCompose(r -> r.after(l -> creator.createGeneralUserNote(loan.getUserId(),
-        "Claimed returned item marked declared lost")))
-      .thenCompose(r -> r.after(note -> completedFuture(succeeded(loan))));
+      .thenCompose(r -> r.applySideEffectAfter(l -> creator.createGeneralUserNote(l.getUserId(),
+        "Claimed returned item marked declared lost")));
   }
 
   private Loan declareItemLost(Loan loan, DeclareItemLostRequest request) {

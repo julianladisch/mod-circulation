@@ -257,6 +257,29 @@ public interface Result<T> {
   }
 
   /**
+   *
+   * @param sideEffect the side effect to apply
+   * @return success with same value when succeeded and action is applied successfully,
+   * failure otherwise
+   */
+  default <R> CompletableFuture<Result<T>> applySideEffectAfter(
+    Function<T, CompletableFuture<Result<R>>> sideEffect) {
+
+    if (failed()) {
+      return completedFuture(failed(cause()));
+    }
+
+    try {
+      return sideEffect.apply(value())
+        .exceptionally(CommonFailures::failedDueToServerError)
+        .thenApply(x -> succeeded(value()));
+    } catch (Exception e) {
+      return completedFuture(failedDueToServerError(e));
+    }
+  }
+
+
+  /**
    * Apply the next action to the value of the result
    *
    * Responds with the result of applying the next action to the current value

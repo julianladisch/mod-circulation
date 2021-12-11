@@ -280,12 +280,11 @@ public class ChargeLostFeesWhenAgedToLostService {
   }
 
   private CompletableFuture<Result<Loan>> closeLoanAsLostAndPaid(LoanToChargeFees loanToChargeFees) {
-    final Loan loan = loanToChargeFees.getLoan();
+    final var loan = loanToChargeFees.getLoan();
 
     loan.setLostItemHasBeenBilled();
-    loan.closeLoanAsLostAndPaid();
 
-    return storeLoanAndItem.updateLoanAndItemInStorage(loan);
+    return storeLoanAndItem.updateLoanAndItemInStorage(loan.closeLoanAsLostAndPaid());
   }
 
   private CompletableFuture<Result<Void>> publishClosedLoansLogEvents(Result<List<Loan>> loansResult) {
