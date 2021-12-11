@@ -41,7 +41,7 @@ public class Item {
   private final Location permanentLocation;
 
   private ServicePoint inTransitDestinationServicePoint;
-  private boolean changed;
+  private final boolean changed;
 
   @NonNull private final Holdings holdings;
   @NonNull private final Instance instance;
