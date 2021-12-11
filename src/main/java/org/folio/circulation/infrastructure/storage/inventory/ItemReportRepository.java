@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import org.folio.circulation.domain.Item;
 import org.folio.circulation.domain.ItemsReportFetcher;
 import org.folio.circulation.domain.MultipleRecords;
+import org.folio.circulation.storage.mappers.ItemMapper;
 import org.folio.circulation.support.Clients;
 import org.folio.circulation.support.GetManyRecordsClient;
 import org.folio.circulation.support.results.Result;
@@ -61,6 +62,8 @@ public class ItemReportRepository {
   private CompletableFuture<Result<MultipleRecords<Item>>> getItemsByField(
     ItemsReportFetcher itemsReportFetcher, String fieldName, String fieldValue) {
 
+    final var mapper = new ItemMapper();
+
     final Result<CqlQuery> itemStatusQuery = exactMatch(fieldName, fieldValue);
     int pageOffset = itemsReportFetcher.getCurrPageNumber() * PAGE_LIMIT;
 
@@ -68,6 +71,6 @@ public class ItemReportRepository {
       .after(query -> itemsClient.getMany(query, limit(PAGE_LIMIT),
         offset(pageOffset)))
       .thenApply(result -> result
-        .next(response -> MultipleRecords.from(response, Item::from, "items")));
+        .next(response -> MultipleRecords.from(response, mapper::toDomain, "items")));
   }
 }

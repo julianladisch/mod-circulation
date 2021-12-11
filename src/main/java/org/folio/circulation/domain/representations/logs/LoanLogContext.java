@@ -22,6 +22,7 @@ import java.time.ZonedDateTime;
 import org.folio.circulation.domain.Item;
 import org.folio.circulation.domain.Loan;
 import org.folio.circulation.domain.User;
+import org.folio.circulation.storage.mappers.ItemMapper;
 
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
@@ -82,9 +83,11 @@ public class LoanLogContext {
   }
 
   private static Item itemFromRepresentation(Loan loan) {
+    final var mapper = new ItemMapper();
+
     JsonObject itemJson = new JsonObject();
     ofNullable(loan).ifPresent(l -> write(itemJson, "id", l.getItemId()));
-    return Item.from(itemJson);
+    return mapper.toDomain(itemJson);
   }
 
   public JsonObject asJson() {

@@ -47,6 +47,7 @@ import org.folio.circulation.domain.ServicePoint;
 import org.folio.circulation.infrastructure.storage.ServicePointRepository;
 import org.folio.circulation.storage.mappers.HoldingsMapper;
 import org.folio.circulation.storage.mappers.InstanceMapper;
+import org.folio.circulation.storage.mappers.ItemMapper;
 import org.folio.circulation.storage.mappers.LoanTypeMapper;
 import org.folio.circulation.storage.mappers.MaterialTypeMapper;
 import org.folio.circulation.support.Clients;
@@ -285,27 +286,33 @@ public class ItemRepository {
     final var fetcher = findWithMultipleCqlIndexValues(itemsClient,
       ITEMS_COLLECTION_PROPERTY_NAME, identity());
 
+    final var mapper = new ItemMapper();
+
     return fetcher.findByIds(itemIds)
       .thenApply(mapResult(this::addToIdentityMap))
-      .thenApply(mapResult(m -> m.mapRecords(Item::from)))
-      .thenApply(r -> r.map(MultipleRecords::getRecords));
+      .thenApply(mapResult(records -> records.mapRecords(mapper::toDomain)))
+      .thenApply(mapResult(MultipleRecords::getRecords));
   }
 
   private CompletableFuture<Result<Item>> fetchItem(String itemId) {
+    final var mapper = new ItemMapper();
+
     return SingleRecordFetcher.jsonOrNull(itemsClient, "item")
       .fetch(itemId)
-      .thenApply(r -> r.map(this::addToIdentityMap))
-      .thenApply(r -> r.map(Item::from));
+      .thenApply(mapResult(this::addToIdentityMap))
+      .thenApply(mapResult(mapper::toDomain));
   }
 
   private CompletableFuture<Result<Item>> fetchItemByBarcode(String barcode) {
     log.info("Fetching item with barcode: {}", barcode);
 
+    final var mapper = new ItemMapper();
+
     return CqlQuery.exactMatch("barcode", barcode)
        .after(query -> itemsClient.getMany(query, PageLimit.one()))
       .thenApply(result -> result.next(this::mapMultipleToResult))
       .thenApply(r -> r.map(this::addToIdentityMap))
-      .thenApply(r -> r.map(Item::from))
+      .thenApply(r -> r.map(mapper::toDomain))
       .exceptionally(CommonFailures::failedDueToServerError);
   }
 
@@ -366,12 +373,14 @@ public class ItemRepository {
   }
 
   public CompletableFuture<Result<Collection<Item>>> findByQuery(Result<CqlQuery> queryResult) {
+    final var mapper = new ItemMapper();
+
     final var fetcher = findWithCqlQuery(itemsClient,
       ITEMS_COLLECTION_PROPERTY_NAME, identity());
 
     return fetcher.findByQuery(queryResult)
       .thenApply(mapResult(this::addToIdentityMap))
-      .thenApply(mapResult(m -> m.mapRecords(Item::from)))
+      .thenApply(mapResult(m -> m.mapRecords(mapper::toDomain)))
       .thenApply(mapResult(MultipleRecords::getRecords))
       .thenComposeAsync(this::fetchHoldingRecords)
       .thenComposeAsync(this::fetchInstances)
@@ -382,13 +391,15 @@ public class ItemRepository {
   public CompletableFuture<Result<Collection<Item>>> findByIndexNameAndQuery(
     Collection<String> ids, String indexName, Result<CqlQuery> query) {
 
+    final var mapper = new ItemMapper();
+
     FindWithMultipleCqlIndexValues<JsonObject> fetcher
       = findWithMultipleCqlIndexValues(itemsClient,
         ITEMS_COLLECTION_PROPERTY_NAME, identity());
 
     return fetcher.find(byIndex(indexName, ids).withQuery(query))
       .thenApply(mapResult(this::addToIdentityMap))
-      .thenApply(mapResult(m -> m.mapRecords(Item::from)))
+      .thenApply(mapResult(m -> m.mapRecords(mapper::toDomain)))
       .thenApply(mapResult(MultipleRecords::getRecords))
       .thenComposeAsync(this::fetchHoldingRecords)
       .thenComposeAsync(this::fetchInstances)
@@ -418,11 +429,13 @@ public class ItemRepository {
     Collection<Item> items,
     BiFunction<T, Item, T> includeItemMap) {
 
+    final var mapper = new ItemMapper();
+
     return records.getRecords().stream()
       .map(r -> includeItemMap.apply(r,
         items.stream()
           .filter(item -> StringUtils.equals(item.getItemId(), r.getItemId()))
-          .findFirst().orElse(Item.from(null))))
+          .findFirst().orElse(mapper.toDomain(null))))
       .collect(Collectors.toList());
   }
 
