@@ -1,0 +1,17 @@
+name: Build
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: maven
+          restore-keys: maven
+      - run: mvn -B clean install
