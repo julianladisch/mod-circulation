@@ -24,7 +24,7 @@
 
   <properties>
     <antlr4.version>4.7.2</antlr4.version>
-    <drools.version>7.53.0.Final</drools.version>
+    <drools.version>7.63.0.Final</drools.version>
     <rmb.version>33.1.1</rmb.version>
     <vertx.version>4.2.1</vertx.version>
     <log4j2.version>2.17.1</log4j2.version>
