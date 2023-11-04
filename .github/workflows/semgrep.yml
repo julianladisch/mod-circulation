@@ -1,0 +1,48 @@
+name: Semgrep
+
+on:
+  # Scan changed files in PRs (diff-aware scanning):
+  #pull_request: {}
+  # Scan on-demand through GitHub Actions interface:
+  workflow_dispatch: {}
+  # Scan mainline branches and report all findings:
+  #push:
+  #  branches: ["master", "main"]
+  # Schedule the CI job (this method uses cron syntax):
+  #schedule:
+  #  - cron: '20 17 * * *' # Sets Semgrep to scan every day at 17:20 UTC.
+  #  # It is recommended to change the schedule to a random time.
+
+jobs:
+  buildmavenDepTree: 
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      - run: mvn dependency:tree -DoutputFile=maven_dep_tree.txt -Dmaven.test.skip=true -Dscope=runtime
+      - run: find . -type f -name 'maven_dep_tree.txt' -exec zip -r archive.zip {} +
+      - uses: actions/upload-artifact@v3
+        with:
+          name: zipfile
+          path: archive.zip
+  semgrep:
+    needs: buildmavenDepTree
+    name: semgrep/ci 
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    if: (github.actor != 'dependabot[bot]')
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: zipfile    
+      - run: |
+          unzip -o archive.zip
+          semgrep ci
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
