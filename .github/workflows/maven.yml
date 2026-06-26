@@ -14,5 +14,10 @@ jobs:
         with:
           persist-credentials: false
           submodules: true
-      - run: mvn test | tee out
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+      - run: mvn install -DskipTests | tee out
       - run: tail -1000 out
