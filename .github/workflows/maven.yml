@@ -19,5 +19,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
           cache: 'maven'
-      - run: mvn test | tee out
+      #- run: mvn test | tee out
+      - run: mvn --update-snapshots clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report | tee out
       - run: tail -1000 out
