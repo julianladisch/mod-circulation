@@ -10,5 +10,9 @@ jobs:
   maven:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          submodules: true
       - run: mvn test | tee out
       - run: tail -1000 out
